@@ -1,5 +1,7 @@
 package de.dakror.arise;
 
+import java.awt.Font;
+
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.UpdateThread;
 import de.dakror.gamesetup.applet.DoubleBufferApplet;
@@ -15,6 +17,15 @@ public class Arise extends DoubleBufferApplet
 	public void init()
 	{
 		super.init();
+		
+		try
+		{
+			g.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		
 		new Game();
 		Game.currentApplet.init(this);

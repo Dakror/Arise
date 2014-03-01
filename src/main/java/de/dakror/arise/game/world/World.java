@@ -76,7 +76,7 @@ public class World extends Layer
 				if (citiesData == null || !citiesData.equals(newData))
 				{
 					citiesData = newData;
-					reloadWorld();
+					updateWorld();
 				}
 			}
 			catch (Exception e)
@@ -98,15 +98,19 @@ public class World extends Layer
 			if (c.getY() + c.getHeight() > maxY || maxY == -65536) maxY = c.getY() + c.getHeight();
 		}
 		
+		minX = minX > 0 ? 0 : minX;
+		minY = minY > 0 ? 0 : minY;
 		width = maxX - minX;
 		width = width < Game.getWidth() ? Game.getWidth() : width;
 		height = maxY - minY;
 		height = height < Game.getHeight() ? Game.getHeight() : height;
 		
-		bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		for (int i = 0; i < bi.getWidth(); i += 32)
 			for (int j = 0; j < bi.getHeight(); j += 32)
 				Helper.drawImage2(Game.getImage("world/ground.png"), i, j, 32, 32, 32, 0, 32, 32, (Graphics2D) bi.getGraphics());
+		
+		this.bi = bi;
 	}
 	
 	@Override
@@ -119,10 +123,15 @@ public class World extends Layer
 			worldDragStart = new Point(x, y);
 		}
 		
-		x = worldDragStart.x + e.getX() - dragStart.x;
-		y = worldDragStart.y + e.getY() - dragStart.y;
+		int x = worldDragStart.x + e.getX() - dragStart.x;
+		int y = worldDragStart.y + e.getY() - dragStart.y;
 		
-		e.translatePoint(-x, -y);
+		x = x + width < Game.getWidth() ? Game.getWidth() - width : x;
+		y = y + height < Game.getHeight() ? Game.getHeight() - height : y;
+		this.x = x > 0 ? 0 : x;
+		this.y = y > 0 ? 0 : y;
+		
+		e.translatePoint(-this.x, -this.y);
 		super.mouseDragged(e);
 	}
 	
@@ -149,7 +158,7 @@ public class World extends Layer
 		super.mouseReleased(e);
 	}
 	
-	public void reloadWorld() throws JSONException
+	public void updateWorld() throws JSONException
 	{
 		int middleX = (Game.getWidth() - City.SIZE) / 2;
 		int middleY = (Game.getHeight() - City.SIZE) / 2;

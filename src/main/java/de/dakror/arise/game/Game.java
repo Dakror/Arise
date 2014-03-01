@@ -23,6 +23,7 @@ public class Game extends GameApplet
 	public static Game currentGame;
 	public static World world;
 	public static int userID;
+	public static int worldID = 1;
 	
 	public Game()
 	{
@@ -57,8 +58,6 @@ public class Game extends GameApplet
 	
 	public void startGame()
 	{
-		int worldID = 1;/* default map (for now) */
-		
 		try
 		{
 			Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));

@@ -2,11 +2,13 @@ package de.dakror.arise.game.world;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseEvent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.CityLayer;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -39,7 +41,7 @@ public class City extends ClickableComponent
 	@Override
 	public void draw(Graphics2D g)
 	{
-		if (state == 2)
+		if (state != 0)
 		{
 			Color c = g.getColor();
 			g.setColor(Color.black);
@@ -51,7 +53,7 @@ public class City extends ClickableComponent
 		Helper.setRenderingHints(g, true);
 		
 		int y1 = y + height + 10;
-		y1 = y1 < Game.getHeight() ? y1 : Game.getHeight() - 25;
+		y1 = y1 < Game.world.height ? y1 : Game.world.height - 25;
 		Color c = g.getColor();
 		g.setColor(userId == Game.userID ? Color.decode("#007eff") : Color.white);
 		Helper.drawHorizontallyCenteredString(name + " (" + (level + 1) + ")", x, width, y1, g, 25);
@@ -98,4 +100,11 @@ public class City extends ClickableComponent
 		return userId;
 	}
 	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		super.mousePressed(e);
+		
+		if (state == 1 && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && userId == Game.userID) Game.currentGame.addLayer(new CityLayer(City.this));
+	}
 }

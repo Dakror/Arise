@@ -1,6 +1,9 @@
 package de.dakror.arise.game.world;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 
@@ -19,17 +22,14 @@ import de.dakror.gamesetup.util.Helper;
 public class World extends Layer
 {
 	String name;
-	int speed;
-	int id;
-	int width;
-	int height;
-	float x;
-	float y;
 	
+	int speed, id, width, height, x, y;
 	long lastCheck;
 	
 	BufferedImage bi;
 	JSONArray citiesData;
+	
+	Point dragStart, worldDragStart;
 	
 	public World(int id)
 	{
@@ -55,9 +55,14 @@ public class World extends Layer
 	@Override
 	public void draw(Graphics2D g)
 	{
+		AffineTransform old = g.getTransform();
+		AffineTransform at = g.getTransform();
+		at.translate(x, y);
+		g.setTransform(at);
 		g.drawImage(bi, 0, 0, null);
 		
 		drawComponents(g);
+		g.setTransform(old);
 	}
 	
 	@Override
@@ -102,6 +107,46 @@ public class World extends Layer
 		for (int i = 0; i < bi.getWidth(); i += 32)
 			for (int j = 0; j < bi.getHeight(); j += 32)
 				Helper.drawImage2(Game.getImage("world/ground.png"), i, j, 32, 32, 32, 0, 32, 32, (Graphics2D) bi.getGraphics());
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e)
+	{
+		
+		if (dragStart == null)
+		{
+			dragStart = e.getPoint();
+			worldDragStart = new Point(x, y);
+		}
+		
+		x = worldDragStart.x + e.getX() - dragStart.x;
+		y = worldDragStart.y + e.getY() - dragStart.y;
+		
+		e.translatePoint(-x, -y);
+		super.mouseDragged(e);
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		e.translatePoint(-x, -y);
+		super.mousePressed(e);
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		e.translatePoint(-x, -y);
+		super.mouseMoved(e);
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		worldDragStart = dragStart = null;
+		
+		e.translatePoint(-x, -y);
+		super.mouseReleased(e);
 	}
 	
 	public void reloadWorld() throws JSONException

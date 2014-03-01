@@ -8,8 +8,8 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 import de.dakror.arise.layer.LoginLayer;
-import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.applet.GameApplet;
+import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -27,6 +27,7 @@ public class Game extends GameApplet
 	@Override
 	public void initGame()
 	{
+		InputField.h = 14;
 		try
 		{
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
@@ -54,14 +55,14 @@ public class Game extends GameApplet
 	{
 		try
 		{
-			BufferedImage i = ImageIO.read(GameFrame.class.getResource((p.startsWith("/") ? "" : p.contains("gui") ? "/img/" : "/img/") + p));
+			BufferedImage i = ImageIO.read(Game.class.getResource("/img/" + p));
 			
 			return i;
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			return null;
 		}
 	}
-	
 }

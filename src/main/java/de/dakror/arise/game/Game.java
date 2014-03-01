@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.ui.InputField;
@@ -18,6 +21,8 @@ import de.dakror.gamesetup.util.Helper;
 public class Game extends GameApplet
 {
 	public static Game currentGame;
+	public static World world;
+	public static int userID;
 	
 	public Game()
 	{
@@ -48,6 +53,26 @@ public class Game extends GameApplet
 		g.setColor(Color.white);
 		Helper.drawString("FPS: " + getFPS(), 10, 26, g, 18);
 		Helper.drawString("UPS: " + getUPS(), 10, 52, g, 18);
+	}
+	
+	public void startGame()
+	{
+		int worldID = 1;/* default map (for now) */
+		
+		try
+		{
+			Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));
+		}
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+		}
+		
+		world = new World(worldID);
+		
+		layers.clear();
+		
+		addLayer(world);
 	}
 	
 	@Override

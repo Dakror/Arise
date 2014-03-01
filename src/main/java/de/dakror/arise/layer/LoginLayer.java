@@ -148,14 +148,22 @@ public class LoginLayer extends Layer
 				{
 					String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
 					String response = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + username.getText() + "&password=" + pw));
-					if (!response.contains("true")) Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
+					if (!response.contains("true"))
 					{
-						@Override
-						public void trigger()
+						Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
 						{
-							password.setText("");
-						}
-					}));
+							@Override
+							public void trigger()
+							{
+								password.setText("");
+							}
+						}));
+					}
+					else
+					{
+						Game.userID = Integer.parseInt(response.replace("true:", "").trim());
+						Game.currentGame.startGame();
+					}
 				}
 				catch (Exception e)
 				{

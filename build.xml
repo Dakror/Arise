@@ -1,14 +1,51 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project Arise">
-    
-    
-	<target name="create_run_jar">
+<!-- WARNING: Eclipse auto-generated file. Any modifications will be overwritten. 
+	To include a user specific buildfile here, simply create one in the same 
+	directory with the processing instruction <?eclipse.ant.import?> as the first 
+	entry and export the buildfile again. -->
+<project basedir="." default="pack" name="Arise">
+	<property environment="env" />
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.7" />
+	<property name="source" value="1.7" />
+	<path id="Arise.classpath">
+		<pathelement location="bin" />
+		<pathelement location="libs/JSON.jar" />
+		<pathelement location="libs/GameSetup.jar" />
+	</path>
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src/main/java">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src/main/resources">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall" />
+	<target depends="build-subprojects,build-project" name="build" />
+	<target name="build-subprojects" />
+	<target depends="init" name="build-project">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin"
+			includeantruntime="false" source="${source}" target="${target}">
+			<src path="src/main/java" />
+			<src path="src/main/resources" />
+			<classpath refid="Arise.classpath" />
+		</javac>
+	</target>
+	<target depends="build" name="pack">
 		<tstamp>
 			<format property="DATE" pattern="dd.MM.yyyy HH:mm:ss" />
 		</tstamp>
 
-		<jar destfile="Arise.jar"
-			filesetmanifest="mergewithoutmain">
+		<jar destfile="Arise.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.dakror.arise.Arise" />
 				<attribute name="Class-Path" value="." />
@@ -18,13 +55,11 @@
 			<fileset dir="bin">
 				<exclude name="**/*.applet" />
 			</fileset>
-			<zipfileset excludes="META-INF/*.SF"
-				src="libs/GameSetup.jar" />
-			<zipfileset excludes="META-INF/*.SF"
-				src="libs/JSON.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="libs/GameSetup.jar" />
+			<zipfileset excludes="META-INF/*.SF" src="libs/JSON.jar" />
 		</jar>
 
-		<signjar jar="Arise.jar"
-			keystore="ariseKeystore" alias="arise" storepass="ariseKeystore" />
+		<signjar jar="Arise.jar" keystore="ariseKeystore" alias="arise"
+			storepass="ariseKeystore" />
 	</target>
 </project>

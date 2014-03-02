@@ -14,6 +14,7 @@
 		<pathelement location="libs/GameSetup.jar" />
 	</path>
 	<target name="init">
+	    <delete file="Arise.jar" />
 		<mkdir dir="bin" />
 		<copy includeemptydirs="false" todir="bin">
 			<fileset dir="src/main/java">

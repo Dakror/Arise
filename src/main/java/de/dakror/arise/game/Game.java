@@ -54,6 +54,7 @@ public class Game extends GameApplet
 		g.setColor(Color.white);
 		Helper.drawString("FPS: " + getFPS(), 10, 26, g, 18);
 		Helper.drawString("UPS: " + getUPS(), 10, 52, g, 18);
+		if (world != null) Helper.drawString("E: " + world.citiesDrawn + " / " + world.cities, 10, 52 + 26, g, 18);
 	}
 	
 	public void startGame()

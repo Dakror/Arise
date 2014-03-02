@@ -6,7 +6,7 @@ import java.net.URL;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arise.game.world.City;
+import de.dakror.arise.game.city.City;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.button.IconButton;

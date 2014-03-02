@@ -2,6 +2,7 @@ package de.dakror.arise.game.world;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -11,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.game.city.City;
+import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;
@@ -22,7 +25,9 @@ public class World extends Layer
 {
 	String name;
 	
-	int speed, id, width, height, x, y, tick;
+	int speed, id, width, height, tick, minX, minY;
+	public int x, y, cities, citiesDrawn;
+	
 	long lastCheck;
 	
 	BufferedImage bi;
@@ -38,6 +43,8 @@ public class World extends Layer
 			JSONObject data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/world?get=" + id)));
 			speed = data.getInt("SPEED");
 			name = data.getString("NAME");
+			
+			minX = minY = 0;
 			
 			updateGround();
 		}
@@ -58,9 +65,23 @@ public class World extends Layer
 		AffineTransform at = g.getTransform();
 		at.translate(x, y);
 		g.setTransform(at);
-		g.drawImage(bi, 0, 0, null);
+		g.drawImage(bi, minX, minY, null);
 		
-		drawComponents(g);
+		int citiesDrawn = 0;
+		
+		Component hovered = null;
+		
+		for (Component c : components)
+		{
+			if (!new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(c.getX() + x, c.getY() + y, c.getWidth(), c.getHeight()))) continue;
+			c.draw(g);
+			if (c.state == 2) hovered = c;
+			citiesDrawn++;
+		}
+		if (hovered != null) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
+		
+		this.citiesDrawn = citiesDrawn;
+		
 		g.setTransform(old);
 	}
 	
@@ -84,6 +105,10 @@ public class World extends Layer
 		
 		minX = minX > 0 ? 0 : minX;
 		minY = minY > 0 ? 0 : minY;
+		
+		this.minX = minX;
+		this.minY = minY;
+		
 		width = maxX - minX;
 		width = width < Game.getWidth() ? Game.getWidth() : width;
 		height = maxY - minY;
@@ -97,51 +122,6 @@ public class World extends Layer
 		this.bi = bi;
 	}
 	
-	@Override
-	public void mouseDragged(MouseEvent e)
-	{
-		
-		if (dragStart == null)
-		{
-			dragStart = e.getPoint();
-			worldDragStart = new Point(x, y);
-		}
-		
-		int x = worldDragStart.x + e.getX() - dragStart.x;
-		int y = worldDragStart.y + e.getY() - dragStart.y;
-		
-		x = x + width < Game.getWidth() ? Game.getWidth() - width : x;
-		y = y + height < Game.getHeight() ? Game.getHeight() - height : y;
-		this.x = x > 0 ? 0 : x;
-		this.y = y > 0 ? 0 : y;
-		
-		e.translatePoint(-this.x, -this.y);
-		super.mouseDragged(e);
-	}
-	
-	@Override
-	public void mousePressed(MouseEvent e)
-	{
-		e.translatePoint(-x, -y);
-		super.mousePressed(e);
-	}
-	
-	@Override
-	public void mouseMoved(MouseEvent e)
-	{
-		e.translatePoint(-x, -y);
-		super.mouseMoved(e);
-	}
-	
-	@Override
-	public void mouseReleased(MouseEvent e)
-	{
-		worldDragStart = dragStart = null;
-		
-		e.translatePoint(-x, -y);
-		super.mouseReleased(e);
-	}
-	
 	public void updateWorld()
 	{
 		try
@@ -150,6 +130,7 @@ public class World extends Layer
 			if (citiesData == null || !citiesData.equals(newData))
 			{
 				citiesData = newData;
+				cities = citiesData.length();
 				
 				int middleX = (Game.getWidth() - City.SIZE) / 2;
 				int middleY = (Game.getHeight() - City.SIZE) / 2;
@@ -189,5 +170,68 @@ public class World extends Layer
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e)
+	{
+		if (dragStart == null)
+		{
+			dragStart = e.getPoint();
+			worldDragStart = new Point(x, y);
+		}
+		
+		int x = worldDragStart.x + e.getX() - dragStart.x;
+		int y = worldDragStart.y + e.getY() - dragStart.y;
+		x = x < -(width - Game.getWidth() + minX) ? -(width - Game.getWidth() + minX) : x;
+		y = y < -(height - Game.getHeight() + minY) ? -(height - Game.getHeight() + minY) : y;
+		this.x = x > -minX ? -minX : x;
+		this.y = y > -minY ? -minY : y;
+		
+		e.translatePoint(-x, -y);
+		super.mouseDragged(e);
+	}
+	
+	@Override
+	public void mousePressed(MouseEvent e)
+	{
+		e.translatePoint(-x, -y);
+		super.mousePressed(e);
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		e.translatePoint(-x, -y);
+		super.mouseMoved(e);
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		worldDragStart = dragStart = null;
+		
+		e.translatePoint(-x, -y);
+		super.mouseReleased(e);
+	}
+	
+	public int getSpeed()
+	{
+		return speed;
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+	
+	public int getWidth()
+	{
+		return width;
+	}
+	
+	public int getHeight()
+	{
+		return height;
 	}
 }

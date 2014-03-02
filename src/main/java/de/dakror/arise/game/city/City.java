@@ -1,4 +1,4 @@
-package de.dakror.arise.game.world;
+package de.dakror.arise.game.city;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -17,7 +17,7 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class City extends ClickableComponent
 {
-	public static int SIZE = 64;
+	public static int SIZE = 96;
 	
 	int[][] levels = { { 320, 352, 32, 32 }, { 352, 352, 32, 32 }, { 448, 320, 32, 32 }, { 256, 352, 32, 32 }, { 320, 416, 32, 32 }, { 448, 192, 64, 64 }, { 256, 192, 64, 64 } };
 	
@@ -48,16 +48,17 @@ public class City extends ClickableComponent
 			g.drawRect(x, y, width, height);
 			g.setColor(c);
 		}
+		
 		Helper.setRenderingHints(g, false);
-		Helper.drawImage2(Game.getImage("world/TileB.png"), x, y, width, height, levels[level][0], levels[level][1], levels[level][2], levels[level][3], g);
+		Helper.drawImage2(Game.getImage("world/TileB.png"), x + 16, y + 16, 64, 64, levels[level][0], levels[level][1], levels[level][2], levels[level][3], g);
 		Helper.setRenderingHints(g, true);
 		
-		int y1 = y + height + 10;
-		y1 = y1 < Game.world.height ? y1 : Game.world.height - 25;
+		int y1 = y + height - 15;
+		y1 = y1 < Game.world.getHeight() ? y1 : Game.world.getHeight() - 25;
 		Color c = g.getColor();
 		g.setColor(userId == Game.userID ? Color.decode("#007eff") : Color.white);
-		Helper.drawHorizontallyCenteredString(name + " (" + (level + 1) + ")", x, width, y1, g, 25);
-		Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 20);
+		Helper.drawHorizontallyCenteredString(name, x, width, y1, g, 20);
+		Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
 		g.setColor(c);
 	}
 	

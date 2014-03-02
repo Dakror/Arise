@@ -59,7 +59,7 @@ public abstract class Building extends ClickableComponent
 	
 	public String getData()
 	{
-		return typeId + ":" + level + ":" + (x / 32) + ":" + (y / 32);
+		return typeId + ":" + level + ":" + ((x - 96) / 32) + ":" + ((y - 96) / 32);
 	}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)

@@ -45,6 +45,8 @@ public class Arise extends JApplet
 	{
 		running = false;
 		Game.currentGame.updater.closeRequested = true;
+		
+		System.gc();
 	}
 	
 	public static void main(String[] args)

@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.world.City;
 import de.dakror.gamesetup.layer.Layer;
+import de.dakror.gamesetup.ui.ClickEvent;
+import de.dakror.gamesetup.ui.button.IconButton;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -33,16 +35,34 @@ public class CityLayer extends Layer
 	}
 	
 	@Override
+	public void init()
+	{
+		IconButton map = new IconButton((Game.getWidth() - 64) / 2, 20, 64, 64, "system/map.png");
+		map.addClickEvent(new ClickEvent()
+		{
+			@Override
+			public void trigger()
+			{
+				Game.currentGame.removeLayer(CityLayer.this);
+				Game.world.updateWorld();
+			}
+		});
+		map.tooltip = "Weltkarte";
+		map.container = true;
+		map.woodOnHover = true;
+		components.add(map);
+	}
+	
+	@Override
 	public void draw(Graphics2D g)
 	{
 		g.drawImage(Game.getImage("system/city.png"), 0, 0, null);
+		
+		drawComponents(g);
 	}
 	
 	@Override
 	public void update(int tick)
 	{}
 	
-	@Override
-	public void init()
-	{}
 }

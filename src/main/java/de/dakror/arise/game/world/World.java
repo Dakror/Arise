@@ -8,7 +8,6 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
@@ -23,7 +22,7 @@ public class World extends Layer
 {
 	String name;
 	
-	int speed, id, width, height, x, y;
+	int speed, id, width, height, x, y, tick;
 	long lastCheck;
 	
 	BufferedImage bi;
@@ -68,23 +67,8 @@ public class World extends Layer
 	@Override
 	public void update(int tick)
 	{
-		if (lastCheck == 0 || tick - lastCheck > 3600) // check once a minute
-		{
-			try
-			{
-				JSONArray newData = new JSONArray(Helper.getURLContent(new URL("http://dakror.de/arise/world?cities=true&id=" + id)));
-				if (citiesData == null || !citiesData.equals(newData))
-				{
-					citiesData = newData;
-					updateWorld();
-				}
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-			lastCheck = tick;
-		}
+		this.tick = tick;
+		if (lastCheck == 0 || tick - lastCheck > 3600) updateWorld(); // check once a minute
 	}
 	
 	public void updateGround()
@@ -158,37 +142,52 @@ public class World extends Layer
 		super.mouseReleased(e);
 	}
 	
-	public void updateWorld() throws JSONException
+	public void updateWorld()
 	{
-		int middleX = (Game.getWidth() - City.SIZE) / 2;
-		int middleY = (Game.getHeight() - City.SIZE) / 2;
-		
-		for (int i = 0; i < citiesData.length(); i++)
+		try
 		{
-			JSONObject o = citiesData.getJSONObject(i);
-			int x = middleX + o.getInt("X") * City.SIZE;
-			int y = middleY + o.getInt("Y") * City.SIZE;
-			
-			boolean found = false;
-			
-			for (Component c : components)
+			JSONArray newData = new JSONArray(Helper.getURLContent(new URL("http://dakror.de/arise/world?cities=true&id=" + id)));
+			if (citiesData == null || !citiesData.equals(newData))
 			{
-				if (c instanceof City && c.getX() == x && c.getY() == y)
+				citiesData = newData;
+				
+				int middleX = (Game.getWidth() - City.SIZE) / 2;
+				int middleY = (Game.getHeight() - City.SIZE) / 2;
+				
+				for (int i = 0; i < citiesData.length(); i++)
 				{
-					((City) c).setName(o.getString("NAME"));
-					((City) c).setLevel(o.getInt("LEVEL"));
-					found = true;
-					break;
+					JSONObject o = citiesData.getJSONObject(i);
+					int x = middleX + o.getInt("X") * City.SIZE;
+					int y = middleY + o.getInt("Y") * City.SIZE;
+					
+					boolean found = false;
+					
+					for (Component c : components)
+					{
+						if (c instanceof City && c.getX() == x && c.getY() == y)
+						{
+							((City) c).setName(o.getString("NAME"));
+							((City) c).setLevel(o.getInt("LEVEL"));
+							found = true;
+							break;
+						}
+					}
+					
+					if (!found)
+					{
+						City c = new City(x, y, o);
+						components.add(c);
+					}
 				}
+				
+				updateGround();
 			}
 			
-			if (!found)
-			{
-				City c = new City(x, y, o);
-				components.add(c);
-			}
+			lastCheck = tick;
 		}
-		
-		updateGround();
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

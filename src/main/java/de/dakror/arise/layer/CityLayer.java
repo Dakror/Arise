@@ -9,16 +9,18 @@ import java.awt.Rectangle;
 import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.dakror.arise.game.City;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Lumberjack;
+import de.dakror.arise.game.world.City;
 import de.dakror.gamesetup.GameFrame;
+import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.Component;
@@ -165,6 +167,22 @@ public class CityLayer extends Layer
 		}
 	}
 	
+	public void saveData()
+	{
+		String data = "";
+		for (Component c : components)
+			if (c instanceof Building) data += ((Building) c).getData() + ";";
+		
+		try
+		{
+			if (!Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId() + "&data=" + data)).contains("true")) Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist Dieser im Moment down.", null));
+		}
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public boolean intersectsBuildings(Rectangle r)
 	{
 		for (Component c : components)
@@ -189,6 +207,7 @@ public class CityLayer extends Layer
 				activeBuilding.y = y;
 				components.add(activeBuilding);
 				activeBuilding = null;
+				saveData();
 			}
 			if (e.getButton() == MouseEvent.BUTTON3)
 			{

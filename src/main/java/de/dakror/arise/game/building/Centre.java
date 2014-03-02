@@ -3,8 +3,8 @@ package de.dakror.arise.game.building;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import de.dakror.arise.game.City;
 import de.dakror.arise.game.Game;
+import de.dakror.arise.game.world.City;
 import de.dakror.gamesetup.util.Helper;
 
 /**

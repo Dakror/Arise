@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.city.City;
+import de.dakror.arise.layer.CityLayer;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.Component;
@@ -61,6 +62,12 @@ public class World extends Layer
 	@Override
 	public void draw(Graphics2D g)
 	{
+		if (Game.currentGame.getActiveLayer() instanceof CityLayer)
+		{
+			citiesDrawn = 0;
+			return;
+		}
+		
 		AffineTransform old = g.getTransform();
 		AffineTransform at = g.getTransform();
 		at.translate(x, y);

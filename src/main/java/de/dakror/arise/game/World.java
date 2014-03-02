@@ -22,6 +22,8 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class World extends Layer
 {
+	public static int CHUNKSIZE = 256;
+	
 	String name;
 	
 	int speed, id, width, height, tick, minX, minY;
@@ -29,7 +31,7 @@ public class World extends Layer
 	
 	long lastCheck;
 	
-	BufferedImage bi;
+	BufferedImage chunk;
 	JSONArray citiesData;
 	
 	Point dragStart, worldDragStart;
@@ -45,7 +47,12 @@ public class World extends Layer
 			
 			minX = minY = 0;
 			
-			updateGround();
+			chunk = new BufferedImage(CHUNKSIZE, CHUNKSIZE, BufferedImage.TYPE_INT_ARGB);
+			for (int i = 0; i < chunk.getWidth(); i += 32)
+				for (int j = 0; j < chunk.getHeight(); j += 32)
+					Helper.drawImage2(Game.getImage("world/ground.png"), i, j, 32, 32, 32, 0, 32, 32, (Graphics2D) chunk.getGraphics());
+			
+			updateSize();
 		}
 		catch (Exception e)
 		{
@@ -70,7 +77,9 @@ public class World extends Layer
 		AffineTransform at = g.getTransform();
 		at.translate(x, y);
 		g.setTransform(at);
-		g.drawImage(bi, minX, minY, null);
+		for (int i = 0; i < Math.ceil(width / (float) CHUNKSIZE); i++)
+			for (int j = 0; j < Math.ceil(height / (float) CHUNKSIZE); j++)
+				if (new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(minX + i * CHUNKSIZE + x, minY + j * CHUNKSIZE + y, CHUNKSIZE, CHUNKSIZE))) g.drawImage(chunk, minX + i * CHUNKSIZE, minY + j * CHUNKSIZE, null);
 		
 		int citiesDrawn = 0;
 		
@@ -83,6 +92,7 @@ public class World extends Layer
 			if (c.state == 2) hovered = c;
 			citiesDrawn++;
 		}
+		
 		if (hovered != null) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
 		
 		this.citiesDrawn = citiesDrawn;
@@ -97,7 +107,7 @@ public class World extends Layer
 		if (lastCheck == 0 || tick - lastCheck > 3600) updateWorld(); // check once a minute
 	}
 	
-	public void updateGround()
+	public void updateSize()
 	{
 		int minX = -65536, minY = -65536, maxX = -65536, maxY = -65536;
 		for (Component c : components)
@@ -118,13 +128,6 @@ public class World extends Layer
 		width = width < Game.getWidth() ? Game.getWidth() : width;
 		height = maxY - minY;
 		height = height < Game.getHeight() ? Game.getHeight() : height;
-		
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		for (int i = 0; i < bi.getWidth(); i += 32)
-			for (int j = 0; j < bi.getHeight(); j += 32)
-				Helper.drawImage2(Game.getImage("world/ground.png"), i, j, 32, 32, 32, 0, 32, 32, (Graphics2D) bi.getGraphics());
-		
-		this.bi = bi;
 	}
 	
 	public void updateWorld()
@@ -166,7 +169,7 @@ public class World extends Layer
 					}
 				}
 				
-				updateGround();
+				updateSize();
 			}
 			
 			lastCheck = tick;

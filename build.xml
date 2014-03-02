@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project Arise">
+    
+    
 	<target name="create_run_jar">
 		<tstamp>
 			<format property="DATE" pattern="dd.MM.yyyy HH:mm:ss" />
 		</tstamp>
 
-		<jar destfile="E:/Programmieren/Eclipse/Java/Arise/Arise.jar"
+		<jar destfile="Arise.jar"
 			filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.dakror.arise.Arise" />
@@ -13,15 +15,16 @@
 				<attribute name="Application-Name" value="Arise" />
 				<attribute name="Build-Date" value="${DATE}" />
 			</manifest>
-			<fileset dir="E:/Programmieren/Eclipse/Java/Arise/bin">
+			<fileset dir="bin">
 				<exclude name="**/*.applet" />
 			</fileset>
-			<fileset dir="E:/Programmieren/Eclipse/Java/GameSetup/bin" />
 			<zipfileset excludes="META-INF/*.SF"
-				src="E:/Programmieren/Eclipse/Java/Arise/libs/JSON.jar" />
+				src="libs/GameSetup.jar" />
+			<zipfileset excludes="META-INF/*.SF"
+				src="libs/JSON.jar" />
 		</jar>
 
-		<signjar jar="E:/Programmieren/Eclipse/Java/Arise/Arise.jar"
-			keystore="C:\Users\Dakror\ariseKeystore" alias="arise" storepass="ariseKeystore" />
+		<signjar jar="Arise.jar"
+			keystore="ariseKeystore" alias="arise" storepass="ariseKeystore" />
 	</target>
 </project>

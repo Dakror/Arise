@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 import javax.imageio.ImageIO;
 
@@ -23,6 +25,7 @@ public class Game extends GameApplet
 	public static World world;
 	public static int userID;
 	public static int worldID = 1;
+	public static String buildDate = "from now";
 	
 	public Game()
 	{
@@ -32,10 +35,12 @@ public class Game extends GameApplet
 	@Override
 	public void initGame()
 	{
+		
 		InputField.h = 14;
 		try
 		{
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
+			readManifest();
 		}
 		catch (Exception e)
 		{
@@ -51,9 +56,10 @@ public class Game extends GameApplet
 		drawLayers(g);
 		
 		g.setColor(Color.white);
-		Helper.drawString("FPS: " + getFPS(), 10, 26, g, 18);
-		Helper.drawString("UPS: " + getUPS(), 10, 52, g, 18);
-		if (world != null) Helper.drawString("E: " + world.citiesDrawn + " / " + world.cities, 10, 52 + 26, g, 18);
+		Helper.drawString("Build " + buildDate, 10, 26, g, 18);
+		Helper.drawString("FPS: " + getFPS(), 10, 52, g, 18);
+		Helper.drawString("UPS: " + getUPS(), 10, 52 + 26, g, 18);
+		if (world != null) Helper.drawString("E: " + world.citiesDrawn + " / " + world.cities, 10, 52 + 52, g, 18);
 	}
 	
 	public void startGame()
@@ -72,6 +78,18 @@ public class Game extends GameApplet
 		layers.clear();
 		
 		addLayer(world);
+	}
+	
+	public void readManifest() throws Exception
+	{
+		String className = getClass().getSimpleName() + ".class";
+		String classPath = getClass().getResource(className).toString();
+		if (!classPath.startsWith("jar")) return;
+		
+		String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
+		Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+		Attributes attr = manifest.getMainAttributes();
+		buildDate = attr.getValue("Build-Date");
 	}
 	
 	@Override

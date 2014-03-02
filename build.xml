@@ -3,7 +3,7 @@
 	To include a user specific buildfile here, simply create one in the same 
 	directory with the processing instruction <?eclipse.ant.import?> as the first 
 	entry and export the buildfile again. -->
-<project basedir="." default="clean" name="Arise">
+<project basedir="." default="transfer" name="Arise">
 	<property environment="env" />
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="target" value="1.7" />
@@ -60,5 +60,10 @@
 
 		<signjar jar="Arise.jar" keystore="ariseKeystore" alias="arise"
 			storepass="ariseKeystore" />
+	</target>
+	<target depends="clean" name="transfer">
+		<ftp server="dakror.de" userid="ftp_public@dakror.de" password="1234567890a">
+			<fileset dir="/" ><include name="**/Arise.jar"/></fileset>
+		</ftp>
 	</target>
 </project>

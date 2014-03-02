@@ -1,4 +1,4 @@
-package de.dakror.arise.game.city;
+package de.dakror.arise.game;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -7,7 +7,6 @@ import java.awt.event.MouseEvent;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
@@ -19,7 +18,7 @@ public class City extends ClickableComponent
 {
 	public static int SIZE = 96;
 	
-	int[][] levels = { { 320, 352, 32, 32 }, { 352, 352, 32, 32 }, { 448, 320, 32, 32 }, { 256, 352, 32, 32 }, { 320, 416, 32, 32 }, { 448, 192, 64, 64 }, { 256, 192, 64, 64 } };
+	public static int[][] levels = { { 320, 352, 32, 32 }, { 352, 352, 32, 32 }, { 448, 320, 32, 32 }, { 256, 352, 32, 32 }, { 320, 416, 32, 32 }, { 448, 192, 64, 64 }, { 256, 192, 64, 64 } };
 	
 	String name;
 	String username;

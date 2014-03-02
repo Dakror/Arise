@@ -9,7 +9,6 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
-import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.ui.InputField;

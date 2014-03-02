@@ -6,7 +6,6 @@
 			<manifest>
 				<attribute name="Main-Class" value="de.dakror.arise.Arise" />
 				<attribute name="Class-Path" value="." />
-				<attribute name="Permissions" value="sandbox" />
 				<attribute name="Application-Name" value="Arise" />
 			</manifest>
 			<fileset dir="E:/Programmieren/Eclipse/Java/Arise/bin">
@@ -17,6 +16,6 @@
 				src="E:/Programmieren/Eclipse/Java/Arise/libs/JSON.jar" />
 		</jar>
 		<signjar jar="E:/Programmieren/Eclipse/Java/Arise/Arise.jar"
-			keystore="C:\Users\Dakror\ariseKeystore" alias="arise" storepass="ariseKeystore" />
+			keystore="C:\Users\Dakror\ariseKeystore" alias="arise" storepass="ariseKeystore"/>
 	</target>
 </project>

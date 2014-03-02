@@ -119,7 +119,7 @@ public class World extends Layer
 		height = maxY - minY;
 		height = height < Game.getHeight() ? Game.getHeight() : height;
 		
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		for (int i = 0; i < bi.getWidth(); i += 32)
 			for (int j = 0; j < bi.getHeight(); j += 32)
 				Helper.drawImage2(Game.getImage("world/ground.png"), i, j, 32, 32, 32, 0, 32, 32, (Graphics2D) bi.getGraphics());

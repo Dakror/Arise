@@ -129,6 +129,11 @@ public class World extends Layer
 		width = width < Game.getWidth() ? Game.getWidth() : width;
 		height = maxY - minY;
 		height = height < Game.getHeight() ? Game.getHeight() : height;
+		
+		x = x < -(width - Game.getWidth() + minX) ? -(width - Game.getWidth() + minX) : x;
+		y = y < -(height - Game.getHeight() + minY) ? -(height - Game.getHeight() + minY) : y;
+		x = x > -minX ? -minX : x;
+		y = y > -minY ? -minY : y;
 	}
 	
 	public void updateWorld()

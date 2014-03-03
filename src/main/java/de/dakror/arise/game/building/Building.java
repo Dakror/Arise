@@ -116,6 +116,10 @@ public abstract class Building extends ClickableComponent
 				return new Centre(x, y, level);
 			case 2:
 				return new Lumberjack(x, y, level);
+			case 3:
+				return new Mine(x, y, level);
+			case 4:
+				return new Quarry(x, y, level);
 			default:
 				return null;
 		}

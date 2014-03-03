@@ -20,6 +20,7 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Lumberjack;
 import de.dakror.arise.game.building.Mine;
+import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -106,6 +107,17 @@ public class CityLayer extends Layer
 				}
 			});
 			components.add(mine);
+			
+			BuildingButton quarry = new BuildingButton(15 + 128, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
+			quarry.addClickEvent(new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					activeBuilding = new Quarry(0, 0, 0);
+				}
+			});
+			components.add(quarry);
 			
 			ResourceLabel wood = new ResourceLabel(20, 20, resources, Resource.WOOD);
 			components.add(wood);

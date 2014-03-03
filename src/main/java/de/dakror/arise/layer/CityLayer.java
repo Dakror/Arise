@@ -20,6 +20,7 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Lumberjack;
 import de.dakror.arise.game.world.City;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildingButton;
@@ -198,6 +199,25 @@ public class CityLayer extends Layer
 		updateComponents(tick);
 	}
 	
+	public void updateResources()
+	{
+		Resources products = new Resources();
+		for (Component c : components)
+			if (c instanceof Building) products.add(((Building) c).getProducts());
+		
+		products = Resources.mul(products, Game.world.getSpeed());
+		
+		for (Resource r : products.getFilled())
+		{
+			int interval = 60 / products.get(r);
+			int perminute = interval < 1 ? interval : 1;
+			CFG.p(interval, perminute);
+			if (Game.minuteInHour % (interval < 1 ? 1 : interval) == 0) resources.add(r, perminute);
+		}
+		
+		saveData();
+	}
+	
 	public void placeBuildings() throws JSONException
 	{
 		String[] buildings = data.getString("DATA").split(";");
@@ -236,8 +256,18 @@ public class CityLayer extends Layer
 	{
 		try
 		{
+			Resources products = new Resources();
 			for (Component c : components)
+			{
 				if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = resources.get(Resource.BUILDINGS) < (data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
+				if (c instanceof Building) products.add(((Building) c).getProducts());
+			}
+			
+			products = Resources.mul(products, Game.world.getSpeed());
+			
+			for (Component c : components)
+				if (c instanceof ResourceLabel) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
+			
 			allBuildingsEnabled = resources.get(Resource.BUILDINGS) < (data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
 		}
 		catch (JSONException e)

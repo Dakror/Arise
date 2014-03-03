@@ -194,4 +194,13 @@ public class Resources
 		
 		return result;
 	}
+	
+	public static Resources mul(Resources res, float f)
+	{
+		Resources result = new Resources();
+		for (Resource r : res.getFilled())
+			result.set(r, res.getF(r) * f);
+		
+		return result;
+	}
 }

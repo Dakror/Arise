@@ -27,6 +27,7 @@ public abstract class Building extends ClickableComponent
 		
 		this.level = level;
 		buildingCosts = new Resources();
+		products = new Resources();
 	}
 	
 	public void init()

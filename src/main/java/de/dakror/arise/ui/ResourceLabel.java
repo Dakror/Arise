@@ -17,7 +17,7 @@ public class ResourceLabel extends Component
 	Resource r;
 	Resources res;
 	
-	public int off;
+	public int off, perHour;
 	public boolean tooltipOnBottom;
 	
 	public ResourceLabel(int x, int y, Resources res, Resource r)
@@ -28,14 +28,22 @@ public class ResourceLabel extends Component
 		this.r = r;
 		tooltipOnBottom = false;
 		off = -1;
+		perHour = 0;
 	}
 	
 	@Override
 	public void draw(Graphics2D g)
 	{
-		if (width == 0) width = 25 + g.getFontMetrics(g.getFont().deriveFont(25f)).stringWidth(res.get(r) + "" + (off > -1 ? " / " + off : ""));
+		String string = res.get(r) + "" + (off > -1 ? " / " + off : "") + (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + perHour + "/h)" : "");
 		
-		Assistant.drawLabelWithIcon(x, y, 25, new Point(r.getIconX(), r.getIconY()), res.get(r) + "" + (off > -1 ? " / " + off : ""), 25, g);
+		if (width == 0) width = 25 + g.getFontMetrics(g.getFont().deriveFont(25f)).stringWidth(string);
+		
+		Assistant.drawLabelWithIcon(x, y, 25, new Point(r.getIconX(), r.getIconY()), string, 25, g);
+	}
+	
+	public Resource getResource()
+	{
+		return r;
 	}
 	
 	@Override

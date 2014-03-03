@@ -5,13 +5,19 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.json.JSONObject;
 
 import de.dakror.arise.game.world.World;
+import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.layer.LoginLayer;
+import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.util.Helper;
@@ -25,8 +31,9 @@ public class Game extends GameApplet
 	public static Game currentGame;
 	public static World world;
 	public static int userID;
-	public static int worldID = 1;
+	public static int worldID = 65536;
 	public static String buildDate = "from now";
+	public static int minuteInHour;
 	
 	boolean debug;
 	
@@ -74,6 +81,22 @@ public class Game extends GameApplet
 		{
 			Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));
 			buildingsConfig = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/building.json")));
+			
+			Calendar calendar = new GregorianCalendar();
+			calendar.set(Calendar.SECOND, 0);
+			minuteInHour = calendar.get(Calendar.MINUTE);
+			Calendar result = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), 0);
+			final Timer t = new Timer();
+			t.scheduleAtFixedRate(new TimerTask()
+			{
+				@Override
+				public void run()
+				{
+					CFG.p("update resources!!!");
+					minuteInHour = (minuteInHour + 1) % 60;
+					if (getActiveLayer() instanceof CityLayer) ((CityLayer) getActiveLayer()).updateResources();
+				}
+			}, result.getTime(), 1000 * 60);
 		}
 		catch (Exception e)
 		{

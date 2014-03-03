@@ -18,6 +18,7 @@ import de.dakror.gamesetup.util.Helper;
 public class City extends ClickableComponent
 {
 	public static int SIZE = 96;
+	public static int BUILDINGS_SCALE = 5;
 	
 	public static int[][] levels = { { 320, 352, 32, 32 }, { 352, 352, 32, 32 }, { 448, 320, 32, 32 }, { 256, 352, 32, 32 }, { 320, 416, 32, 32 }, { 448, 192, 64, 64 }, { 256, 192, 64, 64 } };
 	

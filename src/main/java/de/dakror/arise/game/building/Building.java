@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -16,12 +17,14 @@ public abstract class Building extends ClickableComponent
 	protected int typeId;
 	protected int level;
 	protected String name;
+	protected Resources buildingCosts;
 	
 	public Building(int x, int y, int width, int height, int level)
 	{
 		super(x * 32, y * 32, width * 32, height * 32);
 		
 		this.level = level;
+		buildingCosts = new Resources();
 	}
 	
 	@Override
@@ -69,6 +72,11 @@ public abstract class Building extends ClickableComponent
 	public String getData()
 	{
 		return typeId + ":" + level + ":" + ((x - 96) / 32) + ":" + ((y - 96) / 32);
+	}
+	
+	public Resources getBuildingCosts()
+	{
+		return buildingCosts;
 	}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)

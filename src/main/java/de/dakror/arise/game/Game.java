@@ -3,13 +3,11 @@ package de.dakror.arise.game;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
-
-import javax.imageio.ImageIO;
 
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoginLayer;
@@ -28,6 +26,8 @@ public class Game extends GameApplet
 	public static int worldID = 1;
 	public static String buildDate = "from now";
 	
+	boolean debug;
+	
 	public Game()
 	{
 		currentGame = this;
@@ -36,7 +36,7 @@ public class Game extends GameApplet
 	@Override
 	public void initGame()
 	{
-		
+		debug = false;
 		InputField.h = 14;
 		try
 		{
@@ -56,11 +56,14 @@ public class Game extends GameApplet
 	{
 		drawLayers(g);
 		
-		g.setColor(Color.white);
-		Helper.drawString("Build " + buildDate, 10, 26, g, 18);
-		Helper.drawString("FPS: " + getFPS(), 10, 52, g, 18);
-		Helper.drawString("UPS: " + getUPS(), 10, 52 + 26, g, 18);
-		if (world != null) Helper.drawString("E: " + world.citiesDrawn + " / " + world.cities, 10, 52 + 52, g, 18);
+		if (debug)
+		{
+			g.setColor(Color.white);
+			Helper.drawString("Build " + buildDate, 10, 26, g, 18);
+			Helper.drawString("FPS: " + getFPS(), 10, 52, g, 18);
+			Helper.drawString("UPS: " + getUPS(), 10, 52 + 26, g, 18);
+			if (world != null) Helper.drawString("E: " + world.citiesDrawn + " / " + world.cities, 10, 52 + 52, g, 18);
+		}
 	}
 	
 	public void startGame()
@@ -94,18 +97,10 @@ public class Game extends GameApplet
 	}
 	
 	@Override
-	public BufferedImage loadImage(String p)
+	public void keyPressed(KeyEvent e)
 	{
-		try
-		{
-			BufferedImage i = ImageIO.read(Game.class.getResource("/img/" + p));
-			
-			return i;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
+		super.keyPressed(e);
+		
+		if (e.getKeyCode() == KeyEvent.VK_F1) debug = !debug;
 	}
 }

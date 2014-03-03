@@ -1,5 +1,7 @@
 package de.dakror.arise.game.building;
 
+import de.dakror.arise.settings.Resources.Resource;
+
 /**
  * @author Dakror
  */
@@ -15,5 +17,8 @@ public class Lumberjack extends Building
 		ty = 5;
 		tw = 5;
 		th = 6;
+		
+		buildingCosts.set(Resource.WOOD, 50);
+		buildingCosts.set(Resource.GOLD, 75);
 	}
 }

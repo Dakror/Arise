@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Lumberjack;
+import de.dakror.arise.game.building.Mine;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -94,6 +95,17 @@ public class CityLayer extends Layer
 				}
 			});
 			components.add(lumberjack);
+			
+			BuildingButton mine = new BuildingButton(15 + 64, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
+			mine.addClickEvent(new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					activeBuilding = new Mine(0, 0, 0);
+				}
+			});
+			components.add(mine);
 			
 			ResourceLabel wood = new ResourceLabel(20, 20, resources, Resource.WOOD);
 			components.add(wood);

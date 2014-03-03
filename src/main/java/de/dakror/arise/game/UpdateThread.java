@@ -9,5 +9,7 @@ public class UpdateThread extends Updater
 {
 	@Override
 	public void update()
-	{}
+	{
+		if (tick % 600 == 0) System.gc();
+	}
 }

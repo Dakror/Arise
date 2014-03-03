@@ -146,24 +146,28 @@ public class LoginLayer extends Layer
 			{
 				try
 				{
-					String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
-					String response = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + username.getText() + "&password=" + pw));
-					if (!response.contains("true"))
+					final String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
+					Game.currentGame.addLayer(new LoadingLayer());
+					
+					new Thread()
 					{
-						Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
+						@Override
+						public void run()
 						{
-							@Override
-							public void trigger()
+							try
 							{
-								password.setText("");
+								String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + username.getText() + "&password=" + pw));
+								
+								Game.currentGame.removeLayer(Game.currentGame.getActiveLayer());
+								
+								login(s);
 							}
-						}));
-					}
-					else
-					{
-						Game.userID = Integer.parseInt(response.replace("true:", "").trim());
-						Game.currentGame.startGame();
-					}
+							catch (MalformedURLException e)
+							{
+								e.printStackTrace();
+							}
+						}
+					}.start();
 				}
 				catch (Exception e)
 				{
@@ -172,6 +176,26 @@ public class LoginLayer extends Layer
 			}
 		});
 		components.add(login);
+	}
+	
+	public void login(String response)
+	{
+		if (!response.contains("true"))
+		{
+			Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					password.setText("");
+				}
+			}));
+		}
+		else
+		{
+			Game.userID = Integer.parseInt(response.replace("true:", "").trim());
+			Game.currentGame.startGame();
+		}
 	}
 	
 	@Override

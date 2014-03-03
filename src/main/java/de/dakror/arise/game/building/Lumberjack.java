@@ -13,6 +13,7 @@ public class Lumberjack extends Building
 		
 		typeId = 2;
 		name = "Holzfäller";
+		desc = "Fällt Bäume, um den Holzvorrat der Stadt zu erhöhen.";
 		tx = 0;
 		ty = 5;
 		tw = 5;

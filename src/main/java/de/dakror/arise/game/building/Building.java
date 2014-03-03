@@ -16,7 +16,7 @@ public abstract class Building extends ClickableComponent
 	protected int tx, ty, tw, th;
 	protected int typeId;
 	protected int level;
-	protected String name;
+	protected String name, desc;
 	protected Resources buildingCosts;
 	
 	public Building(int x, int y, int width, int height, int level)
@@ -67,6 +67,11 @@ public abstract class Building extends ClickableComponent
 	public String getName()
 	{
 		return name;
+	}
+	
+	public String getDescription()
+	{
+		return desc;
 	}
 	
 	public String getData()

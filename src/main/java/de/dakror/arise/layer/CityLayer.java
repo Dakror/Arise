@@ -97,7 +97,7 @@ public class CityLayer extends Layer
 			});
 			components.add(lumberjack);
 			
-			BuildingButton mine = new BuildingButton(15 + 64, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
+			BuildingButton mine = new BuildingButton(15 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
 			mine.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -108,7 +108,7 @@ public class CityLayer extends Layer
 			});
 			components.add(mine);
 			
-			BuildingButton quarry = new BuildingButton(15 + 128, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
+			BuildingButton quarry = new BuildingButton(15 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
 			quarry.addClickEvent(new ClickEvent()
 			{
 				@Override

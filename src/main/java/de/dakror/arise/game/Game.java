@@ -32,7 +32,7 @@ public class Game extends GameApplet
 	public static int userID;
 	public static int worldID = 1;
 	public static String buildDate = "from now";
-	public static int minuteInHour;
+	public static int secondInMinute;
 	
 	boolean debug;
 	
@@ -82,19 +82,18 @@ public class Game extends GameApplet
 			buildingsConfig = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/building.json")));
 			
 			Calendar calendar = new GregorianCalendar();
-			calendar.set(Calendar.SECOND, 0);
-			minuteInHour = calendar.get(Calendar.MINUTE);
-			Calendar result = new GregorianCalendar(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE), calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			secondInMinute = calendar.get(Calendar.SECOND);
 			final Timer t = new Timer();
 			t.scheduleAtFixedRate(new TimerTask()
 			{
 				@Override
 				public void run()
 				{
-					minuteInHour = (minuteInHour + 1) % 60;
+					secondInMinute = (secondInMinute + 1) % 60;
 					if (getActiveLayer() instanceof CityLayer) ((CityLayer) getActiveLayer()).updateResources();
 				}
-			}, result.getTime(), 1000 * 60);
+			}, calendar.getTime(), 1000);
 		}
 		catch (Exception e)
 		{

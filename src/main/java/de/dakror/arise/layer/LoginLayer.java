@@ -3,10 +3,13 @@ package de.dakror.arise.layer;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
+
+import javax.swing.JOptionPane;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
@@ -202,5 +205,23 @@ public class LoginLayer extends Layer
 	public void init()
 	{
 		initFirstPage();
+	}
+	
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		super.keyPressed(e);
+		
+		if (e.getKeyCode() == KeyEvent.VK_F5)
+		{
+			String id = JOptionPane.showInputDialog("ID der geünschten Welt: ", 1);
+			try
+			{
+				int i = Integer.parseInt(id);
+				Game.worldID = i;
+			}
+			catch (Exception e1)
+			{}
+		}
 	}
 }

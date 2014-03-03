@@ -232,9 +232,19 @@ public class CityLayer extends Layer
 		
 		for (Resource r : products.getFilled())
 		{
-			float interval = 60f / products.get(r);
-			int perminute = interval < 1 ? (int) (1 / interval) : 1;
-			if (Game.minuteInHour % (interval < 1 ? 1 : interval) == 0) resources.add(r, perminute);
+			float interval = 3600f / products.get(r);
+			float persecond = products.get(r) / 3600f;
+			
+			if (interval >= 1 && Game.secondInMinute % interval == 0)
+			{
+				resources.add(r, 1);
+			}
+			else if (persecond > 1)
+			{
+				int powerOfTen = (int) Math.pow(10, ((int) persecond + "").length());
+				int intervalForPowerOfTen = (int) (powerOfTen / persecond);
+				if (Game.secondInMinute % intervalForPowerOfTen == 0) resources.add(r, powerOfTen);
+			}
 		}
 		
 		saveData();

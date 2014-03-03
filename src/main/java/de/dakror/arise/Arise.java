@@ -1,6 +1,7 @@
 package de.dakror.arise;
 
 import javax.swing.JApplet;
+import javax.swing.UIManager;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.UpdateThread;
@@ -18,6 +19,15 @@ public class Arise extends JApplet
 	public void init()
 	{
 		super.init();
+		
+		try
+		{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		
 		running = true;
 		

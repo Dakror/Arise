@@ -17,6 +17,8 @@ public class Centre extends Building
 		super(x, y, 3, 3, level);
 		typeId = 1;
 		name = level > 3 ? "Stadtzentrum" : "Dorfzentrum";
+		
+		init();
 	}
 	
 	@Override

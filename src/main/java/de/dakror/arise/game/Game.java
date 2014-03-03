@@ -4,10 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
+import org.json.JSONObject;
 
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoginLayer;
@@ -20,6 +21,7 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class Game extends GameApplet
 {
+	public static JSONObject buildingsConfig;
 	public static Game currentGame;
 	public static World world;
 	public static int userID;
@@ -71,8 +73,9 @@ public class Game extends GameApplet
 		try
 		{
 			Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));
+			buildingsConfig = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/building.json")));
 		}
-		catch (MalformedURLException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

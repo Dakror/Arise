@@ -3,6 +3,8 @@ package de.dakror.arise.game.building;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import org.json.JSONException;
+
 import de.dakror.arise.game.Game;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.ui.ClickableComponent;
@@ -17,7 +19,7 @@ public abstract class Building extends ClickableComponent
 	protected int typeId;
 	protected int level;
 	protected String name, desc;
-	protected Resources buildingCosts;
+	protected Resources buildingCosts, products;
 	
 	public Building(int x, int y, int width, int height, int level)
 	{
@@ -25,6 +27,22 @@ public abstract class Building extends ClickableComponent
 		
 		this.level = level;
 		buildingCosts = new Resources();
+	}
+	
+	public void init()
+	{
+		if (Game.buildingsConfig.has("" + typeId))
+		{
+			try
+			{
+				buildingCosts = new Resources(Game.buildingsConfig.getJSONObject(typeId + "").getJSONObject("costs"));
+				products = new Resources(Game.buildingsConfig.getJSONObject(typeId + "").getJSONObject("products"));
+			}
+			catch (JSONException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
@@ -82,6 +100,11 @@ public abstract class Building extends ClickableComponent
 	public Resources getBuildingCosts()
 	{
 		return buildingCosts;
+	}
+	
+	public Resources getProducts()
+	{
+		return products;
 	}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)

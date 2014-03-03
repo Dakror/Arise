@@ -221,7 +221,7 @@ public class CityLayer extends Layer
 		
 		try
 		{
-			if (!Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId() + "&data=" + data + "&wood=" + resources.get(Resource.WOOD) + "&stone=" + resources.get(Resource.STONE) + "&gold=" + resources.get(Resource.GOLD))).contains("true"))
+			if (!Helper.getURLContent(new URL("http://dakror.de/arise/city?keepAlive=true&userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId() + "&data=" + data + "&wood=" + resources.get(Resource.WOOD) + "&stone=" + resources.get(Resource.STONE) + "&gold=" + resources.get(Resource.GOLD))).contains("true"))
 			{
 				Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist dieser im Moment down.", null));
 			}

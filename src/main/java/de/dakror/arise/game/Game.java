@@ -31,7 +31,7 @@ public class Game extends GameApplet
 	public static Game currentGame;
 	public static World world;
 	public static int userID;
-	public static int worldID = 65536;
+	public static int worldID = 1;
 	public static String buildDate = "from now";
 	public static int minuteInHour;
 	

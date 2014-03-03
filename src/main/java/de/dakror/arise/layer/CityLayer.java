@@ -10,8 +10,8 @@ import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,6 +31,7 @@ import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.Component;
+import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.ui.button.IconButton;
 import de.dakror.gamesetup.util.Helper;
 
@@ -85,6 +86,25 @@ public class CityLayer extends Layer
 			map.tooltip = "Weltkarte";
 			map.mode2 = true;
 			components.add(map);
+			
+			final InputField name = new InputField(Game.getWidth() / 2 + 50, 18, Game.getWidth() / 2 - 120, 48);
+			name.setMaxlength(50);
+			name.setAllowed(name.getAllowed() + " '.#~-");
+			name.setText(city.getName());
+			name.drawBG = false;
+			name.onEnter = new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					if (name.getText().trim().length() > 0)
+					{
+						city.setName(name.getText().trim());
+						saveData();
+					}
+				}
+			};
+			components.add(name);
 			
 			BuildingButton lumberjack = new BuildingButton(15, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(72, 0, 24, 24), new Lumberjack(0, 0, 0));
 			lumberjack.addClickEvent(new ClickEvent()
@@ -273,12 +293,21 @@ public class CityLayer extends Layer
 		
 		try
 		{
-			if (!Helper.getURLContent(new URL("http://dakror.de/arise/city?keepAlive=true&userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId() + "&data=" + data + "&wood=" + resources.get(Resource.WOOD) + "&stone=" + resources.get(Resource.STONE) + "&gold=" + resources.get(Resource.GOLD))).contains("true"))
+			String url = "http://dakror.de/arise/city?keepAlive=true";
+			url += "&userid=" + Game.userID;
+			url += "&worldid=" + Game.worldID;
+			url += "&id=" + city.getId();
+			url += "&data=" + data;
+			url += "&wood=" + resources.get(Resource.WOOD);
+			url += "&stone=" + resources.get(Resource.STONE);
+			url += "&gold=" + resources.get(Resource.GOLD);
+			url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
+			if (!Helper.getURLContent(new URL(url)).contains("true"))
 			{
 				Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist dieser im Moment down.", null));
 			}
 		}
-		catch (MalformedURLException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

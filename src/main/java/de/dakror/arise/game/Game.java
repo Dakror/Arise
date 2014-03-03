@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.layer.LoginLayer;
+import de.dakror.arise.layer.PauseLayer;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.util.Helper;
@@ -125,5 +126,6 @@ public class Game extends GameApplet
 		super.keyPressed(e);
 		
 		if (e.getKeyCode() == KeyEvent.VK_F1) debug = !debug;
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) toggleLayer(new PauseLayer());
 	}
 }

@@ -20,7 +20,6 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Lumberjack;
 import de.dakror.arise.game.world.City;
-import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildingButton;
@@ -96,7 +95,7 @@ public class CityLayer extends Layer
 			});
 			components.add(lumberjack);
 			
-			ResourceLabel wood = new ResourceLabel(70, 20, resources, Resource.WOOD);
+			ResourceLabel wood = new ResourceLabel(20, 20, resources, Resource.WOOD);
 			components.add(wood);
 			
 			ResourceLabel stone = new ResourceLabel(190 + wood.getX(), 20, resources, Resource.STONE);
@@ -209,9 +208,8 @@ public class CityLayer extends Layer
 		
 		for (Resource r : products.getFilled())
 		{
-			int interval = 60 / products.get(r);
-			int perminute = interval < 1 ? interval : 1;
-			CFG.p(interval, perminute);
+			float interval = 60f / products.get(r);
+			int perminute = interval < 1 ? (int) (1 / interval) : 1;
 			if (Game.minuteInHour % (interval < 1 ? 1 : interval) == 0) resources.add(r, perminute);
 		}
 		

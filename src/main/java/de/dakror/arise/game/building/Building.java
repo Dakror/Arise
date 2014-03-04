@@ -2,11 +2,14 @@ package de.dakror.arise.game.building;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
 
 import org.json.JSONException;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.settings.Resources;
+import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -17,11 +20,13 @@ public abstract class Building extends ClickableComponent
 {
 	public static int GRID = 32;
 	
-	protected int tx, ty, tw, th;
-	protected int typeId;
-	protected int level;
+	protected int tx, ty, tw, th, typeId, level, stage;
+	public int bx, by, bw, bh;
+	protected int stageChangeSeconds;
 	protected String name, desc;
 	protected Resources buildingCosts, products;
+	
+	public static HashMap<Class<?>, BufferedImage> stage0Cache = new HashMap<>();
 	
 	public Building(int x, int y, int width, int height, int level)
 	{
@@ -30,6 +35,9 @@ public abstract class Building extends ClickableComponent
 		this.level = level;
 		buildingCosts = new Resources();
 		products = new Resources();
+		bx = by = 0;
+		bw = width;
+		bh = height;
 	}
 	
 	public void init()
@@ -55,10 +63,20 @@ public abstract class Building extends ClickableComponent
 		{
 			Color c = g.getColor();
 			g.setColor(Color.black);
-			g.drawRect(x, y, width, height);
+			g.drawRect(x + bx * GRID - 1, y + by * GRID - 1, bw * GRID + 2, bh * GRID + 2);
 			g.setColor(c);
 		}
 		
+		if (stage == 0)
+		{
+			if (!stage0Cache.containsKey(getClass())) stage0Cache.put(getClass(), Assistant.drawBuildingStage(this));
+			g.drawImage(stage0Cache.get(getClass()), x + bx * GRID, y + by * GRID, null);
+		}
+		else drawStage1(g);
+	}
+	
+	protected void drawStage1(Graphics2D g)
+	{
 		Helper.setRenderingHints(g, false);
 		Helper.drawImage2(Game.getImage("world/structs.png"), x, y, width, height, tx * 32, ty * 32, tw * 32, th * 32, g);
 		Helper.setRenderingHints(g, true);
@@ -85,6 +103,26 @@ public abstract class Building extends ClickableComponent
 		return level;
 	}
 	
+	public int getStage()
+	{
+		return stage;
+	}
+	
+	public void setStage(int s)
+	{
+		stage = s;
+	}
+	
+	public int getStageChangeSeconds()
+	{
+		return stageChangeSeconds;
+	}
+	
+	public void setStageChangeSeconds(int stateChangeSeconds)
+	{
+		stageChangeSeconds = stateChangeSeconds;
+	}
+	
 	public String getName()
 	{
 		return name;
@@ -97,7 +135,7 @@ public abstract class Building extends ClickableComponent
 	
 	public String getData()
 	{
-		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID);
+		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeSeconds;
 	}
 	
 	public Resources getBuildingCosts()

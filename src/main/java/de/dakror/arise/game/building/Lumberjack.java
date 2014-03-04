@@ -18,6 +18,9 @@ public class Lumberjack extends Building
 		tw = 5;
 		th = 6;
 		
+		by = 1;
+		bh = 5;
+		
 		init();
 	}
 }

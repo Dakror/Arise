@@ -181,15 +181,24 @@ public class CityLayer extends Layer
 			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
 			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 			
+			AffineTransform old = g.getTransform();
+			AffineTransform at = g.getTransform();
+			at.translate(x, y);
+			g.setTransform(at);
+			
+			activeBuilding.draw(g);
+			
+			g.setTransform(old);
+			
 			Composite c = g.getComposite();
 			Color cl = g.getColor();
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
 			
 			boolean free = true;
 			
-			for (int i = 0; i < activeBuilding.getWidth(); i += Building.GRID)
+			for (int i = activeBuilding.bx * Building.GRID; i < activeBuilding.bx * Building.GRID + activeBuilding.bw * Building.GRID; i += Building.GRID)
 			{
-				for (int j = 0; j < activeBuilding.getHeight(); j += Building.GRID)
+				for (int j = activeBuilding.by * Building.GRID; j < activeBuilding.by * Building.GRID + activeBuilding.bh * Building.GRID; j += Building.GRID)
 				{
 					boolean green = new Rectangle(96, 96, 1088, 544).contains(new Rectangle(i + x, j + y, Building.GRID, Building.GRID)) && !intersectsBuildings(new Rectangle(i + x, j + y, Building.GRID, Building.GRID));
 					g.setColor(green ? Color.decode("#5fff5b") : Color.red);
@@ -218,21 +227,6 @@ public class CityLayer extends Layer
 			if (c.state == 2) hovered = c;
 		}
 		
-		if (activeBuilding != null)
-		{
-			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
-			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
-			
-			AffineTransform old = g.getTransform();
-			AffineTransform at = g.getTransform();
-			at.translate(x, y);
-			g.setTransform(at);
-			
-			activeBuilding.draw(g);
-			
-			g.setTransform(old);
-		}
-		
 		if (hovered != null) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
 	}
 	
@@ -240,6 +234,7 @@ public class CityLayer extends Layer
 	public void update(int tick)
 	{
 		updateComponents(tick);
+		if (activeBuilding != null) activeBuilding.setStage(1);
 	}
 	
 	public void updateResources()
@@ -280,6 +275,8 @@ public class CityLayer extends Layer
 			
 			String[] parts = building.split(":");
 			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
+			b.setStage(Integer.parseInt(parts[4]));
+			b.setStageChangeSeconds(Integer.parseInt(parts[5]));
 			components.add(b);
 			resources.add(Resource.BUILDINGS, 1);
 		}
@@ -310,6 +307,7 @@ public class CityLayer extends Layer
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise bist du nicht mit dem Internet verbunden.", null));
 		}
 	}
 	
@@ -357,9 +355,7 @@ public class CityLayer extends Layer
 				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
 				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 				
-				activeBuilding.x = x;
-				activeBuilding.y = y;
-				components.add(activeBuilding);
+				components.add(Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId()));
 				resources.add(Resource.BUILDINGS, 1);
 				resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
 				activeBuilding = null;

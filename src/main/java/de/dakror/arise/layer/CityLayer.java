@@ -178,8 +178,8 @@ public class CityLayer extends Layer
 		
 		if (activeBuilding != null)
 		{
-			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, 32);
-			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, 32);
+			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
+			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 			
 			Composite c = g.getComposite();
 			Color cl = g.getColor();
@@ -187,13 +187,13 @@ public class CityLayer extends Layer
 			
 			boolean free = true;
 			
-			for (int i = 0; i < activeBuilding.getWidth(); i += 32)
+			for (int i = 0; i < activeBuilding.getWidth(); i += Building.GRID)
 			{
-				for (int j = 0; j < activeBuilding.getHeight(); j += 32)
+				for (int j = 0; j < activeBuilding.getHeight(); j += Building.GRID)
 				{
-					boolean green = new Rectangle(96, 96, 1088, 544).contains(new Rectangle(i + x, j + y, 32, 32)) && !intersectsBuildings(new Rectangle(i + x, j + y, 32, 32));
+					boolean green = new Rectangle(96, 96, 1088, 544).contains(new Rectangle(i + x, j + y, Building.GRID, Building.GRID)) && !intersectsBuildings(new Rectangle(i + x, j + y, Building.GRID, Building.GRID));
 					g.setColor(green ? Color.decode("#5fff5b") : Color.red);
-					g.fillRect(i + x, j + y, 32, 32);
+					g.fillRect(i + x, j + y, Building.GRID, Building.GRID);
 					
 					if (!green) free = false;
 				}
@@ -203,9 +203,9 @@ public class CityLayer extends Layer
 			else Game.applet.setCursor(DragSource.DefaultMoveNoDrop);
 			
 			g.setColor(Color.black);
-			for (int i = 0; i < 1088; i += 32)
-				for (int j = 0; j < 544; j += 32)
-					g.drawRect(i + 96, j + 96, 32, 32);
+			for (int i = 0; i < 1088; i += Building.GRID)
+				for (int j = 0; j < 544; j += Building.GRID)
+					g.drawRect(i + 96, j + 96, Building.GRID, Building.GRID);
 			
 			g.setComposite(c);
 			g.setColor(cl);
@@ -220,8 +220,8 @@ public class CityLayer extends Layer
 		
 		if (activeBuilding != null)
 		{
-			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, 32);
-			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, 32);
+			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
+			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 			
 			AffineTransform old = g.getTransform();
 			AffineTransform at = g.getTransform();
@@ -279,7 +279,7 @@ public class CityLayer extends Layer
 			if (!building.contains(":")) continue;
 			
 			String[] parts = building.split(":");
-			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + 3, Integer.parseInt(parts[3]) + 3, Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
+			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
 			components.add(b);
 			resources.add(Resource.BUILDINGS, 1);
 		}
@@ -354,8 +354,8 @@ public class CityLayer extends Layer
 		{
 			if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor()))
 			{
-				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, 32);
-				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, 32);
+				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
+				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 				
 				activeBuilding.x = x;
 				activeBuilding.y = y;

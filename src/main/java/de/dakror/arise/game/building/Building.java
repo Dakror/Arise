@@ -15,6 +15,8 @@ import de.dakror.gamesetup.util.Helper;
  */
 public abstract class Building extends ClickableComponent
 {
+	public static int GRID = 32;
+	
 	protected int tx, ty, tw, th;
 	protected int typeId;
 	protected int level;
@@ -23,7 +25,7 @@ public abstract class Building extends ClickableComponent
 	
 	public Building(int x, int y, int width, int height, int level)
 	{
-		super(x * 32, y * 32, width * 32, height * 32);
+		super(x * GRID, y * GRID, width * GRID, height * GRID);
 		
 		this.level = level;
 		buildingCosts = new Resources();
@@ -95,7 +97,7 @@ public abstract class Building extends ClickableComponent
 	
 	public String getData()
 	{
-		return typeId + ":" + level + ":" + ((x - 96) / 32) + ":" + ((y - 96) / 32);
+		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID);
 	}
 	
 	public Resources getBuildingCosts()

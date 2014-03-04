@@ -18,8 +18,6 @@ public class Arise extends JApplet
 	@Override
 	public void init()
 	{
-		super.init();
-		
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -80,7 +80,7 @@ public class Game extends GameApplet
 		try
 		{
 			Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));
-			buildingsConfig = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/building.json")));
+			buildingsConfig = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/building")));
 			
 			Calendar calendar = new GregorianCalendar();
 			calendar.set(Calendar.MILLISECOND, 0);

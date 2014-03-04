@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.7+" codebase="" href="arise.jnlp">
+    <information>
+        <title>Arise</title>
+        <vendor>Dakror Inc.</vendor>
+        <icon href="https://raw.github.com/Dakror/Arise/master/src/main/resources/img/system/logoHD.png"/>
+    </information>
+    <resources>
+        <jar href="Arise.jar"
+            main="true" />
+    </resources>
+    <application-desc
+         name="Arise"
+         main-class="de.dakror.arise.Arise"
+         width="1280"
+         height="720">
+     </application-desc>
+     <update check="background"/>
+</jnlp>

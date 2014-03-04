@@ -36,12 +36,19 @@
 			<format property="DATE" pattern="dd.MM.yyyy HH:mm:ss" />
 		</tstamp>
 
+		<script language="javascript">
+ 		<![CDATA[
+  		  property = project.setProperty("now", (new Date()).getTime());
+  		]]>
+		</script>
+
 		<jar destfile="Arise.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
 				<attribute name="Main-Class" value="de.dakror.arise.Arise" />
 				<attribute name="Class-Path" value="." />
 				<attribute name="Application-Name" value="Arise" />
 				<attribute name="Build-Date" value="${DATE}" />
+				<attribute name="Build-Timestamp" value="${now}" />
 				<attribute name="Permissions" value="all-permissions" />
 				<attribute name="Trusted-Only" value="true" />
 			</manifest>
@@ -55,15 +62,15 @@
 		<signjar jar="Arise.jar" keystore="ariseKeystore" alias="arise"
 			storepass="ariseKeystore" />
 
-		<echo message="starting FTP file upload"/>
+		<echo message="starting FTP file upload" />
 		<java classname="de.dakror.ariseftp.AriseFTP">
 			<classpath>
 				<pathelement location="AriseFTP.jar" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
 		</java>
-		
+
 		<delete dir="bin" />
-		
+
 	</target>
 </project>

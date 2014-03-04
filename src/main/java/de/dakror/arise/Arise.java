@@ -3,6 +3,8 @@ package de.dakror.arise;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.JApplet;
 import javax.swing.JFrame;
@@ -10,6 +12,8 @@ import javax.swing.UIManager;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.UpdateThread;
+import de.dakror.arise.settings.CFG;
+import de.dakror.gamesetup.util.Helper;
 
 /**
  * @author Dakror
@@ -66,27 +70,38 @@ public class Arise extends JApplet
 	
 	public static void main(String[] args)
 	{
-		wrapper = true;
-		
-		JFrame frame = new JFrame("Arise");
-		frame.setSize(1280, 720);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter()
+		try
 		{
-			@Override
-			public void windowClosing(WindowEvent e)
+			long time = Long.parseLong(Helper.getURLContent(new URL("http://dakror.de/arise/bin/version")).trim());
+			
+			wrapper = true;
+			
+			JFrame frame = new JFrame("Arise");
+			frame.setSize(1280, 720);
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.addWindowListener(new WindowAdapter()
 			{
-				Game.applet.stop();
-			}
-		});
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-		frame.setResizable(false);
-		Arise arise = new Arise();
-		frame.add(arise);
-		arise.setSize(1280, 720);
-		frame.setSize(frame.getWidth() + (1280 - arise.getWidth()), frame.getHeight() + (720 - arise.getHeight()));
-		Game.size = new Dimension(1280, 720);
-		arise.init();
+				@Override
+				public void windowClosing(WindowEvent e)
+				{
+					Game.applet.stop();
+				}
+			});
+			frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+			frame.setResizable(false);
+			Arise arise = new Arise();
+			frame.add(arise);
+			arise.setSize(1280, 720);
+			frame.setSize(frame.getWidth() + (1280 - arise.getWidth()), frame.getHeight() + (720 - arise.getHeight()));
+			Game.size = new Dimension(1280, 720);
+			arise.init();
+			
+			CFG.p(Game.buildTimestamp - time);
+		}
+		catch (MalformedURLException e1)
+		{
+			e1.printStackTrace();
+		}
 	}
 }

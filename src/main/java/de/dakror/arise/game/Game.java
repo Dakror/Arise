@@ -33,6 +33,7 @@ public class Game extends GameApplet
 	public static int userID;
 	public static int worldID = 1;
 	public static String buildDate = "from now";
+	public static long buildTimestamp = 0;
 	public static int secondInMinute;
 	
 	boolean debug;
@@ -118,6 +119,7 @@ public class Game extends GameApplet
 		Manifest manifest = new Manifest(new URL(manifestPath).openStream());
 		Attributes attr = manifest.getMainAttributes();
 		buildDate = attr.getValue("Build-Date");
+		buildTimestamp = Long.parseLong(attr.getValue("Build-Timestamp").trim());
 	}
 	
 	@Override

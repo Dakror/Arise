@@ -18,6 +18,8 @@ public class Arise extends JApplet
 {
 	private static final long serialVersionUID = 1L;
 	
+	public static boolean wrapper = false;
+	
 	public static boolean running;
 	
 	@Override
@@ -64,6 +66,8 @@ public class Arise extends JApplet
 	
 	public static void main(String[] args)
 	{
+		wrapper = true;
+		
 		JFrame frame = new JFrame("Arise");
 		frame.setSize(1280, 720);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

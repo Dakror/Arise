@@ -1,5 +1,6 @@
 package de.dakror.arise.layer;
 
+import java.awt.Desktop;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -13,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
+import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
@@ -85,9 +87,10 @@ public class LoginLayer extends Layer
 			{
 				try
 				{
-					Game.applet.getAppletContext().showDocument(new URL("http://dakror.de#register"), "_blank");
+					if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de#register"), "_blank");
+					else Desktop.getDesktop().browse(new URL("http://dakror.de#register").toURI());
 				}
-				catch (MalformedURLException e)
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -102,7 +105,8 @@ public class LoginLayer extends Layer
 			{
 				try
 				{
-					Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
+					if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
+					else System.exit(0);
 				}
 				catch (MalformedURLException e)
 				{

@@ -93,7 +93,12 @@ public class Game extends GameApplet
 				public void run()
 				{
 					secondInMinute = (secondInMinute + 1) % 60;
-					if (getActiveLayer() instanceof CityLayer) ((CityLayer) getActiveLayer()).updateResources();
+					if (getActiveLayer() instanceof CityLayer)
+					{
+						((CityLayer) getActiveLayer()).updateResources();
+						((CityLayer) getActiveLayer()).updateBuildingStages();
+						((CityLayer) getActiveLayer()).saveData();
+					}
 				}
 			}, calendar.getTime(), 1000);
 		}

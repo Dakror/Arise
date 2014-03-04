@@ -19,10 +19,12 @@ import de.dakror.gamesetup.util.Helper;
 public abstract class Building extends ClickableComponent
 {
 	public static int GRID = 32;
+	public static float DESTRUCT_FACTOR = 0.35f;
 	
 	protected int tx, ty, tw, th, typeId, level, stage;
 	public int bx, by, bw, bh;
 	protected int stageChangeSeconds;
+	protected long stageChangeTimestamp;
 	protected String name, desc;
 	protected Resources buildingCosts, products;
 	
@@ -48,6 +50,7 @@ public abstract class Building extends ClickableComponent
 			{
 				buildingCosts = new Resources(Game.buildingsConfig.getJSONObject(typeId + "").getJSONObject("costs"));
 				products = new Resources(Game.buildingsConfig.getJSONObject(typeId + "").getJSONObject("products"));
+				stageChangeSeconds = Game.buildingsConfig.getJSONObject(typeId + "").getInt("stage");
 			}
 			catch (JSONException e)
 			{
@@ -59,6 +62,8 @@ public abstract class Building extends ClickableComponent
 	@Override
 	public void draw(Graphics2D g)
 	{
+		if (Game.world == null) return;
+		
 		if (state != 0)
 		{
 			Color c = g.getColor();
@@ -67,12 +72,31 @@ public abstract class Building extends ClickableComponent
 			g.setColor(c);
 		}
 		
-		if (stage == 0)
+		if (stage == 0 && stageChangeTimestamp > 0)
 		{
 			if (!stage0Cache.containsKey(getClass())) stage0Cache.put(getClass(), Assistant.drawBuildingStage(this));
-			g.drawImage(stage0Cache.get(getClass()), x + bx * GRID, y + by * GRID, null);
+			
+			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
+			
+			g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
+			
+			// long destTimeStamp = (long) ((stageChangeTimestamp + (stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR))) * 1000 / Game.world.getSpeed());
+			// long deltaS = destTimeStamp - System.currentTimeMillis();
+			// CFG.p(deltaS);
+			// if (deltaS > 0)
+			// {
+			// Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, (System.currentTimeMillis() - stageChangeTimestamp * 1000) / ((stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR)) / Game.world.getSpeed() * 1000), "ffc744", g);
+			//
+			// String s = new SimpleDateFormat("HH:mm:ss").format(new Date(deltaS));
+			//
+			// Color c = g.getColor();
+			// g.setColor(Color.black);
+			// Helper.drawHorizontallyCenteredString(s, tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
+			// g.setColor(c);
+			// }
 		}
-		else drawStage1(g);
+		
+		if (stage == 1) drawStage1(g);
 	}
 	
 	protected void drawStage1(Graphics2D g)
@@ -118,9 +142,24 @@ public abstract class Building extends ClickableComponent
 		return stageChangeSeconds;
 	}
 	
-	public void setStageChangeSeconds(int stateChangeSeconds)
+	public long getStageChangeTimestamp()
 	{
-		stageChangeSeconds = stateChangeSeconds;
+		return stageChangeTimestamp;
+	}
+	
+	/**
+	 * @param s - time in seconds
+	 */
+	public void setStageChangeTimestamp(long s)
+	{
+		stageChangeTimestamp = s;
+	}
+	
+	public boolean isStageChangeReady()
+	{
+		if (stageChangeTimestamp == 0) return false;
+		
+		return System.currentTimeMillis() / 1000 - stageChangeTimestamp >= stageChangeSeconds * (stage == 0 ? 1 : DESTRUCT_FACTOR) / Game.world.getSpeed();
 	}
 	
 	public String getName()
@@ -135,7 +174,7 @@ public abstract class Building extends ClickableComponent
 	
 	public String getData()
 	{
-		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeSeconds;
+		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeTimestamp;
 	}
 	
 	public Resources getBuildingCosts()

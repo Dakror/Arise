@@ -61,6 +61,8 @@ public class CityLayer extends Layer
 			resources.set(Resource.GOLD, data.getInt("GOLD"));
 			resources.set(Resource.STONE, data.getInt("STONE"));
 			placeBuildings();
+			updateBuildingStages();
+			saveData();
 		}
 		catch (Exception e)
 		{
@@ -186,6 +188,7 @@ public class CityLayer extends Layer
 			at.translate(x, y);
 			g.setTransform(at);
 			
+			activeBuilding.setStage(1);
 			activeBuilding.draw(g);
 			
 			g.setTransform(old);
@@ -234,7 +237,6 @@ public class CityLayer extends Layer
 	public void update(int tick)
 	{
 		updateComponents(tick);
-		if (activeBuilding != null) activeBuilding.setStage(1);
 	}
 	
 	public void updateResources()
@@ -261,8 +263,19 @@ public class CityLayer extends Layer
 				if (Game.secondInMinute % intervalForPowerOfTen == 0) resources.add(r, powerOfTen);
 			}
 		}
-		
-		saveData();
+	}
+	
+	public void updateBuildingStages()
+	{
+		for (Component c : components)
+		{
+			if (c instanceof Building && ((Building) c).isStageChangeReady())
+			{
+				((Building) c).setStageChangeTimestamp(0);
+				if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
+				else components.remove(c);
+			}
+		}
 	}
 	
 	public void placeBuildings() throws JSONException
@@ -276,7 +289,8 @@ public class CityLayer extends Layer
 			String[] parts = building.split(":");
 			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
 			b.setStage(Integer.parseInt(parts[4]));
-			b.setStageChangeSeconds(Integer.parseInt(parts[5]));
+			b.setStageChangeTimestamp(Long.parseLong(parts[5]));
+			
 			components.add(b);
 			resources.add(Resource.BUILDINGS, 1);
 		}
@@ -355,7 +369,9 @@ public class CityLayer extends Layer
 				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
 				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 				
-				components.add(Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId()));
+				Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId());
+				b.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+				components.add(b);
 				resources.add(Resource.BUILDINGS, 1);
 				resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
 				activeBuilding = null;

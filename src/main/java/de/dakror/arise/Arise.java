@@ -103,7 +103,8 @@ public class Arise extends JApplet
 			if (Game.buildTimestamp > 0 && time - Game.buildTimestamp > 60000)
 			{
 				JOptionPane.showMessageDialog(frame, "Es ist eine neue Version von Arise verfügbar.\nDiese wird nun heruntergeladen.", "Update", JOptionPane.INFORMATION_MESSAGE);
-				File updater = File.createTempFile("arise_selfupdate", ".jar");
+				File updater = new File(System.getProperty("user.home") + "/.dakror/SelfUpdate/SelfUpdate.jar");
+				updater.getParentFile().mkdirs();
 				Helper.copyInputStream(Arise.class.getResourceAsStream("/SelfUpdate.jar"), new FileOutputStream(updater));
 				Runtime.getRuntime().exec("javaw -jar \"" + updater.getPath() + "\" \"" + jar.getPath() + "\" \"http://dakror.de/arise/bin/Arise.jar\"");
 				System.exit(0);

@@ -6,7 +6,7 @@
         <icon href="https://raw.github.com/Dakror/Arise/master/src/main/resources/img/system/logoHD.png"/>
     </information>
     <resources>
-        <jar href="Arise.jar"
+        <jar href="http://dakror.de/arise/bin/Arise.jar"
             main="true" />
     </resources>
     <application-desc

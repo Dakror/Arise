@@ -3,16 +3,17 @@ package de.dakror.arise;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.MalformedURLException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URL;
 
 import javax.swing.JApplet;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.UpdateThread;
-import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -72,6 +73,14 @@ public class Arise extends JApplet
 	{
 		try
 		{
+			File jar = new File(Arise.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			if (jar.getName().equals("Arise_new_Version.jar"))
+			{
+				new File(jar.getParentFile(), "Arise.jar").deleteOnExit();
+				new File(jar.getParentFile(), "Arise.jar").delete();
+				jar.renameTo(new File(jar.getParentFile(), "Arise.jar"));
+			}
+			
 			long time = Long.parseLong(Helper.getURLContent(new URL("http://dakror.de/arise/bin/version")).trim());
 			
 			wrapper = true;
@@ -97,9 +106,16 @@ public class Arise extends JApplet
 			Game.size = new Dimension(1280, 720);
 			arise.init();
 			
-			CFG.p(Game.buildTimestamp - time);
+			if (Game.buildTimestamp > 0 && time - Game.buildTimestamp > 60000)
+			{
+				JOptionPane.showMessageDialog(frame, "Es ist eine neue Version von Arise verfügbar.\nDiese wird nun heruntergeladen.", "Update", JOptionPane.INFORMATION_MESSAGE);
+				File f = new File(jar.getParentFile(), "Arise_new_Version.jar");
+				Helper.copyInputStream(new URL("http://dakror.de/arise/bin/Arise.jar").openStream(), new FileOutputStream(f));
+				Runtime.getRuntime().exec("javaw -jar " + f.toString());
+				System.exit(0);
+			}
 		}
-		catch (MalformedURLException e1)
+		catch (Exception e1)
 		{
 			e1.printStackTrace();
 		}

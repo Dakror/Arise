@@ -6,8 +6,8 @@
         <icon href="https://raw.github.com/Dakror/Arise/master/src/main/resources/img/system/logoHD.png"/>
     </information>
     <resources>
-        <jar href="http://dakror.de/arise/bin/Arise.jar"
-            main="true" />
+		<j2se version="1.7*" java-vm-args="-Xmx2g" max-heap-size="2g" href="http://java.sun.com/products/autodl/j2se"/>
+        <jar href="http://dakror.de/arise/bin/Arise.jar" main="true" />
     </resources>
     <application-desc
          name="Arise"

@@ -51,6 +51,7 @@ public class PauseLayer extends Layer
 			public void trigger()
 			{
 				Game.userID = 0;
+				Game.currentGame.removeLayer(Game.world);
 				Game.world = null;
 				Game.worldID = 1;
 				

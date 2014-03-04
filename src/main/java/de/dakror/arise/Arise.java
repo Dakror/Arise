@@ -1,6 +1,11 @@
 package de.dakror.arise;
 
+import java.awt.Dimension;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JApplet;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import de.dakror.arise.game.Game;
@@ -58,5 +63,26 @@ public class Arise extends JApplet
 	}
 	
 	public static void main(String[] args)
-	{}
+	{
+		JFrame frame = new JFrame("Arise");
+		frame.setSize(1280, 720);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addWindowListener(new WindowAdapter()
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				Game.applet.stop();
+			}
+		});
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		frame.setResizable(false);
+		Arise arise = new Arise();
+		frame.add(arise);
+		arise.setSize(1280, 720);
+		frame.setSize(frame.getWidth() + (1280 - arise.getWidth()), frame.getHeight() + (720 - arise.getHeight()));
+		Game.size = new Dimension(1280, 720);
+		arise.init();
+	}
 }

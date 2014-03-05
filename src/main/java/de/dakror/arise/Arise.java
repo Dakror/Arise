@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.JApplet;
@@ -80,7 +81,7 @@ public class Arise extends JApplet
 			
 			wrapper = true;
 			
-			JFrame frame = new JFrame("Arise");
+			JFrame frame = new JFrame("Arise Standalone v");
 			frame.setIconImage(ImageIO.read(Arise.class.getResource("/img/system/logo.png")));
 			frame.setSize(1280, 720);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -102,12 +103,14 @@ public class Arise extends JApplet
 			Game.size = new Dimension(1280, 720);
 			arise.init();
 			
+			frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(Game.buildTimestamp));
+			
 			if (Game.buildTimestamp > 0 && time - Game.buildTimestamp > 60000)
 			{
 				JOptionPane.showMessageDialog(frame, "Es ist eine neue Version von Arise verfügbar.\nDiese wird nun heruntergeladen.", "Update", JOptionPane.INFORMATION_MESSAGE);
 				File updater = new File(System.getProperty("user.home") + "/.dakror/SelfUpdate/SelfUpdate.jar");
 				updater.getParentFile().mkdirs();
-				Helper.copyInputStream(Arise.class.getResourceAsStream("/SelfUpdate.jar"), new FileOutputStream(updater));
+				if (!updater.exists()) Helper.copyInputStream(Arise.class.getResourceAsStream("/SelfUpdate.jar"), new FileOutputStream(updater));
 				Runtime.getRuntime().exec("javaw -jar \"" + updater.getPath() + "\" \"" + jar.getPath() + "\" \"http://dakror.de/arise/bin/Arise.jar\"");
 				System.exit(0);
 			}

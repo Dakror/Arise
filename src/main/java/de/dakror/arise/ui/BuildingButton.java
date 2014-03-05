@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import de.dakror.arise.game.building.Building;
+import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.util.Assistant;
@@ -35,7 +36,7 @@ public class BuildingButton extends IconButton
 	@Override
 	public void update(int tick)
 	{
-		if (CityLayer.allBuildingsEnabled) checkIfCanEffort();
+		if (CityHUDLayer.allBuildingsEnabled) checkIfCanEffort();
 	}
 	
 	@Override

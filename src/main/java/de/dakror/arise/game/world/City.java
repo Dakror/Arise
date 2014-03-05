@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
@@ -107,6 +108,11 @@ public class City extends ClickableComponent
 	{
 		super.mousePressed(e);
 		
-		if (state == 1 && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && userId == Game.userID) Game.currentGame.addLayer(new CityLayer(City.this));
+		if (state == 1 && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && userId == Game.userID)
+		{
+			CityLayer cl = new CityLayer(City.this);
+			Game.currentGame.addLayer(cl);
+			Game.currentGame.addLayer(new CityHUDLayer(cl));
+		}
 	}
 }

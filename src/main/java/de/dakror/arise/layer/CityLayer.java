@@ -9,7 +9,6 @@ import java.awt.Rectangle;
 import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -18,21 +17,13 @@ import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
-import de.dakror.arise.game.building.Lumberjack;
-import de.dakror.arise.game.building.Mine;
-import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
-import de.dakror.arise.ui.BuildingButton;
-import de.dakror.arise.ui.ResourceLabel;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
-import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.Component;
-import de.dakror.gamesetup.ui.InputField;
-import de.dakror.gamesetup.ui.button.IconButton;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -41,13 +32,10 @@ import de.dakror.gamesetup.util.Helper;
 public class CityLayer extends Layer
 {
 	public static Resources resources;
-	public static boolean allBuildingsEnabled;
 	JSONObject data;
 	City city;
 	
 	Building activeBuilding;
-	
-	BufferedImage cache;
 	
 	public CityLayer(City city)
 	{
@@ -72,111 +60,12 @@ public class CityLayer extends Layer
 	
 	@Override
 	public void init()
-	{
-		try
-		{
-			IconButton map = new IconButton((Game.getWidth() - 64) / 2, 20, 64, 64, "system/map.png");
-			map.addClickEvent(new ClickEvent()
-			{
-				@Override
-				public void trigger()
-				{
-					Game.currentGame.removeLayer(CityLayer.this);
-					Game.world.updateWorld();
-				}
-			});
-			map.tooltip = "Weltkarte";
-			map.mode2 = true;
-			components.add(map);
-			
-			final InputField name = new InputField(Game.getWidth() / 2 + 50, 18, Game.getWidth() / 2 - 120, 48);
-			name.setMaxlength(50);
-			name.setAllowed(name.getAllowed() + " '.#~-");
-			name.setText(city.getName());
-			name.drawBG = false;
-			name.onEnter = new ClickEvent()
-			{
-				@Override
-				public void trigger()
-				{
-					if (name.getText().trim().length() > 0)
-					{
-						city.setName(name.getText().trim());
-						saveData();
-					}
-				}
-			};
-			components.add(name);
-			
-			BuildingButton lumberjack = new BuildingButton(15, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(72, 0, 24, 24), new Lumberjack(0, 0, 0));
-			lumberjack.addClickEvent(new ClickEvent()
-			{
-				@Override
-				public void trigger()
-				{
-					activeBuilding = new Lumberjack(0, 0, 0);
-				}
-			});
-			components.add(lumberjack);
-			
-			BuildingButton mine = new BuildingButton(15 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
-			mine.addClickEvent(new ClickEvent()
-			{
-				@Override
-				public void trigger()
-				{
-					activeBuilding = new Mine(0, 0, 0);
-				}
-			});
-			components.add(mine);
-			
-			BuildingButton quarry = new BuildingButton(15 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
-			quarry.addClickEvent(new ClickEvent()
-			{
-				@Override
-				public void trigger()
-				{
-					activeBuilding = new Quarry(0, 0, 0);
-				}
-			});
-			components.add(quarry);
-			
-			ResourceLabel wood = new ResourceLabel(20, 20, resources, Resource.WOOD);
-			components.add(wood);
-			
-			ResourceLabel stone = new ResourceLabel(190 + wood.getX(), 20, resources, Resource.STONE);
-			components.add(stone);
-			
-			ResourceLabel gold = new ResourceLabel(400 + wood.getX(), 20, resources, Resource.GOLD);
-			components.add(gold);
-			
-			ResourceLabel buildings = new ResourceLabel(70 + wood.getX(), 60, resources, Resource.BUILDINGS);
-			buildings.off = (data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
-			components.add(buildings);
-			
-			ResourceLabel people = new ResourceLabel(270 + wood.getX(), 60, resources, Resource.PEOPLE);
-			people.off = 20;
-			components.add(people);
-			
-			updateBuildingbar();
-			
-			cache = new BufferedImage(Game.getWidth(), Game.getHeight(), BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g = (Graphics2D) cache.getGraphics();
-			Helper.setRenderingHints(g, true);
-			g.drawImage(Game.getImage("system/city.png"), 0, 0, null);
-			Helper.drawShadow(0, 5, Game.getWidth(), 96, g);
-			Helper.drawOutline(0, 5, Game.getWidth(), 96, false, g);
-		}
-		catch (JSONException e)
-		{
-			e.printStackTrace();
-		}
-	}
+	{}
 	
 	@Override
 	public void draw(Graphics2D g)
 	{
-		g.drawImage(cache, 0, 0, null);
+		g.drawImage(Game.getImage("system/city.png"), 0, 0, null);
 		
 		Component hovered = null;
 		for (Component c : components)
@@ -325,30 +214,6 @@ public class CityLayer extends Layer
 		}
 	}
 	
-	public void updateBuildingbar()
-	{
-		try
-		{
-			Resources products = new Resources();
-			for (Component c : components)
-			{
-				if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = resources.get(Resource.BUILDINGS) < (data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
-				if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getProducts());
-			}
-			
-			products = Resources.mul(products, Game.world.getSpeed());
-			
-			for (Component c : components)
-				if (c instanceof ResourceLabel) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
-			
-			allBuildingsEnabled = resources.get(Resource.BUILDINGS) < (data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
-		}
-		catch (JSONException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	public boolean intersectsBuildings(Rectangle r)
 	{
 		for (Component c : components)
@@ -361,6 +226,18 @@ public class CityLayer extends Layer
 	public void mousePressed(MouseEvent e)
 	{
 		super.mousePressed(e);
+		
+		boolean anyBuildingActive = false;
+		for (Component c : components)
+		{
+			if (c instanceof Building && c.state == 1)
+			{
+				anyBuildingActive = true;
+				break;
+			}
+		}
+		
+		if (!anyBuildingActive && !((CityHUDLayer) Game.currentGame.getActiveLayer()).anyComponentClicked) CityHUDLayer.selectedBuilding = null;
 		
 		if (activeBuilding != null)
 		{
@@ -375,7 +252,7 @@ public class CityLayer extends Layer
 				resources.add(Resource.BUILDINGS, 1);
 				resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
 				activeBuilding = null;
-				updateBuildingbar();
+				((CityHUDLayer) Game.currentGame.getActiveLayer()).updateBuildingbar();
 				saveData();
 			}
 			if (e.getButton() == MouseEvent.BUTTON3)

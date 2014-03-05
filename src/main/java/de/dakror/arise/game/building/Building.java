@@ -2,14 +2,17 @@ package de.dakror.arise.game.building;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
 import org.json.JSONException;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.util.Assistant;
+import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -21,7 +24,15 @@ public abstract class Building extends ClickableComponent
 	public static int GRID = 32;
 	public static float DESTRUCT_FACTOR = 0.35f;
 	
-	protected int tx, ty, tw, th, typeId, level, stage;
+	protected int tx, ty, tw, th, typeId, level;
+	
+	/**
+	 * 0 = construction<br>
+	 * 1 = built<br>
+	 * 2 = deconstruction<br>
+	 * 3 = upgrading<br>
+	 */
+	protected int stage;
 	public int bx, by, bw, bh;
 	protected int stageChangeSeconds;
 	protected long stageChangeTimestamp;
@@ -40,6 +51,24 @@ public abstract class Building extends ClickableComponent
 		bx = by = 0;
 		bw = width;
 		bh = height;
+		
+		addClickEvent(new ClickEvent()
+		{
+			@Override
+			public void trigger()
+			{
+				if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
+				{
+					if (((CityHUDLayer) Game.currentGame.getActiveLayer()).first)
+					{
+						((CityHUDLayer) Game.currentGame.getActiveLayer()).first = false;
+						return;
+					}
+					
+					CityHUDLayer.selectedBuilding = Building.this;
+				}
+			}
+		});
 	}
 	
 	public void init()
@@ -64,7 +93,7 @@ public abstract class Building extends ClickableComponent
 	{
 		if (Game.world == null) return;
 		
-		if (state != 0)
+		if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)))
 		{
 			Color c = g.getColor();
 			g.setColor(Color.black);
@@ -72,13 +101,15 @@ public abstract class Building extends ClickableComponent
 			g.setColor(c);
 		}
 		
-		if (stage == 0 && stageChangeTimestamp > 0)
+		if (stage > 0) drawStage1(g);
+		
+		if (stage != 1 && stageChangeTimestamp > 0)
 		{
 			if (!stage0Cache.containsKey(getClass())) stage0Cache.put(getClass(), Assistant.drawBuildingStage(this));
 			
 			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
 			
-			g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
+			if (stage == 0) g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
 			
 			float duration = stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR) / Game.world.getSpeed();
 			long destTimeStamp = stageChangeTimestamp + (long) duration;
@@ -103,8 +134,6 @@ public abstract class Building extends ClickableComponent
 				g.setColor(c);
 			}
 		}
-		
-		if (stage == 1) drawStage1(g);
 	}
 	
 	protected void drawStage1(Graphics2D g)
@@ -193,6 +222,12 @@ public abstract class Building extends ClickableComponent
 	public Resources getProducts()
 	{
 		return products;
+	}
+	
+	@Override
+	public boolean contains(int x, int y)
+	{
+		return new Rectangle(this.x + bx * GRID, this.y + by * GRID, bw * GRID, bh * GRID).contains(x, y);
 	}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)

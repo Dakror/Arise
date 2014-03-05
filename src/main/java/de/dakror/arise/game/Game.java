@@ -14,8 +14,9 @@ import java.util.jar.Manifest;
 
 import org.json.JSONObject;
 
+import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
-import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.gamesetup.applet.GameApplet;
@@ -35,6 +36,8 @@ public class Game extends GameApplet
 	public static String buildDate = "from now";
 	public static long buildTimestamp = 0;
 	public static int secondInMinute;
+	
+	public static final int INTERVAL = 10;
 	
 	boolean debug;
 	
@@ -82,6 +85,9 @@ public class Game extends GameApplet
 		{
 			Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));
 			buildingsConfig = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/building")));
+			Building.DECONSTRUCT_FACTOR = (float) buildingsConfig.getDouble("deconstruct");
+			Building.UPGRADE_FACTOR = (float) buildingsConfig.getDouble("upgrade");
+			Building.MAX_LEVEL = buildingsConfig.getInt("maxlevel");
 			
 			Calendar calendar = new GregorianCalendar();
 			calendar.set(Calendar.MILLISECOND, 0);
@@ -92,15 +98,13 @@ public class Game extends GameApplet
 				@Override
 				public void run()
 				{
-					secondInMinute = (secondInMinute + 1) % 60;
-					if (getActiveLayer() instanceof CityLayer)
+					secondInMinute = (secondInMinute + INTERVAL) % 60;
+					if (getActiveLayer() instanceof CityHUDLayer)
 					{
-						((CityLayer) getActiveLayer()).updateResources();
-						((CityLayer) getActiveLayer()).updateBuildingStages();
-						((CityLayer) getActiveLayer()).saveData();
+						((CityHUDLayer) getActiveLayer()).timerTick();
 					}
 				}
-			}, calendar.getTime(), 1000);
+			}, calendar.getTime(), INTERVAL * 1000);
 		}
 		catch (Exception e)
 		{

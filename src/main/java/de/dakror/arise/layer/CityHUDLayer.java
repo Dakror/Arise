@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import org.json.JSONException;
 
@@ -18,7 +19,9 @@ import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildingButton;
 import de.dakror.arise.ui.ResourceLabel;
+import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
+import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Confirm;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
@@ -141,9 +144,52 @@ public class CityHUDLayer extends Layer
 			updateBuildingbar();
 			
 			upgrade = new IconButton(-1000, -1000, 48, 48, Game.getImage("system/upgrade.png").getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+			upgrade.addClickEvent(new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					upgrade.state = 0;
+					final Resources costs = selectedBuilding.getUpgradeCosts();
+					String costText = "";
+					ArrayList<Resource> filled = costs.getFilled();
+					
+					boolean canEffort = true;
+					
+					for (int i = 0; i < filled.size(); i++)
+					{
+						costText += costs.get(filled.get(i)) + " " + filled.get(i).getName() + (i < filled.size() - 2 ? ", " : (i < filled.size() - 1 ? " und " : ""));
+						if (CityLayer.resources.get(filled.get(i)) < costs.get(filled.get(i))) canEffort = false;
+					}
+					
+					float duration = selectedBuilding.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
+					
+					String s = (canEffort ? "Es wird " + Assistant.formatSeconds((long) duration) + " dauern." : "Dies kannst du dir aktuell nicht leisten.");
+					
+					if (!canEffort)
+					{
+						Game.currentGame.addLayer(new Alert("Das Ausbauen kostet " + costText + ". " + s, null));
+					}
+					else
+					{
+						Game.currentGame.addLayer(new Confirm("Das Ausbauen kostet " + costText + ". " + s, new ClickEvent()
+						{
+							@Override
+							public void trigger()
+							{
+								CityLayer.resources.add(Resources.mul(costs, -1));
+								selectedBuilding.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+								selectedBuilding.setStage(3);
+								
+								cl.saveData();
+							}
+						}, null));
+					}
+				}
+			});
 			upgrade.tooltip = "Gebäude ausbauen";
 			upgrade.mode2 = true;
-			upgrade.enabled = false; // TODO
+			upgrade.enabled = false;
 			components.add(upgrade);
 			
 			deconstruct = new IconButton(-1000, -1000, 48, 48, Game.getImage("system/bomb.png").getScaledInstance(48, 48, Image.SCALE_SMOOTH));
@@ -194,7 +240,7 @@ public class CityHUDLayer extends Layer
 			c.draw(g);
 			if (c.state == 2) hovered = c;
 		}
-		if (hovered != null && Game.currentGame.getActiveLayer().equals(this)) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
+		if (hovered != null && Game.currentGame.getActiveLayer() instanceof CityHUDLayer) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
 	}
 	
 	@Override
@@ -206,7 +252,11 @@ public class CityHUDLayer extends Layer
 		upgrade.setY(selectedBuilding == null ? -1000 : selectedBuilding.getY() + selectedBuilding.by * Building.GRID - 48);
 		deconstruct.setX(selectedBuilding == null ? -1000 : selectedBuilding.getX() + selectedBuilding.getWidth() / 2 + 20);
 		deconstruct.setY(selectedBuilding == null ? -1000 : selectedBuilding.getY() + selectedBuilding.by * Building.GRID - 48);
-		if (selectedBuilding != null) deconstruct.enabled = !(selectedBuilding instanceof Centre) && selectedBuilding.getStage() < 3;
+		if (selectedBuilding != null)
+		{
+			deconstruct.enabled = !(selectedBuilding instanceof Centre) && selectedBuilding.getStage() == 1;
+			upgrade.enabled = selectedBuilding.getLevel() < Building.MAX_LEVEL && selectedBuilding.getStage() == 1;
+		}
 	}
 	
 	public void updateBuildingbar()
@@ -231,6 +281,12 @@ public class CityHUDLayer extends Layer
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public void timerTick()
+	{
+		cl.updateResources();
+		cl.saveData();
 	}
 	
 	@Override

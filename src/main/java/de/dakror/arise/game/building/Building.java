@@ -11,6 +11,7 @@ import org.json.JSONException;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
@@ -22,7 +23,9 @@ import de.dakror.gamesetup.util.Helper;
 public abstract class Building extends ClickableComponent
 {
 	public static int GRID = 32;
-	public static float DESTRUCT_FACTOR = 0.35f;
+	public static float DECONSTRUCT_FACTOR;
+	public static float UPGRADE_FACTOR;
+	public static int MAX_LEVEL;
 	
 	protected int tx, ty, tw, th, typeId, level;
 	
@@ -32,7 +35,7 @@ public abstract class Building extends ClickableComponent
 	 * 2 = deconstruction<br>
 	 * 3 = upgrading<br>
 	 */
-	protected int stage;
+	protected int stage, prevStage;
 	public int bx, by, bw, bh;
 	protected int stageChangeSeconds;
 	protected long stageChangeTimestamp;
@@ -73,18 +76,18 @@ public abstract class Building extends ClickableComponent
 	
 	public void init()
 	{
-		if (Game.buildingsConfig.has("" + typeId))
+		try
 		{
-			try
+			if (Game.buildingsConfig.getJSONObject("buildings").has("" + typeId))
 			{
-				buildingCosts = new Resources(Game.buildingsConfig.getJSONObject(typeId + "").getJSONObject("costs"));
-				products = new Resources(Game.buildingsConfig.getJSONObject(typeId + "").getJSONObject("products"));
-				stageChangeSeconds = Game.buildingsConfig.getJSONObject(typeId + "").getInt("stage");
+				buildingCosts = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("costs"));
+				products = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
+				stageChangeSeconds = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
 			}
-			catch (JSONException e)
-			{
-				e.printStackTrace();
-			}
+		}
+		catch (JSONException e)
+		{
+			e.printStackTrace();
 		}
 	}
 	
@@ -111,7 +114,7 @@ public abstract class Building extends ClickableComponent
 			
 			if (stage == 0) g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
 			
-			float duration = stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR) / Game.world.getSpeed();
+			float duration = stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed();
 			long destTimeStamp = stageChangeTimestamp + (long) duration;
 			long deltaEnd = (destTimeStamp - System.currentTimeMillis() / 1000);
 			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeTimestamp);
@@ -120,17 +123,9 @@ public abstract class Building extends ClickableComponent
 			{
 				Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, deltaStart / duration, "ffc744", g);
 				
-				String seconds = deltaEnd % 60 + "";
-				seconds = seconds.length() == 1 ? "0" + seconds : seconds;
-				String minutes = (deltaEnd / 60) % 60 + "";
-				minutes = minutes.length() == 1 ? "0" + minutes : minutes;
-				String hours = deltaEnd / 3600 + "";
-				hours = hours.length() == 1 ? "0" + hours : hours;
-				String s = (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
-				
 				Color c = g.getColor();
 				g.setColor(Color.black);
-				Helper.drawHorizontallyCenteredString(s, tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
+				Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(deltaEnd), tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
 				g.setColor(c);
 			}
 		}
@@ -146,8 +141,10 @@ public abstract class Building extends ClickableComponent
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		Helper.drawShadow(x, y, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(name) + 30, 64, g);
-		Helper.drawString(name, x + 15, y + 40, g, 30);
+		String string = name + (stage == 2 ? " (Abriss)" : (stage == 3 ? " (Ausbau)" : (stage == 0 ? " (Bau)" : "")));
+		
+		Helper.drawShadow(x, y, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30, 64, g);
+		Helper.drawString(string, x + 15, y + 40, g, 30);
 	}
 	
 	@Override
@@ -171,6 +168,7 @@ public abstract class Building extends ClickableComponent
 	
 	public void setStage(int s)
 	{
+		prevStage = stage;
 		stage = s;
 	}
 	
@@ -189,14 +187,14 @@ public abstract class Building extends ClickableComponent
 	 */
 	public void setStageChangeTimestamp(long s)
 	{
-		stageChangeTimestamp = s;
+		stageChangeTimestamp = (s > 0 ? s - 1 : 0);
 	}
 	
 	public boolean isStageChangeReady()
 	{
 		if (stageChangeTimestamp == 0) return false;
 		
-		return System.currentTimeMillis() / 1000 - stageChangeTimestamp >= stageChangeSeconds * (stage == 0 ? 1 : DESTRUCT_FACTOR) / Game.world.getSpeed();
+		return System.currentTimeMillis() / 1000 - stageChangeTimestamp >= stageChangeSeconds * (stage == 0 ? 1 : DECONSTRUCT_FACTOR) / Game.world.getSpeed();
 	}
 	
 	public String getName()
@@ -219,6 +217,17 @@ public abstract class Building extends ClickableComponent
 		return buildingCosts;
 	}
 	
+	public Resources getUpgradeCosts()
+	{
+		Resources res = new Resources();
+		res.add(buildingCosts);
+		
+		for (Resource r : res.getFilled())
+			res.set(r, (int) Math.round(res.get(r) * Math.pow(UPGRADE_FACTOR, level + 1)));
+		
+		return res;
+	}
+	
 	public Resources getProducts()
 	{
 		return products;
@@ -228,6 +237,11 @@ public abstract class Building extends ClickableComponent
 	public boolean contains(int x, int y)
 	{
 		return new Rectangle(this.x + bx * GRID, this.y + by * GRID, bw * GRID, bh * GRID).contains(x, y);
+	}
+	
+	public void levelUp()
+	{
+		level++;
 	}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)
@@ -246,4 +260,6 @@ public abstract class Building extends ClickableComponent
 				return null;
 		}
 	}
+	
+	
 }

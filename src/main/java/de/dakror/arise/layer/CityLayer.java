@@ -45,9 +45,9 @@ public class CityLayer extends Layer
 		{
 			data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId())));
 			resources = new Resources();
-			resources.set(Resource.WOOD, data.getInt("WOOD"));
-			resources.set(Resource.GOLD, data.getInt("GOLD"));
-			resources.set(Resource.STONE, data.getInt("STONE"));
+			resources.set(Resource.WOOD, (float) data.getDouble("WOOD"));
+			resources.set(Resource.GOLD, (float) data.getDouble("GOLD"));
+			resources.set(Resource.STONE, (float) data.getDouble("STONE"));
 			placeBuildings();
 			updateBuildingStages();
 			saveData();
@@ -125,6 +125,9 @@ public class CityLayer extends Layer
 	@Override
 	public void update(int tick)
 	{
+		if (Game.world == null) return;
+		updateBuildingStages();
+		
 		updateComponents(tick);
 	}
 	
@@ -138,19 +141,8 @@ public class CityLayer extends Layer
 		
 		for (Resource r : products.getFilled())
 		{
-			float interval = 3600f / products.get(r);
 			float persecond = products.get(r) / 3600f;
-			
-			if (interval >= 1 && Game.secondInMinute % interval == 0)
-			{
-				resources.add(r, 1);
-			}
-			else if (persecond > 1)
-			{
-				int powerOfTen = (int) Math.pow(10, ((int) persecond + "").length());
-				int intervalForPowerOfTen = (int) (powerOfTen / persecond);
-				if (Game.secondInMinute % intervalForPowerOfTen == 0) resources.add(r, powerOfTen);
-			}
+			resources.add(r, persecond * Game.INTERVAL);
 		}
 	}
 	
@@ -198,10 +190,11 @@ public class CityLayer extends Layer
 			url += "&worldid=" + Game.worldID;
 			url += "&id=" + city.getId();
 			url += "&data=" + data;
-			url += "&wood=" + resources.get(Resource.WOOD);
-			url += "&stone=" + resources.get(Resource.STONE);
-			url += "&gold=" + resources.get(Resource.GOLD);
+			url += "&wood=" + resources.getF(Resource.WOOD);
+			url += "&stone=" + resources.getF(Resource.STONE);
+			url += "&gold=" + resources.getF(Resource.GOLD);
 			url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
+			
 			if (!Helper.getURLContent(new URL(url)).contains("true"))
 			{
 				Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist dieser im Moment down.", null));

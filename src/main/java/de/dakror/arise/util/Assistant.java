@@ -76,4 +76,16 @@ public class Assistant
 		
 		return bi;
 	}
+	
+	public static String formatSeconds(long s)
+	{
+		String seconds = s % 60 + "";
+		seconds = seconds.length() == 1 ? "0" + seconds : seconds;
+		String minutes = (s / 60) % 60 + "";
+		minutes = minutes.length() == 1 ? "0" + minutes : minutes;
+		String hours = s / 3600 + "";
+		hours = hours.length() == 1 ? "0" + hours : hours;
+		
+		return (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
+	}
 }

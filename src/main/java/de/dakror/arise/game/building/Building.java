@@ -8,7 +8,6 @@ import java.util.HashMap;
 import org.json.JSONException;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickableComponent;
@@ -88,7 +87,6 @@ public abstract class Building extends ClickableComponent
 			
 			if (deltaEnd > 0)
 			{
-				CFG.p(deltaStart, duration, deltaStart / duration);
 				Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, deltaStart / duration, "ffc744", g);
 				
 				String seconds = deltaEnd % 60 + "";

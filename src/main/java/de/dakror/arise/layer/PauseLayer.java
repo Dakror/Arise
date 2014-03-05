@@ -1,7 +1,10 @@
 package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
@@ -69,7 +72,15 @@ public class PauseLayer extends Layer
 			@Override
 			public void trigger()
 			{
-				Game.applet.stop();
+				try
+				{
+					if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
+					else System.exit(0);
+				}
+				catch (MalformedURLException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		});
 		components.add(exit);

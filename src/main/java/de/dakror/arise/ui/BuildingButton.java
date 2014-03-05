@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
@@ -48,9 +49,8 @@ public class BuildingButton extends IconButton
 		
 		if (tooltipCache == null)
 		{
-			g.setColor(new Color(0, 0, 0, 0));
 			int width = 250;
-			tooltipRows = Helper.drawStringWrapped(building.getDescription(), x, y + 40, width - 20, g, 25);
+			tooltipRows = Helper.getLineCount(building.getDescription(), width - 40, g, 25);
 			tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + 55 + products.size() * 30;
 			
 			tooltipCache = new BufferedImage(width, tooltipHeight, BufferedImage.TYPE_INT_ARGB);
@@ -62,14 +62,15 @@ public class BuildingButton extends IconButton
 			Helper.drawShadow(0, 0, width, tooltipHeight, g2);
 			g2.setColor(Color.white);
 			Helper.drawString(tooltip, 20, 50, g2, 40);
-			Helper.drawStringWrapped(building.getDescription(), 30, 80, width - 20, g2, 25);
+			Helper.drawStringWrapped(building.getDescription(), 30, 80, width - 40, g2, 25);
 			Helper.drawString("Baukosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
 			Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
 			for (int i = 0; i < products.size(); i++)
 			{
 				Resource r = products.get(i);
-				int f = building.getProducts().get(r);
-				Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30, 25, new Point(r.getIconX(), r.getIconY()), (f > 0 ? "+" : "") + f + "/h", 30, g2);
+				int f = building.getProducts().get(r) * Game.world.getSpeed();
+				int sc = building.getScale().get(r) * Game.world.getSpeed();
+				Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30, 25, new Point(r.getIconX(), r.getIconY()), (f > 0 ? "+" : "") + f + "/h" + (sc > 0 ? " (+" + sc + "/lvl)" : ""), 30, g2);
 			}
 		}
 		else g.drawImage(tooltipCache, x, y - tooltipCache.getHeight(), null);

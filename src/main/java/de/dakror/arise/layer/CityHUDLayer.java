@@ -151,7 +151,7 @@ public class CityHUDLayer extends Layer
 				{
 					upgrade.state = 0;
 					final Resources costs = selectedBuilding.getUpgradeCosts();
-					String costText = "";
+					String costText = "\n";
 					ArrayList<Resource> filled = costs.getFilled();
 					
 					boolean canEffort = true;
@@ -164,15 +164,15 @@ public class CityHUDLayer extends Layer
 					
 					float duration = selectedBuilding.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
 					
-					String s = (canEffort ? "Es wird " + Assistant.formatSeconds((long) duration) + " dauern." : "Dies kannst du dir aktuell nicht leisten.");
+					String s = ". \n" + (canEffort ? "Die Ausbaudauer beträgt " + Assistant.formatSeconds((long) duration) + "." : "Dies kannst du dir aktuell nicht leisten.");
 					
 					if (!canEffort)
 					{
-						Game.currentGame.addLayer(new Alert("Das Ausbauen kostet " + costText + ". " + s, null));
+						Game.currentGame.addLayer(new Alert("Das Ausbauen kostet " + costText + s, null));
 					}
 					else
 					{
-						Game.currentGame.addLayer(new Confirm("Das Ausbauen kostet " + costText + ". " + s, new ClickEvent()
+						Game.currentGame.addLayer(new Confirm("Das Ausbauen kostet " + costText + s, new ClickEvent()
 						{
 							@Override
 							public void trigger()
@@ -246,6 +246,10 @@ public class CityHUDLayer extends Layer
 	@Override
 	public void update(int tick)
 	{
+		if (Game.world == null) return;
+		
+		if (cl.updateBuildingStages()) updateBuildingbar();
+		
 		updateComponents(tick);
 		
 		upgrade.setX(selectedBuilding == null ? -1000 : selectedBuilding.getX() + selectedBuilding.getWidth() / 2 - 68);
@@ -265,7 +269,7 @@ public class CityHUDLayer extends Layer
 		{
 			Resources products = new Resources();
 			for (Component c : cl.components)
-				if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getProducts());
+				if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getScalingProducts());
 			
 			for (Component c : components)
 				if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = CityLayer.resources.get(Resource.BUILDINGS) < (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
@@ -273,7 +277,14 @@ public class CityHUDLayer extends Layer
 			products = Resources.mul(products, Game.world.getSpeed());
 			
 			for (Component c : components)
-				if (c instanceof ResourceLabel) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
+			{
+				if (c instanceof ResourceLabel)
+				{
+					((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
+					
+					if (((ResourceLabel) c).getResource() == Resource.BUILDINGS) ((ResourceLabel) c).off = (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
+				}
+			}
 			
 			allBuildingsEnabled = CityLayer.resources.get(Resource.BUILDINGS) < (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
 		}
@@ -286,6 +297,7 @@ public class CityHUDLayer extends Layer
 	public void timerTick()
 	{
 		cl.updateResources();
+		updateBuildingbar();
 		cl.saveData();
 	}
 	

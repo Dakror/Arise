@@ -40,7 +40,7 @@ public abstract class Building extends ClickableComponent
 	protected int stageChangeSeconds;
 	protected long stageChangeTimestamp;
 	protected String name, desc;
-	protected Resources buildingCosts, products;
+	protected Resources buildingCosts, products, scale;
 	
 	public static HashMap<Class<?>, BufferedImage> stage0Cache = new HashMap<>();
 	
@@ -51,6 +51,7 @@ public abstract class Building extends ClickableComponent
 		this.level = level;
 		buildingCosts = new Resources();
 		products = new Resources();
+		scale = new Resources();
 		bx = by = 0;
 		bw = width;
 		bh = height;
@@ -82,6 +83,7 @@ public abstract class Building extends ClickableComponent
 			{
 				buildingCosts = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("costs"));
 				products = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
+				scale = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
 				stageChangeSeconds = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
 			}
 		}
@@ -231,6 +233,20 @@ public abstract class Building extends ClickableComponent
 	public Resources getProducts()
 	{
 		return products;
+	}
+	
+	public Resources getScalingProducts()
+	{
+		Resources p = new Resources();
+		p.add(products);
+		if (level > 0) p.add(Resources.mul(scale, level));
+		
+		return p;
+	}
+	
+	public Resources getScale()
+	{
+		return scale;
 	}
 	
 	@Override

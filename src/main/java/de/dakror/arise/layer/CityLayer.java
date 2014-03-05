@@ -125,9 +125,6 @@ public class CityLayer extends Layer
 	@Override
 	public void update(int tick)
 	{
-		if (Game.world == null) return;
-		updateBuildingStages();
-		
 		updateComponents(tick);
 	}
 	
@@ -135,7 +132,7 @@ public class CityLayer extends Layer
 	{
 		Resources products = new Resources();
 		for (Component c : components)
-			if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getProducts());
+			if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getScalingProducts());
 		
 		products = Resources.mul(products, Game.world.getSpeed());
 		
@@ -146,8 +143,9 @@ public class CityLayer extends Layer
 		}
 	}
 	
-	public void updateBuildingStages()
+	public boolean updateBuildingStages()
 	{
+		boolean changedOne = false;
 		for (Component c : components)
 		{
 			if (c instanceof Building && ((Building) c).isStageChangeReady())
@@ -155,8 +153,12 @@ public class CityLayer extends Layer
 				((Building) c).setStageChangeTimestamp(0);
 				if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
 				else components.remove(c);
+				
+				changedOne = true;
 			}
 		}
+		
+		return changedOne;
 	}
 	
 	public void placeBuildings() throws JSONException

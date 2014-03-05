@@ -178,6 +178,13 @@ public class CityLayer extends Layer
 	{
 		g.drawImage(cache, 0, 0, null);
 		
+		Component hovered = null;
+		for (Component c : components)
+		{
+			c.draw(g);
+			if (c.state == 2) hovered = c;
+		}
+		
 		if (activeBuilding != null)
 		{
 			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
@@ -223,13 +230,6 @@ public class CityLayer extends Layer
 			g.setColor(cl);
 		}
 		
-		Component hovered = null;
-		for (Component c : components)
-		{
-			c.draw(g);
-			if (c.state == 2) hovered = c;
-		}
-		
 		if (hovered != null) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
 	}
 	
@@ -243,7 +243,7 @@ public class CityLayer extends Layer
 	{
 		Resources products = new Resources();
 		for (Component c : components)
-			if (c instanceof Building) products.add(((Building) c).getProducts());
+			if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getProducts());
 		
 		products = Resources.mul(products, Game.world.getSpeed());
 		
@@ -333,7 +333,7 @@ public class CityLayer extends Layer
 			for (Component c : components)
 			{
 				if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = resources.get(Resource.BUILDINGS) < (data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
-				if (c instanceof Building) products.add(((Building) c).getProducts());
+				if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getProducts());
 			}
 			
 			products = Resources.mul(products, Game.world.getSpeed());

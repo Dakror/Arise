@@ -8,6 +8,7 @@ import java.util.HashMap;
 import org.json.JSONException;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickableComponent;
@@ -80,20 +81,29 @@ public abstract class Building extends ClickableComponent
 			
 			g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
 			
-			// long destTimeStamp = (long) ((stageChangeTimestamp + (stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR))) * 1000 / Game.world.getSpeed());
-			// long deltaS = destTimeStamp - System.currentTimeMillis();
-			// CFG.p(deltaS);
-			// if (deltaS > 0)
-			// {
-			// Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, (System.currentTimeMillis() - stageChangeTimestamp * 1000) / ((stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR)) / Game.world.getSpeed() * 1000), "ffc744", g);
-			//
-			// String s = new SimpleDateFormat("HH:mm:ss").format(new Date(deltaS));
-			//
-			// Color c = g.getColor();
-			// g.setColor(Color.black);
-			// Helper.drawHorizontallyCenteredString(s, tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
-			// g.setColor(c);
-			// }
+			float duration = stageChangeSeconds * (stage == 0 ? 1f : DESTRUCT_FACTOR) / Game.world.getSpeed();
+			long destTimeStamp = stageChangeTimestamp + (long) duration;
+			long deltaEnd = (destTimeStamp - System.currentTimeMillis() / 1000);
+			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeTimestamp);
+			
+			if (deltaEnd > 0)
+			{
+				CFG.p(deltaStart, duration, deltaStart / duration);
+				Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, deltaStart / duration, "ffc744", g);
+				
+				String seconds = deltaEnd % 60 + "";
+				seconds = seconds.length() == 1 ? "0" + seconds : seconds;
+				String minutes = deltaEnd / 60 + "";
+				minutes = minutes.length() == 1 ? "0" + minutes : minutes;
+				String hours = deltaEnd / 3600 + "";
+				hours = hours.length() == 1 ? "0" + hours : hours;
+				String s = (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
+				
+				Color c = g.getColor();
+				g.setColor(Color.black);
+				Helper.drawHorizontallyCenteredString(s, tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
+				g.setColor(c);
+			}
 		}
 		
 		if (stage == 1) drawStage1(g);

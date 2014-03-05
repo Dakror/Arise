@@ -91,7 +91,7 @@ public abstract class Building extends ClickableComponent
 				
 				String seconds = deltaEnd % 60 + "";
 				seconds = seconds.length() == 1 ? "0" + seconds : seconds;
-				String minutes = deltaEnd / 60 + "";
+				String minutes = (deltaEnd / 60) % 60 + "";
 				minutes = minutes.length() == 1 ? "0" + minutes : minutes;
 				String hours = deltaEnd / 3600 + "";
 				hours = hours.length() == 1 ? "0" + hours : hours;

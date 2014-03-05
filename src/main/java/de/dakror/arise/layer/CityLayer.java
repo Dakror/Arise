@@ -17,6 +17,7 @@ import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.building.Centre;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -152,6 +153,11 @@ public class CityLayer extends Layer
 			{
 				((Building) c).setStageChangeTimestamp(0);
 				if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
+				else if (((Building) c).getStage() == 3)
+				{
+					((Building) c).levelUp();
+					if (c instanceof Centre) city.levelUp();
+				}
 				else components.remove(c);
 				
 				changedOne = true;
@@ -195,6 +201,7 @@ public class CityLayer extends Layer
 			url += "&wood=" + resources.getF(Resource.WOOD);
 			url += "&stone=" + resources.getF(Resource.STONE);
 			url += "&gold=" + resources.getF(Resource.GOLD);
+			url += "&level=" + city.getLevel();
 			url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
 			
 			if (!Helper.getURLContent(new URL(url)).contains("true"))

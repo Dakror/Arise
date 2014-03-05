@@ -189,7 +189,7 @@ public abstract class Building extends ClickableComponent
 	 */
 	public void setStageChangeTimestamp(long s)
 	{
-		stageChangeTimestamp = (s > 0 ? s - 1 : 0);
+		stageChangeTimestamp = (s > 0 ? s + 1 : 0);
 	}
 	
 	public boolean isStageChangeReady()
@@ -258,6 +258,7 @@ public abstract class Building extends ClickableComponent
 	public void levelUp()
 	{
 		level++;
+		stage = 1;
 	}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)

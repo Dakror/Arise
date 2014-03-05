@@ -116,12 +116,12 @@ public abstract class Building extends ClickableComponent
 			
 			if (stage == 0) g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
 			
-			float duration = stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed();
+			float duration = Math.round(stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
 			long destTimeStamp = stageChangeTimestamp + (long) duration;
 			long deltaEnd = (destTimeStamp - System.currentTimeMillis() / 1000);
 			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeTimestamp);
 			
-			if (deltaEnd > 0)
+			if (deltaEnd >= 0)
 			{
 				Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, deltaStart / duration, "ffc744", g);
 				
@@ -189,7 +189,7 @@ public abstract class Building extends ClickableComponent
 	 */
 	public void setStageChangeTimestamp(long s)
 	{
-		stageChangeTimestamp = (s > 0 ? s + 1 : 0);
+		stageChangeTimestamp = s;
 	}
 	
 	public boolean isStageChangeReady()

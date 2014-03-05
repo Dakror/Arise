@@ -15,6 +15,7 @@ import de.dakror.arise.game.building.Lumberjack;
 import de.dakror.arise.game.building.Mine;
 import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildingButton;
@@ -232,6 +233,8 @@ public class CityHUDLayer extends Layer
 	@Override
 	public void draw(Graphics2D g)
 	{
+		for (Component c : components)
+			if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) CFG.p(c.enabled);
 		g.drawImage(cache, 0, 0, null);
 		
 		Component hovered = null;
@@ -283,12 +286,11 @@ public class CityHUDLayer extends Layer
 				if (c instanceof ResourceLabel)
 				{
 					((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
-					
 					if (((ResourceLabel) c).getResource() == Resource.BUILDINGS) ((ResourceLabel) c).off = (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
 				}
 			}
 			
-			allBuildingsEnabled = CityLayer.resources.get(Resource.BUILDINGS) < (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
+			allBuildingsEnabled = CityLayer.resources.get(Resource.BUILDINGS) < (cl.city.getLevel() + 1) * City.BUILDINGS_SCALE;
 		}
 		catch (JSONException e)
 		{

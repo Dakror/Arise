@@ -6,8 +6,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import org.json.JSONException;
-
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Centre;
@@ -63,9 +61,9 @@ public class CityHUDLayer extends Layer
 				public void trigger()
 				{
 					cl.saveData();
+					Game.world.updateWorld();
 					Game.currentGame.removeLayer(CityHUDLayer.this);
 					Game.currentGame.removeLayer(cl);
-					Game.world.updateWorld();
 				}
 			});
 			map.tooltip = "Weltkarte";
@@ -124,20 +122,20 @@ public class CityHUDLayer extends Layer
 			});
 			components.add(quarry);
 			
-			ResourceLabel wood = new ResourceLabel(20, 20, CityLayer.resources, Resource.WOOD);
-			components.add(wood);
-			
-			ResourceLabel stone = new ResourceLabel(190 + wood.getX(), 20, CityLayer.resources, Resource.STONE);
-			components.add(stone);
-			
-			ResourceLabel gold = new ResourceLabel(400 + wood.getX(), 20, CityLayer.resources, Resource.GOLD);
+			ResourceLabel gold = new ResourceLabel(20, 20, CityLayer.resources, Resource.GOLD);
 			components.add(gold);
 			
-			ResourceLabel buildings = new ResourceLabel(70 + wood.getX(), 60, CityLayer.resources, Resource.BUILDINGS);
-			buildings.off = (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
+			ResourceLabel stone = new ResourceLabel(190 + gold.getX(), 20, CityLayer.resources, Resource.STONE);
+			components.add(stone);
+			
+			ResourceLabel wood = new ResourceLabel(400 + gold.getX(), 20, CityLayer.resources, Resource.WOOD);
+			components.add(wood);
+			
+			ResourceLabel buildings = new ResourceLabel(70 + gold.getX(), 60, CityLayer.resources, Resource.BUILDINGS);
+			buildings.off = new Centre(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
 			components.add(buildings);
 			
-			ResourceLabel people = new ResourceLabel(270 + wood.getX(), 60, CityLayer.resources, Resource.PEOPLE);
+			ResourceLabel people = new ResourceLabel(270 + gold.getX(), 60, CityLayer.resources, Resource.PEOPLE);
 			people.off = 20;
 			components.add(people);
 			
@@ -151,8 +149,11 @@ public class CityHUDLayer extends Layer
 				{
 					upgrade.state = 0;
 					final Resources costs = selectedBuilding.getUpgradeCosts();
+					final Resources scale = selectedBuilding.getScale();
+					final Resources scaleProducts = selectedBuilding.getScalingProducts();
 					String costText = "\n";
 					ArrayList<Resource> filled = costs.getFilled();
+					ArrayList<Resource> scfilled = scale.getFilled();
 					
 					boolean canEffort = true;
 					
@@ -164,7 +165,13 @@ public class CityHUDLayer extends Layer
 					
 					float duration = selectedBuilding.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
 					
-					String s = ". \n" + (canEffort ? "Die Ausbaudauer beträgt " + Assistant.formatSeconds((long) duration) + "." : "Dies kannst du dir aktuell nicht leisten.");
+					String improvements = "";
+					for (Resource r : scfilled)
+					{
+						improvements += r.getName() + ": " + (r.isUsable() ? +scaleProducts.get(r) * Game.world.getSpeed() + "/h" : scaleProducts.get(r)) + " -> " + (r.isUsable() ? (scaleProducts.get(r) + scale.get(r)) * Game.world.getSpeed() + "/h" : (scaleProducts.get(r) + scale.get(r))) + "\n";
+					}
+					
+					String s = " \nDurch den Ausbau wird verbessert: \n" + improvements + " \n" + (canEffort ? "Die Ausbaudauer beträgt " + Assistant.formatSeconds((long) duration) + "." : "Dies kannst du dir aktuell nicht leisten.");
 					
 					if (!canEffort)
 					{
@@ -270,32 +277,27 @@ public class CityHUDLayer extends Layer
 	
 	public void updateBuildingbar()
 	{
-		try
+		Resources products = new Resources();
+		for (Component c : cl.components)
+			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Centre always active */)) products.add(((Building) c).getScalingProducts());
+		
+		int maxBuildings = new Centre(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
+		
+		for (Component c : components)
+			if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = CityLayer.resources.get(Resource.BUILDINGS) < maxBuildings;
+		
+		products = Resources.mul(products, Game.world.getSpeed());
+		
+		for (Component c : components)
 		{
-			Resources products = new Resources();
-			for (Component c : cl.components)
-				if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getScalingProducts());
-			
-			for (Component c : components)
-				if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = CityLayer.resources.get(Resource.BUILDINGS) < (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
-			
-			products = Resources.mul(products, Game.world.getSpeed());
-			
-			for (Component c : components)
+			if (c instanceof ResourceLabel)
 			{
-				if (c instanceof ResourceLabel)
-				{
-					((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
-					if (((ResourceLabel) c).getResource() == Resource.BUILDINGS) ((ResourceLabel) c).off = (cl.data.getInt("LEVEL") + 1) * City.BUILDINGS_SCALE;
-				}
+				if (((ResourceLabel) c).getResource().isUsable()) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
+				else ((ResourceLabel) c).off = products.get(((ResourceLabel) c).getResource()) / Game.world.getSpeed();
 			}
-			
-			allBuildingsEnabled = CityLayer.resources.get(Resource.BUILDINGS) < (cl.city.getLevel() + 1) * City.BUILDINGS_SCALE;
 		}
-		catch (JSONException e)
-		{
-			e.printStackTrace();
-		}
+		
+		allBuildingsEnabled = CityLayer.resources.get(Resource.BUILDINGS) < maxBuildings;
 	}
 	
 	public void timerTick()

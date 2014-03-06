@@ -11,6 +11,10 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -143,7 +147,7 @@ public class CityLayer extends Layer
 		for (Resource r : products.getFilled())
 		{
 			float persecond = products.get(r) / 3600f;
-			resources.add(r, persecond * Game.INTERVAL);
+			if (r.isUsable()) resources.add(r, persecond * Game.INTERVAL);
 		}
 	}
 	
@@ -161,7 +165,11 @@ public class CityLayer extends Layer
 					((Building) c).levelUp();
 					if (c instanceof Centre) city.levelUp();
 				}
-				else components.remove(c);
+				else
+				{
+					components.remove(c);
+					CityHUDLayer.selectedBuilding = null;
+				}
 				
 				changedOne = true;
 			}
@@ -189,6 +197,7 @@ public class CityLayer extends Layer
 		}
 		
 		placedBuildings = true;
+		sortComponents();
 	}
 	
 	public void saveData()
@@ -225,7 +234,7 @@ public class CityLayer extends Layer
 	public boolean intersectsBuildings(Rectangle r)
 	{
 		for (Component c : components)
-			if (c instanceof Building && new Rectangle(c.getX(), c.getY(), c.getWidth(), c.getHeight()).intersects(r)) return true;
+			if (c instanceof Building && new Rectangle(c.getX() + ((Building) c).bx * Building.GRID, c.getY() + ((Building) c).by * Building.GRID, ((Building) c).bw * Building.GRID, ((Building) c).bh * Building.GRID).intersects(r)) return true;
 		
 		return false;
 	}
@@ -261,6 +270,7 @@ public class CityLayer extends Layer
 				resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
 				activeBuilding = null;
 				((CityHUDLayer) Game.currentGame.getActiveLayer()).updateBuildingbar();
+				sortComponents();
 				saveData();
 			}
 			if (e.getButton() == MouseEvent.BUTTON3)
@@ -269,5 +279,20 @@ public class CityLayer extends Layer
 				Game.applet.setCursor(Cursor.getDefaultCursor());
 			}
 		}
+	}
+	
+	public void sortComponents()
+	{
+		ArrayList<Component> c = new ArrayList<>(components);
+		Collections.sort(c, new Comparator<Component>()
+		{
+			@Override
+			public int compare(Component o1, Component o2)
+			{
+				return Integer.compare(o1.getY() + ((Building) o1).by * Building.GRID, o2.getY() + ((Building) o2).by * Building.GRID);
+			}
+		});
+		
+		components = new CopyOnWriteArrayList<>(c);
 	}
 }

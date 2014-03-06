@@ -105,7 +105,7 @@ public class World extends Layer
 	public void update(int tick)
 	{
 		this.tick = tick;
-		if (lastCheck == 0 || tick - lastCheck > 3600) updateWorld(); // check once a minute
+		if (lastCheck == 0 || tick - lastCheck > 1800 && Game.currentGame.getActiveLayer() instanceof World) updateWorld(); // check once 30 secs
 	}
 	
 	public void updateSize()

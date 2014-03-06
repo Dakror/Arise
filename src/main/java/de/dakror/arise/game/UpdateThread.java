@@ -10,6 +10,10 @@ public class UpdateThread extends Updater
 	@Override
 	public void update()
 	{
-		if (tick % 600 == 0) System.gc();
+		if (tick % 60 == 0)
+		{
+			Game.currentGame.usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+			System.gc();
+		}
 	}
 }

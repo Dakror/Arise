@@ -21,7 +21,7 @@ import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
-import de.dakror.arise.game.building.Centre;
+import de.dakror.arise.game.building.Center;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -163,7 +163,7 @@ public class CityLayer extends Layer
 				else if (((Building) c).getStage() == 3)
 				{
 					((Building) c).levelUp();
-					if (c instanceof Centre) city.levelUp();
+					if (c instanceof Center) city.levelUp();
 				}
 				else
 				{

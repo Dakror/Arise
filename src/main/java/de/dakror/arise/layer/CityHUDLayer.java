@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
-import de.dakror.arise.game.building.Centre;
+import de.dakror.arise.game.building.Center;
 import de.dakror.arise.game.building.Lumberjack;
 import de.dakror.arise.game.building.Mine;
 import de.dakror.arise.game.building.Quarry;
@@ -132,7 +132,7 @@ public class CityHUDLayer extends Layer
 			components.add(stone);
 			
 			ResourceLabel buildings = new ResourceLabel(70 + gold.getX(), 60, CityLayer.resources, Resource.BUILDINGS);
-			buildings.off = new Centre(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
+			buildings.off = new Center(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
 			components.add(buildings);
 			
 			ResourceLabel people = new ResourceLabel(270 + gold.getX(), 60, CityLayer.resources, Resource.PEOPLE);
@@ -268,10 +268,10 @@ public class CityHUDLayer extends Layer
 		deconstruct.setY(selectedBuilding == null ? -1000 : selectedBuilding.getY() + selectedBuilding.by * Building.GRID - 48);
 		if (selectedBuilding != null)
 		{
-			deconstruct.enabled = !(selectedBuilding instanceof Centre) && selectedBuilding.getStage() == 1;
+			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
 			upgrade.enabled = selectedBuilding.getLevel() < Building.MAX_LEVEL && selectedBuilding.getStage() == 1;
 			
-			if (selectedBuilding instanceof Centre) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length && selectedBuilding.getStage() == 1;
+			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}
 	}
 	
@@ -281,7 +281,7 @@ public class CityHUDLayer extends Layer
 		for (Component c : cl.components)
 			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Centre always active */)) products.add(((Building) c).getScalingProducts());
 		
-		int maxBuildings = new Centre(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
+		int maxBuildings = new Center(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
 		
 		for (Component c : components)
 			if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = CityLayer.resources.get(Resource.BUILDINGS) < maxBuildings;

@@ -38,16 +38,13 @@ public class Assistant
 		g.setFont(old);
 	}
 	
-	public static BufferedImage drawBuildingStage(int x, int y, Building b)
+	public static void drawBuildingStage(int x, int y, Building b, Graphics2D g)
 	{
 		BufferedImage tile = GameFrame.getImage("world/buildingStage.png");
 		
 		int width = b.bw * 32;
 		int height = b.bh * 32;
 		int size = 32;
-		
-		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = (Graphics2D) bi.getGraphics();
 		
 		Helper.drawImage(tile, x, y, size, size, 0, 0, size, size, g); // lt
 		Helper.drawImage(tile, x + width - size, y, size, size, size * 2, 0, size, size, g); // rt
@@ -69,8 +66,6 @@ public class Assistant
 		for (int i = size; i <= width - size * 2; i += size)
 			for (int j = size; j <= height - size * 2; j += size)
 				Helper.drawImage(tile, x + i, y + j, size, size, size, size, size, size, g); // m
-			
-		return bi;
 	}
 	
 	public static String formatSeconds(long s)

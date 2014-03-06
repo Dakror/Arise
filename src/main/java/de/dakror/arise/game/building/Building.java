@@ -108,7 +108,7 @@ public abstract class Building extends ClickableComponent
 		{
 			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
 			
-			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this);
+			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this, g);
 			
 			float duration = Math.round(stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
 			long destTimeStamp = stageChangeTimestamp + (long) duration;
@@ -260,7 +260,7 @@ public abstract class Building extends ClickableComponent
 		switch (typeId)
 		{
 			case 1:
-				return new Centre(x, y, level);
+				return new Center(x, y, level);
 			case 2:
 				return new Lumberjack(x, y, level);
 			case 3:

@@ -3,8 +3,6 @@ package de.dakror.arise.game.building;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
 
 import org.json.JSONException;
 
@@ -41,8 +39,6 @@ public abstract class Building extends ClickableComponent
 	protected long stageChangeTimestamp;
 	protected String name, desc;
 	protected Resources buildingCosts, products, scale;
-	
-	public static HashMap<Class<?>, BufferedImage> stage0Cache = new HashMap<>();
 	
 	public Building(int x, int y, int width, int height, int level)
 	{
@@ -110,11 +106,9 @@ public abstract class Building extends ClickableComponent
 		
 		if (stage != 1 && stageChangeTimestamp > 0)
 		{
-			if (!stage0Cache.containsKey(getClass())) stage0Cache.put(getClass(), Assistant.drawBuildingStage(this));
-			
 			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
 			
-			if (stage == 0) g.drawImage(stage0Cache.get(getClass()), tx, ty, null);
+			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this);
 			
 			float duration = Math.round(stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
 			long destTimeStamp = stageChangeTimestamp + (long) duration;

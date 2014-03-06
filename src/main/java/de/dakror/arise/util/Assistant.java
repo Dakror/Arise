@@ -38,7 +38,7 @@ public class Assistant
 		g.setFont(old);
 	}
 	
-	public static BufferedImage drawBuildingStage(Building b)
+	public static BufferedImage drawBuildingStage(int x, int y, Building b)
 	{
 		BufferedImage tile = GameFrame.getImage("world/buildingStage.png");
 		
@@ -46,34 +46,30 @@ public class Assistant
 		int height = b.bh * 32;
 		int size = 32;
 		
-		BufferedImage bi = new BufferedImage(width * size, height * size, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		Graphics2D g = (Graphics2D) bi.getGraphics();
 		
-		// copy of Assistant.drawShadow(...);
-		
-		Helper.drawImage(tile, 0, 0, size, size, 0, 0, size, size, g); // lt
-		Helper.drawImage(tile, width - size, 0, size, size, size * 2, 0, size, size, g); // rt
-		Helper.drawImage(tile, 0, height - size, size, size, 0, size * 2, size, size, g); // lb
-		Helper.drawImage(tile, width - size, height - size, size, size, size * 2, size * 2, size, size, g); // rb
+		Helper.drawImage(tile, x, y, size, size, 0, 0, size, size, g); // lt
+		Helper.drawImage(tile, x + width - size, y, size, size, size * 2, 0, size, size, g); // rt
+		Helper.drawImage(tile, x, y + height - size, size, size, 0, size * 2, size, size, g); // lb
+		Helper.drawImage(tile, x + width - size, y + height - size, size, size, size * 2, size * 2, size, size, g); // rb
 		
 		for (int i = size; i <= width - size * 2; i += size)
-			Helper.drawImage(tile, i, 0, size, size, size, 0, size, size, g);// t
-		Helper.drawImage(tile, width - size - (width - size * 2) % size, 0, (width - size * 2) % size, size, size, 0, (width - size * 2) % size, size, g);
+			Helper.drawImage(tile, x + i, y, size, size, size, 0, size, size, g);// t
 		
 		for (int i = size; i <= width - size * 2; i += size)
-			Helper.drawImage(tile, i, height - size, size, size, size, size * 2, size, size, g); // b
-		Helper.drawImage(tile, width - size - (width - size * 2) % size, height - size, (width - size * 2) % size, size, size, size * 2, (width - size * 2) % size, size, g);
+			Helper.drawImage(tile, x + i, y + height - size, size, size, size, size * 2, size, size, g); // b
 		
 		for (int i = size; i <= height - size * 2; i += size)
-			Helper.drawImage(tile, 0, i, size, size, 0, size, size, size, g); // l
-		Helper.drawImage(tile, 0, height - size - (height - size * 2) % size, size, (height - size * 2) % size, 0, size, size, (height - size * 2) % size, g);
+			Helper.drawImage(tile, x, y + i, size, size, 0, size, size, size, g); // l
 		
 		for (int i = size; i <= height - size * 2; i += size)
-			Helper.drawImage(tile, width - size, i, size, size, size * 2, size, size, size, g); // r
-		Helper.drawImage(tile, width - size, height - size - (height - size * 2) % size, size, (height - size * 2) % size, size * 2, size, size, (height - size * 2) % size, g);
+			Helper.drawImage(tile, x + width - size, y + i, size, size, size * 2, size, size, size, g); // r
 		
-		Helper.drawImage(tile, size, size, width - size * 2, height - size * 2, size, size, size, size, g); // m
-		
+		for (int i = size; i <= width - size * 2; i += size)
+			for (int j = size; j <= height - size * 2; j += size)
+				Helper.drawImage(tile, x + i, y + j, size, size, size, size, size, size, g); // m
+			
 		return bi;
 	}
 	

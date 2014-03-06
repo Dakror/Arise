@@ -20,6 +20,7 @@ import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.gamesetup.applet.GameApplet;
+import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.util.Helper;
 
@@ -73,6 +74,7 @@ public class Game extends GameApplet
 		
 		if (debug)
 		{
+			Layer.drawModality(g);
 			g.setColor(Color.white);
 			Helper.drawString("Build " + buildDate, 10, 26, g, 18);
 			Helper.drawString("FPS: " + getFPS(), 10, 52, g, 18);
@@ -82,15 +84,6 @@ public class Game extends GameApplet
 			
 			Helper.drawString("RAM: " + Helper.formatBinarySize(usedMem, 2) + " / " + Helper.formatBinarySize(Runtime.getRuntime().totalMemory(), 2), 10, 52 + 52 + 26, g, 18);
 			Helper.drawString("CPUs: " + Runtime.getRuntime().availableProcessors(), 10, 52 + 52 + 52, g, 18);
-		}
-		
-		try
-		{
-			Thread.sleep(16);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
 		}
 	}
 	

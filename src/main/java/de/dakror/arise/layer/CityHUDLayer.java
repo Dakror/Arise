@@ -125,11 +125,11 @@ public class CityHUDLayer extends Layer
 			ResourceLabel gold = new ResourceLabel(20, 20, CityLayer.resources, Resource.GOLD);
 			components.add(gold);
 			
-			ResourceLabel stone = new ResourceLabel(190 + gold.getX(), 20, CityLayer.resources, Resource.STONE);
-			components.add(stone);
-			
-			ResourceLabel wood = new ResourceLabel(400 + gold.getX(), 20, CityLayer.resources, Resource.WOOD);
+			ResourceLabel wood = new ResourceLabel(190 + gold.getX(), 20, CityLayer.resources, Resource.WOOD);
 			components.add(wood);
+			
+			ResourceLabel stone = new ResourceLabel(400 + gold.getX(), 20, CityLayer.resources, Resource.STONE);
+			components.add(stone);
 			
 			ResourceLabel buildings = new ResourceLabel(70 + gold.getX(), 60, CityLayer.resources, Resource.BUILDINGS);
 			buildings.off = new Centre(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);

@@ -38,9 +38,12 @@ public class CityLayer extends Layer
 	
 	Building activeBuilding;
 	
+	boolean placedBuildings;
+	
 	public CityLayer(City city)
 	{
 		modal = true;
+		placedBuildings = false;
 		this.city = city;
 		try
 		{
@@ -178,11 +181,14 @@ public class CityLayer extends Layer
 			String[] parts = building.split(":");
 			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
 			b.setStage(Integer.parseInt(parts[4]));
+			
 			b.setStageChangeTimestamp(Long.parseLong(parts[5]));
 			
 			components.add(b);
 			resources.add(Resource.BUILDINGS, 1);
 		}
+		
+		placedBuildings = true;
 	}
 	
 	public void saveData()

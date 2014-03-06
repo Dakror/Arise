@@ -137,10 +137,13 @@ public abstract class Building extends ClickableComponent
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		String string = "Lvl. " + (level + 1) + " " + name + (stage == 2 ? " (Abriss)" : (stage == 3 ? " (Ausbau)" : (stage == 0 ? " (Bau)" : "")));
-		
-		Helper.drawShadow(x, y, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30, 64, g);
-		Helper.drawString(string, x + 15, y + 40, g, 30);
+		if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
+		{
+			String string = "Lvl. " + (level + 1) + " " + name + (stage == 2 ? " (Abriss)" : (stage == 3 ? " (Ausbau)" : (stage == 0 ? " (Bau)" : "")));
+			
+			Helper.drawShadow(x, y, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30, 64, g);
+			Helper.drawString(string, x + 15, y + 40, g, 30);
+		}
 	}
 	
 	@Override

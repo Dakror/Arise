@@ -293,7 +293,7 @@ public class CityHUDLayer extends Layer
 		if (selectedBuilding != null)
 		{
 			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
-			upgrade.enabled = selectedBuilding.getLevel() < Building.MAX_LEVEL && selectedBuilding.getStage() == 1;
+			upgrade.enabled = selectedBuilding.getLevel() < Building.MAX_LEVEL - 1 && selectedBuilding.getStage() == 1;
 			
 			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}

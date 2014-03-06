@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.game.building.Barn;
+import de.dakror.arise.game.building.Barracks;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Center;
 import de.dakror.arise.game.building.Lumberjack;
@@ -121,6 +123,28 @@ public class CityHUDLayer extends Layer
 				}
 			});
 			components.add(quarry);
+			
+			BuildingButton barracks = new BuildingButton(15 + 144 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(0, 96, 24, 24), new Barracks(0, 0, 0));
+			barracks.addClickEvent(new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					cl.activeBuilding = new Barracks(0, 0, 0);
+				}
+			});
+			components.add(barracks);
+			
+			BuildingButton barn = new BuildingButton(15 + 144 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 96, 24, 24), new Barn(0, 0, 0));
+			barn.addClickEvent(new ClickEvent()
+			{
+				@Override
+				public void trigger()
+				{
+					cl.activeBuilding = new Barn(0, 0, 0);
+				}
+			});
+			components.add(barn);
 			
 			ResourceLabel gold = new ResourceLabel(20, 20, CityLayer.resources, Resource.GOLD);
 			components.add(gold);

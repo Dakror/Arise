@@ -267,10 +267,12 @@ public abstract class Building extends ClickableComponent
 				return new Mine(x, y, level);
 			case 4:
 				return new Quarry(x, y, level);
+			case 5:
+				return new Barracks(x, y, level);
+			case 6:
+				return new Barn(x, y, level);
 			default:
 				return null;
 		}
 	}
-	
-	
 }

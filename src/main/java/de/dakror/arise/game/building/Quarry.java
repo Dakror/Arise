@@ -11,10 +11,10 @@ public class Quarry extends Building
 		
 		typeId = 4;
 		name = "Steinbruch";
-		desc = "Baut Stein ab, um ihn als Baumaterial zu benutzen.";
+		desc = "Baut Stein ab, welcher als Baumaterial benutzt werden kann.";
 		
-		tx = 7;
-		ty = 21;
+		tx = 5;
+		ty = 23;
 		tw = 5;
 		th = 6;
 		

@@ -51,7 +51,7 @@ public class BuildingButton extends IconButton
 		{
 			int width = 250;
 			tooltipRows = Helper.getLineCount(building.getDescription(), width - 40, g, 25);
-			tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + 55 + products.size() * 30;
+			tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30);
 			
 			tooltipCache = new BufferedImage(width, tooltipHeight, BufferedImage.TYPE_INT_ARGB);
 			
@@ -64,7 +64,7 @@ public class BuildingButton extends IconButton
 			Helper.drawString(tooltip, 20, 50, g2, 40);
 			Helper.drawStringWrapped(building.getDescription(), 30, 80, width - 40, g2, 25);
 			Helper.drawString("Baukosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
-			Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
+			if (products.size() > 0) Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
 			for (int i = 0; i < products.size(); i++)
 			{
 				Resource r = products.get(i);

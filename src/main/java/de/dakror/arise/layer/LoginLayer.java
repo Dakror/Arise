@@ -223,7 +223,7 @@ public class LoginLayer extends Layer
 		
 		if (e.getKeyCode() == KeyEvent.VK_F2)
 		{
-			String id = JOptionPane.showInputDialog("ID der geünschten Welt: ", 1);
+			String id = JOptionPane.showInputDialog("ID der gewünschten Welt: ", 1);
 			try
 			{
 				int i = Integer.parseInt(id);

@@ -28,6 +28,8 @@ public class City extends ClickableComponent
 	int level;
 	int userId;
 	
+	boolean gotoCity;
+	
 	public City(int x, int y, JSONObject data) throws JSONException
 	{
 		super(x, y, SIZE, SIZE);
@@ -65,7 +67,16 @@ public class City extends ClickableComponent
 	
 	@Override
 	public void update(int tick)
-	{}
+	{
+		if (Game.currentGame.alpha == 1 && gotoCity)
+		{
+			CityLayer cl = new CityLayer(City.this);
+			Game.currentGame.addLayer(cl);
+			Game.currentGame.addLayer(new CityHUDLayer(cl));
+			gotoCity = false;
+			Game.currentGame.fadeTo(0, 0.05f);
+		}
+	}
 	
 	public String getName()
 	{
@@ -114,9 +125,8 @@ public class City extends ClickableComponent
 		
 		if (state == 1 && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && userId == Game.userID)
 		{
-			CityLayer cl = new CityLayer(City.this);
-			Game.currentGame.addLayer(cl);
-			Game.currentGame.addLayer(new CityHUDLayer(cl));
+			gotoCity = true;
+			Game.currentGame.fadeTo(1, 0.05f);
 		}
 	}
 }

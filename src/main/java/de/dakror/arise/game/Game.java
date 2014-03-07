@@ -124,6 +124,8 @@ public class Game extends GameApplet
 		layers.clear();
 		
 		addLayer(world);
+		
+		fadeTo(0, 0.05f);
 	}
 	
 	public void readManifest() throws Exception

@@ -62,6 +62,11 @@ public class LoginLayer extends Layer
 	public void update(int tick)
 	{
 		if (login != null) login.enabled = username.getText().length() >= 4 && password.getText().length() > 0;
+		
+		if (Game.currentGame.alpha == 1)
+		{
+			Game.currentGame.startGame();
+		}
 	}
 	
 	public void initFirstPage()
@@ -201,7 +206,7 @@ public class LoginLayer extends Layer
 		else
 		{
 			Game.userID = Integer.parseInt(response.replace("true:", "").trim());
-			Game.currentGame.startGame();
+			Game.currentGame.fadeTo(1, 0.05f);
 		}
 	}
 	

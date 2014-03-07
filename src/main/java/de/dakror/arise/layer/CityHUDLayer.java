@@ -45,6 +45,8 @@ public class CityHUDLayer extends Layer
 	BufferedImage cache;
 	CityLayer cl;
 	
+	boolean goBackToWorld;
+	
 	public CityHUDLayer(CityLayer cityLayer)
 	{
 		first = true;
@@ -62,10 +64,8 @@ public class CityHUDLayer extends Layer
 				@Override
 				public void trigger()
 				{
-					cl.saveData();
-					Game.world.updateWorld();
-					Game.currentGame.removeLayer(CityHUDLayer.this);
-					Game.currentGame.removeLayer(cl);
+					goBackToWorld = true;
+					Game.currentGame.fadeTo(1, 0.05f);
 				}
 			});
 			map.tooltip = "Weltkarte";
@@ -278,6 +278,16 @@ public class CityHUDLayer extends Layer
 	public void update(int tick)
 	{
 		if (Game.world == null) return;
+		
+		if (Game.currentGame.alpha == 1 && goBackToWorld)
+		{
+			cl.saveData();
+			Game.world.updateWorld();
+			Game.currentGame.removeLayer(CityHUDLayer.this);
+			Game.currentGame.removeLayer(cl);
+			goBackToWorld = false;
+			Game.currentGame.fadeTo(0, 0.05f);
+		}
 		
 		if (cl.placedBuildings && tick % Game.currentGame.getUPS() == 0)
 		{

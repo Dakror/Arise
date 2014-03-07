@@ -16,6 +16,8 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class PauseLayer extends Layer
 {
+	boolean gotoMenu;
+	
 	public PauseLayer()
 	{
 		modal = true;
@@ -32,7 +34,22 @@ public class PauseLayer extends Layer
 	
 	@Override
 	public void update(int tick)
-	{}
+	{
+		if (Game.currentGame.alpha == 1 && gotoMenu)
+		{
+			Game.userID = 0;
+			Game.currentGame.removeLayer(Game.world);
+			Game.world = null;
+			Game.worldID = 1;
+			
+			for (Layer l : Game.currentGame.layers)
+				if (l instanceof CityLayer) ((CityLayer) l).saveData();
+			
+			Game.currentGame.setLayer(new LoginLayer());
+			gotoMenu = false;
+			Game.currentGame.fadeTo(0, 0.05f);
+		}
+	}
 	
 	@Override
 	public void init()
@@ -53,15 +70,8 @@ public class PauseLayer extends Layer
 			@Override
 			public void trigger()
 			{
-				Game.userID = 0;
-				Game.currentGame.removeLayer(Game.world);
-				Game.world = null;
-				Game.worldID = 1;
-				
-				for (Layer l : Game.currentGame.layers)
-					if (l instanceof CityLayer) ((CityLayer) l).saveData();
-				
-				Game.currentGame.setLayer(new LoginLayer());
+				gotoMenu = true;
+				Game.currentGame.fadeTo(1, 0.05f);
 			}
 		});
 		if (Game.userID != 0) components.add(logout);

@@ -13,7 +13,7 @@ public class Center extends Building
 {
 	public Center(int x, int y, int level)
 	{
-		super(x, y, 6, 6, level);
+		super(x, y, 5, 5, level);
 		typeId = 1;
 		name = level > 3 ? "Stadtzentrum" : "Dorfzentrum";
 		

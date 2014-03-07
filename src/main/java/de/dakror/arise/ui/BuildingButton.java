@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.building.Center;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.settings.Resources.Resource;
@@ -37,7 +38,7 @@ public class BuildingButton extends IconButton
 	@Override
 	public void update(int tick)
 	{
-		if (CityHUDLayer.allBuildingsEnabled) checkIfCanEffort();
+		checkIfCanEffort();
 	}
 	
 	@Override
@@ -51,7 +52,7 @@ public class BuildingButton extends IconButton
 		{
 			int width = 250;
 			tooltipRows = Helper.getLineCount(building.getDescription(), width - 40, g, 25);
-			tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30);
+			tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30) + (building.getMinCityLevel() > 0 ? 35 : 0);
 			
 			tooltipCache = new BufferedImage(width, tooltipHeight, BufferedImage.TYPE_INT_ARGB);
 			
@@ -79,7 +80,7 @@ public class BuildingButton extends IconButton
 				if (scs.length() > 3) scs = scs.substring(0, scs.length() - 3) + "k";
 				if (scs.length() > 5) scs = scs.substring(0, scs.length() - 5) + "m";
 				
-				Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30, 25, new Point(r.getIconX(), r.getIconY()), (f > 0 ? "+" : "") + pr + "/h" + (sc > 0 ? " (+" + scs + "/lvl)" : ""), 30, g2);
+				Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30 + (building.getMinCityLevel() > 0 ? 60 : 0), 25, new Point(r.getIconX(), r.getIconY()), (f > 0 ? "+" : "") + pr + "/h" + (sc > 0 ? " (+" + scs + "/lvl)" : ""), 30, g2);
 			}
 		}
 		else g.drawImage(tooltipCache, x, y - tooltipCache.getHeight(), null);
@@ -97,7 +98,13 @@ public class BuildingButton extends IconButton
 				boolean en = CityLayer.resources.get(r) < building.getBuildingCosts().get(r);
 				g.setColor(en ? Color.decode("#18acf1") : Color.red);
 			}
-			Assistant.drawResource(building.getBuildingCosts(), r, x + 30, y - tooltipHeight + 95 + tooltipRows * 25 + i * 30, 25, 30, g);
+			Assistant.drawResource(building.getBuildingCosts(), r, x + 30, y - tooltipHeight + 100 + tooltipRows * 25 + i * 30, 25, 30, g);
+		}
+		
+		if (building.getMinCityLevel() > 0)
+		{
+			g.setColor(CityHUDLayer.cl.city.getLevel() >= building.getMinCityLevel() ? Color.white : Color.red);
+			Helper.drawString("min. Stadtlevel: " + (building.getMinCityLevel() + 1), x + 25, y - tooltipHeight + 80 + tooltipRows * 25 + 40 + resources.size() * 30 + products.size() * 30, g, 25);
 		}
 		
 		g.setColor(c);
@@ -122,6 +129,10 @@ public class BuildingButton extends IconButton
 				if (!en) canEffort = false;
 			}
 		}
+		
+		if (CityHUDLayer.cl.city.getLevel() < building.getMinCityLevel()) canEffort = false;
+		
+		if (CityLayer.resources.get(Resource.BUILDINGS) >= new Center(0, 0, CityHUDLayer.cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS)) canEffort = false;
 		
 		enabled = canEffort;
 	}

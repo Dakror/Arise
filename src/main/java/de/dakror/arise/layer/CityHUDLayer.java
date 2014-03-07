@@ -35,15 +35,14 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class CityHUDLayer extends Layer
 {
-	public static boolean allBuildingsEnabled;
+	public static Building selectedBuilding;
+	public static CityLayer cl;
 	
 	public boolean first;
 	public boolean anyComponentClicked;
-	public static Building selectedBuilding;
 	
 	IconButton upgrade, deconstruct;
 	BufferedImage cache;
-	CityLayer cl;
 	
 	boolean goBackToWorld;
 	
@@ -315,11 +314,6 @@ public class CityHUDLayer extends Layer
 		for (Component c : cl.components)
 			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Centre always active */)) products.add(((Building) c).getScalingProducts());
 		
-		int maxBuildings = new Center(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
-		
-		for (Component c : components)
-			if (c instanceof IconButton && c.getY() == Game.getHeight() - 64) c.enabled = CityLayer.resources.get(Resource.BUILDINGS) < maxBuildings;
-		
 		products = Resources.mul(products, Game.world.getSpeed());
 		
 		for (Component c : components)
@@ -330,8 +324,6 @@ public class CityHUDLayer extends Layer
 				else ((ResourceLabel) c).off = products.get(((ResourceLabel) c).getResource()) / Game.world.getSpeed();
 			}
 		}
-		
-		allBuildingsEnabled = CityLayer.resources.get(Resource.BUILDINGS) < maxBuildings;
 	}
 	
 	public void timerTick()

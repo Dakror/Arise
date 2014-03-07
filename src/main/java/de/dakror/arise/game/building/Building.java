@@ -25,8 +25,8 @@ public abstract class Building extends ClickableComponent
 	public static float UPGRADE_FACTOR;
 	public static int MAX_LEVEL;
 	
-	protected int tx, ty, tw, th, typeId, level;
-	
+	protected int tx, ty, tw, th, typeId, level, minCityLevel;
+	public int bx, by, bw, bh;
 	/**
 	 * 0 = construction<br>
 	 * 1 = built<br>
@@ -34,7 +34,6 @@ public abstract class Building extends ClickableComponent
 	 * 3 = upgrading<br>
 	 */
 	protected int stage, prevStage;
-	public int bx, by, bw, bh;
 	protected int stageChangeSeconds;
 	protected long stageChangeTimestamp;
 	protected String name, desc;
@@ -81,6 +80,7 @@ public abstract class Building extends ClickableComponent
 				products = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
 				scale = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
 				stageChangeSeconds = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
+				minCityLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
 			}
 		}
 		catch (JSONException e)
@@ -230,6 +230,11 @@ public abstract class Building extends ClickableComponent
 	public Resources getProducts()
 	{
 		return products;
+	}
+	
+	public int getMinCityLevel()
+	{
+		return minCityLevel;
 	}
 	
 	public Resources getScalingProducts()

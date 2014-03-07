@@ -38,7 +38,7 @@ public class CityLayer extends Layer
 {
 	public static Resources resources;
 	JSONObject data;
-	City city;
+	public City city;
 	
 	Building activeBuilding;
 	

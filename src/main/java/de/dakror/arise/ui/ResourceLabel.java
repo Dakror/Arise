@@ -34,7 +34,11 @@ public class ResourceLabel extends Component
 	@Override
 	public void draw(Graphics2D g)
 	{
-		String string = res.get(r) + "" + (off > -1 ? " / " + off : "") + (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + perHour + "/h)" : "");
+		String perhour = perHour + "";
+		if (perhour.length() > 3) perhour = perhour.substring(0, perhour.length() - 3) + "k";
+		if (perhour.length() > 5) perhour = perhour.substring(0, perhour.length() - 5) + "m";
+		
+		String string = res.get(r) + "" + (off > -1 ? " / " + off : "") + (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + perhour + "/h)" : "");
 		
 		if (width == 0) width = 25 + g.getFontMetrics(g.getFont().deriveFont(25f)).stringWidth(string);
 		

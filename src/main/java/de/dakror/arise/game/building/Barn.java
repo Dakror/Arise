@@ -7,7 +7,7 @@ public class Barn extends Building
 {
 	public Barn(int x, int y, int level)
 	{
-		super(x, y, 9, 9, level);
+		super(x, y, 7, 7, level);
 		
 		typeId = 6;
 		name = "Reiterei";

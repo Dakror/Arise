@@ -70,7 +70,16 @@ public class BuildingButton extends IconButton
 				Resource r = products.get(i);
 				int f = building.getProducts().get(r) * Game.world.getSpeed();
 				int sc = building.getScale().get(r) * Game.world.getSpeed();
-				Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30, 25, new Point(r.getIconX(), r.getIconY()), (f > 0 ? "+" : "") + f + "/h" + (sc > 0 ? " (+" + sc + "/lvl)" : ""), 30, g2);
+				
+				String pr = f + "";
+				if (pr.length() > 3) pr = pr.substring(0, pr.length() - 3) + "k";
+				if (pr.length() > 5) pr = pr.substring(0, pr.length() - 5) + "m";
+				
+				String scs = sc + "";
+				if (scs.length() > 3) scs = scs.substring(0, scs.length() - 3) + "k";
+				if (scs.length() > 5) scs = scs.substring(0, scs.length() - 5) + "m";
+				
+				Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30, 25, new Point(r.getIconX(), r.getIconY()), (f > 0 ? "+" : "") + pr + "/h" + (sc > 0 ? " (+" + scs + "/lvl)" : ""), 30, g2);
 			}
 		}
 		else g.drawImage(tooltipCache, x, y - tooltipCache.getHeight(), null);

@@ -111,7 +111,7 @@ public class Game extends GameApplet
 					{
 						if (l instanceof CityHUDLayer)
 						{
-							((CityHUDLayer) getActiveLayer()).timerTick();
+							((CityHUDLayer) l).timerTick();
 							break;
 						}
 					}

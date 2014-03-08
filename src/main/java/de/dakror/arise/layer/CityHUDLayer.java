@@ -38,7 +38,6 @@ public class CityHUDLayer extends Layer
 	public static Building selectedBuilding;
 	public static CityLayer cl;
 	
-	public boolean first;
 	public boolean anyComponentClicked;
 	
 	IconButton upgrade, deconstruct;
@@ -48,7 +47,6 @@ public class CityHUDLayer extends Layer
 	
 	public CityHUDLayer(CityLayer cityLayer)
 	{
-		first = true;
 		cl = cityLayer;
 	}
 	
@@ -164,7 +162,7 @@ public class CityHUDLayer extends Layer
 			
 			updateBuildingbar();
 			
-			upgrade = new IconButton(-1000, -1000, 48, 48, Game.getImage("system/upgrade.png").getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+			upgrade = new IconButton(-1000, -1000, 32, 32, Game.getImage("system/upgrade.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 			upgrade.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -218,11 +216,11 @@ public class CityHUDLayer extends Layer
 				}
 			});
 			upgrade.tooltip = "Gebäude ausbauen";
-			upgrade.mode2 = true;
+			upgrade.mode1 = true;
 			upgrade.enabled = false;
 			components.add(upgrade);
 			
-			deconstruct = new IconButton(-1000, -1000, 48, 48, Game.getImage("system/bomb.png").getScaledInstance(48, 48, Image.SCALE_SMOOTH));
+			deconstruct = new IconButton(-1000, -1000, 32, 32, Game.getImage("system/bomb.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 			deconstruct.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -243,7 +241,7 @@ public class CityHUDLayer extends Layer
 				}
 			});
 			deconstruct.tooltip = "Gebäude abreißen";
-			deconstruct.mode2 = true;
+			deconstruct.mode1 = true;
 			components.add(deconstruct);
 			
 			cache = new BufferedImage(Game.getWidth(), Game.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -263,6 +261,13 @@ public class CityHUDLayer extends Layer
 	public void draw(Graphics2D g)
 	{
 		g.drawImage(cache, 0, 0, null);
+		
+		if (selectedBuilding != null)
+		{
+			int width = 300, height = 200;
+			Helper.drawContainer(Game.getWidth() - width, Game.getHeight() - height, width, height, true, false, g);
+			selectedBuilding.getGuiContainer().draw(g);
+		}
 		
 		Component hovered = null;
 		for (Component c : components)
@@ -295,14 +300,16 @@ public class CityHUDLayer extends Layer
 		
 		updateComponents(tick);
 		
-		upgrade.setX(selectedBuilding == null ? -1000 : selectedBuilding.getX() + selectedBuilding.getWidth() / 2 - 68);
-		upgrade.setY(selectedBuilding == null ? -1000 : selectedBuilding.getY() + selectedBuilding.by * Building.GRID - 48);
-		deconstruct.setX(selectedBuilding == null ? -1000 : selectedBuilding.getX() + selectedBuilding.getWidth() / 2 + 20);
-		deconstruct.setY(selectedBuilding == null ? -1000 : selectedBuilding.getY() + selectedBuilding.by * Building.GRID - 48);
+		upgrade.setX(selectedBuilding == null ? -1000 : Game.getWidth() - 270);
+		upgrade.setY(selectedBuilding == null ? -1000 : Game.getHeight() - 170);
+		deconstruct.setX(selectedBuilding == null ? -1000 : Game.getWidth() - 270 + 56);
+		deconstruct.setY(selectedBuilding == null ? -1000 : Game.getHeight() - 170);
 		if (selectedBuilding != null)
 		{
 			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
 			upgrade.enabled = selectedBuilding.getLevel() < Building.MAX_LEVEL - 1 && selectedBuilding.getStage() == 1;
+			
+			selectedBuilding.getGuiContainer().update(tick);
 			
 			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}
@@ -336,10 +343,21 @@ public class CityHUDLayer extends Layer
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+		anyComponentClicked = false;
+		if (selectedBuilding != null)
+		{
+			selectedBuilding.getGuiContainer().mousePressed(e);
+			for (Component c : selectedBuilding.getGuiContainer().components)
+			{
+				if (c.state != 0)
+				{
+					anyComponentClicked = true;
+					break;
+				}
+			}
+		}
 		super.mousePressed(e);
 		
-		
-		anyComponentClicked = false;
 		for (Component c : components)
 		{
 			if (c.state != 0)
@@ -348,5 +366,19 @@ public class CityHUDLayer extends Layer
 				break;
 			}
 		}
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		if (selectedBuilding != null) selectedBuilding.getGuiContainer().mouseReleased(e);
+		super.mouseReleased(e);
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e)
+	{
+		if (selectedBuilding != null) selectedBuilding.getGuiContainer().mouseMoved(e);
+		super.mouseMoved(e);
 	}
 }

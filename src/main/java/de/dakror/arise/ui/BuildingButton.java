@@ -32,7 +32,6 @@ public class BuildingButton extends IconButton
 		mode1 = true;
 		this.building = building;
 		tooltip = building.getName();
-		tooltipOnBottom = true;
 	}
 	
 	@Override

@@ -107,9 +107,13 @@ public class Game extends GameApplet
 				public void run()
 				{
 					secondInMinute = (secondInMinute + INTERVAL) % 60;
-					if (getActiveLayer() instanceof CityHUDLayer)
+					for (Layer l : layers)
 					{
-						((CityHUDLayer) getActiveLayer()).timerTick();
+						if (l instanceof CityHUDLayer)
+						{
+							((CityHUDLayer) getActiveLayer()).timerTick();
+							break;
+						}
 					}
 				}
 			}, calendar.getTime(), INTERVAL * 1000);

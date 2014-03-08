@@ -254,7 +254,18 @@ public class CityLayer extends Layer
 			}
 		}
 		
-		if (!anyBuildingActive && !((CityHUDLayer) Game.currentGame.getActiveLayer()).anyComponentClicked) CityHUDLayer.selectedBuilding = null;
+		CityHUDLayer chl = null;
+		
+		if (!anyBuildingActive)
+		{
+			for (Layer l : Game.currentGame.layers)
+				if (l instanceof CityHUDLayer)
+				{
+					chl = (CityHUDLayer) l;
+					break;
+				}
+			if (!chl.anyComponentClicked) CityHUDLayer.selectedBuilding = null;
+		}
 		
 		if (activeBuilding != null)
 		{
@@ -269,7 +280,7 @@ public class CityLayer extends Layer
 				resources.add(Resource.BUILDINGS, 1);
 				resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
 				activeBuilding = null;
-				((CityHUDLayer) Game.currentGame.getActiveLayer()).updateBuildingbar();
+				chl.updateBuildingbar();
 				sortComponents();
 				saveData();
 			}

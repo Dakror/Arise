@@ -2,6 +2,8 @@ package de.dakror.arise.game.building;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 
 import org.json.JSONException;
@@ -11,8 +13,11 @@ import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.util.Assistant;
+import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
+import de.dakror.gamesetup.ui.Container;
+import de.dakror.gamesetup.ui.button.IconButton;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -38,6 +43,7 @@ public abstract class Building extends ClickableComponent
 	protected long stageChangeTimestamp;
 	protected String name, desc;
 	protected Resources buildingCosts, products, scale;
+	protected Container guiContainer;
 	
 	public Building(int x, int y, int width, int height, int level)
 	{
@@ -50,22 +56,14 @@ public abstract class Building extends ClickableComponent
 		bx = by = 0;
 		bw = width;
 		bh = height;
+		guiContainer = new Container.DefaultContainer();
 		
 		addClickEvent(new ClickEvent()
 		{
 			@Override
 			public void trigger()
 			{
-				if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
-				{
-					if (((CityHUDLayer) Game.currentGame.getActiveLayer()).first)
-					{
-						((CityHUDLayer) Game.currentGame.getActiveLayer()).first = false;
-						return;
-					}
-					
-					CityHUDLayer.selectedBuilding = Building.this;
-				}
+				CityHUDLayer.selectedBuilding = Building.this;
 			}
 		});
 	}
@@ -139,16 +137,29 @@ public abstract class Building extends ClickableComponent
 	{
 		if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
 		{
-			String string = "Lvl. " + (level + 1) + " " + name + (stage == 2 ? " (Abriss)" : (stage == 3 ? " (Ausbau)" : (stage == 0 ? " (Bau)" : "")));
+			String string = getTooltipText();
 			
-			Helper.drawShadow(x, y, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30, 64, g);
-			Helper.drawString(string, x + 15, y + 40, g, 30);
+			int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30;
+			int height = 64;
+			int x1 = x;
+			int y1 = y;
+			
+			if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
+			if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
+			
+			Helper.drawShadow(x1, y1, width, height, g);
+			Helper.drawString(string, x1 + 15, y1 + 40, g, 30);
 		}
 	}
 	
 	@Override
 	public void update(int tick)
 	{}
+	
+	public String getTooltipText()
+	{
+		return "Lvl. " + (level + 1) + " " + name + (stage == 2 ? " (Abriss)" : (stage == 3 ? " (Ausbau)" : (stage == 0 ? " (Bau)" : "")));
+	}
 	
 	public int getTypeId()
 	{
@@ -249,6 +260,26 @@ public abstract class Building extends ClickableComponent
 	public Resources getScale()
 	{
 		return scale;
+	}
+	
+	public Container getGuiContainer()
+	{
+		return guiContainer;
+	}
+	
+	protected void addGuiButton(int x, int y, Image icon, String tooltip, ClickEvent action)
+	{
+		IconButton b = new IconButton(x * 56 + Game.getWidth() - 270, y * 56 + Game.getHeight() - 170, 32, 32, icon);
+		b.addClickEvent(action);
+		b.mode1 = true;
+		b.tooltip = tooltip;
+		
+		guiContainer.components.add(b);
+	}
+	
+	protected void addGuiButton(int x, int y, Point icon, String tooltip, ClickEvent action)
+	{
+		addGuiButton(x, y, Game.getImage("system/icons.png").getSubimage(icon.x * 24, icon.y * 24, 24, 24), tooltip, action);
 	}
 	
 	@Override

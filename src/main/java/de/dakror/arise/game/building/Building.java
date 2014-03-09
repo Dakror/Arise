@@ -66,29 +66,12 @@ public abstract class Building extends ClickableComponent
 				CityHUDLayer.selectedBuilding = Building.this;
 				
 				float duration = stageChangeSeconds * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
-				// if (!canEffort)
-				// {
-				// Game.currentGame.addLayer(new Alert("Das Ausbauen kostet " + costText + s, null));
-				// }
-				// else
-				// {
-				// Game.currentGame.addLayer(new Confirm("Das Ausbauen kostet " + costText + s, new ClickEvent()
-				// {
-				// @Override
-				// public void trigger()
-				// {
-				// CityLayer.resources.add(Resources.mul(costs, -1));
-				// setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-				// setStage(3);
-				//
-				// CityHUDLayer.cl.saveData();
-				// }
-				// }, null));
-				// }
 				
 				CityHUDLayer.upgrade.setUpgradeMode("Ausbau", "Die Stufe des Gebäudes wird erhöht. \nDauer: " + Assistant.formatSeconds((long) duration), getUpgradeCosts(), 0);
 				CityHUDLayer.upgrade.setProducts(products);
 				CityHUDLayer.upgrade.setScale(scale);
+				CityHUDLayer.upgrade.setLevel(Building.this.level);
+				CityHUDLayer.upgrade.setMaxLevel(maxLevel);
 				
 				CityHUDLayer.deconstruct.setUpgradeMode("Abriss", "Das Gebäudes wird abgerissen. Es werden keine Resourcen zurückgegeben.", new Resources(), 0);
 			}

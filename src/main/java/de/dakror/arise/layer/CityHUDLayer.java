@@ -167,6 +167,11 @@ public class CityHUDLayer extends Layer
 				{
 					upgrade.state = 0;
 					
+					CityLayer.resources.add(Resources.mul(upgrade.getBuildingCosts(), -1));
+					selectedBuilding.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+					selectedBuilding.setStage(3);
+					
+					cl.saveData();
 				}
 			});
 			upgrade.mode1 = true;

@@ -169,6 +169,7 @@ public class CityLayer extends Layer
 				{
 					components.remove(c);
 					CityHUDLayer.selectedBuilding = null;
+					resources.add(Resource.BUILDINGS, -1);
 				}
 				
 				changedOne = true;

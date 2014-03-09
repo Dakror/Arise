@@ -113,7 +113,8 @@ public class BuildButton extends IconButton
 			
 			if (tooltipCache == null)
 			{
-				int width = 250;
+				int hW = g.getFontMetrics(g.getFont().deriveFont(40f)).stringWidth(tooltip) + 40;
+				int width = hW > 250 ? hW : 250;
 				tooltipRows = Helper.getLineCount(desc, width - 40, g, 25);
 				tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30) + (minCityLevel > 0 ? 35 : 0) - (buildingCosts.size() == 0 ? 30 : 0);
 				
@@ -127,7 +128,7 @@ public class BuildButton extends IconButton
 				g2.setColor(Color.white);
 				Helper.drawString(tooltip, 20, 50, g2, 40);
 				Helper.drawStringWrapped(desc, 30, 80, width - 40, g2, 25);
-				if (resources.size() > 0) Helper.drawString("Baukosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
+				if (resources.size() > 0) Helper.drawString("Kosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
 				if (products.size() > 0) Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
 				for (int i = 0; i < products.size(); i++)
 				{

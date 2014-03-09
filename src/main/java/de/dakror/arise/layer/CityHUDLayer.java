@@ -223,7 +223,6 @@ public class CityHUDLayer extends Layer
 		{
 			int width = 300, height = 200;
 			Helper.drawContainer(Game.getWidth() - width, Game.getHeight() - height, width, height, true, false, g);
-			selectedBuilding.getGuiContainer().draw(g);
 		}
 		
 		Component hovered = null;
@@ -232,7 +231,9 @@ public class CityHUDLayer extends Layer
 			c.draw(g);
 			if (c.state == 2) hovered = c;
 		}
+		if (selectedBuilding != null) selectedBuilding.getGuiContainer().draw(g);
 		if (hovered != null && Game.currentGame.getActiveLayer() instanceof CityHUDLayer) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
+		
 	}
 	
 	@Override

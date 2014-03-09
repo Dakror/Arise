@@ -30,7 +30,7 @@ public abstract class Building extends ClickableComponent
 	public static float UPGRADE_FACTOR;
 	public static int MAX_LEVEL;
 	
-	protected int tx, ty, tw, th, typeId, level, minCityLevel;
+	protected int tx, ty, tw, th, typeId, level, maxLevel, minCityLevel;
 	public int bx, by, bw, bh;
 	/**
 	 * 0 = construction<br>
@@ -79,6 +79,7 @@ public abstract class Building extends ClickableComponent
 				scale = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
 				stageChangeSeconds = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
 				minCityLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
+				maxLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("maxlevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("maxlevel") : MAX_LEVEL;
 			}
 		}
 		catch (JSONException e)
@@ -233,7 +234,7 @@ public abstract class Building extends ClickableComponent
 		res.add(buildingCosts);
 		
 		for (Resource r : res.getFilled())
-			res.set(r, (int) Math.round(res.get(r) * Math.pow(UPGRADE_FACTOR, level + 1)));
+			res.set(r, (int) Math.round((MAX_LEVEL / (float) maxLevel) * res.get(r) * Math.pow(UPGRADE_FACTOR, level + 1)));
 		
 		return res;
 	}
@@ -265,6 +266,11 @@ public abstract class Building extends ClickableComponent
 	public Container getGuiContainer()
 	{
 		return guiContainer;
+	}
+	
+	public int getMaxLevel()
+	{
+		return maxLevel;
 	}
 	
 	protected void addGuiButton(int x, int y, Image icon, String tooltip, ClickEvent action)

@@ -12,12 +12,12 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.BuildButton;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.ui.Container;
-import de.dakror.gamesetup.ui.button.IconButton;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -64,6 +64,33 @@ public abstract class Building extends ClickableComponent
 			public void trigger()
 			{
 				CityHUDLayer.selectedBuilding = Building.this;
+				
+				float duration = stageChangeSeconds * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
+				// if (!canEffort)
+				// {
+				// Game.currentGame.addLayer(new Alert("Das Ausbauen kostet " + costText + s, null));
+				// }
+				// else
+				// {
+				// Game.currentGame.addLayer(new Confirm("Das Ausbauen kostet " + costText + s, new ClickEvent()
+				// {
+				// @Override
+				// public void trigger()
+				// {
+				// CityLayer.resources.add(Resources.mul(costs, -1));
+				// setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+				// setStage(3);
+				//
+				// CityHUDLayer.cl.saveData();
+				// }
+				// }, null));
+				// }
+				
+				CityHUDLayer.upgrade.setUpgradeMode("Ausbau", "Die Stufe des Gebäudes wird erhöht. \nDauer: " + Assistant.formatSeconds((long) duration), getUpgradeCosts(), 0);
+				CityHUDLayer.upgrade.setProducts(products);
+				CityHUDLayer.upgrade.setScale(scale);
+				
+				CityHUDLayer.deconstruct.setUpgradeMode("Abriss", "Das Gebäudes wird abgerissen. Es werden keine Resourcen zurückgegeben.", new Resources(), 0);
 			}
 		});
 	}
@@ -273,19 +300,19 @@ public abstract class Building extends ClickableComponent
 		return maxLevel;
 	}
 	
-	protected void addGuiButton(int x, int y, Image icon, String tooltip, ClickEvent action)
+	protected void addGuiButton(int x, int y, Image icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action)
 	{
-		IconButton b = new IconButton(x * 56 + Game.getWidth() - 270, y * 56 + Game.getHeight() - 170, 32, 32, icon);
+		BuildButton b = new BuildButton(x * 56 + Game.getWidth() - 270, y * 56 + Game.getHeight() - 170, 32, 32, icon);
 		b.addClickEvent(action);
 		b.mode1 = true;
-		b.tooltip = tooltip;
+		b.setUpgradeMode(tooltip, desc, buildingCosts, minCityLevel);
 		
 		guiContainer.components.add(b);
 	}
 	
-	protected void addGuiButton(int x, int y, Point icon, String tooltip, ClickEvent action)
+	protected void addGuiButton(int x, int y, Point icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action)
 	{
-		addGuiButton(x, y, Game.getImage("system/icons.png").getSubimage(icon.x * 24, icon.y * 24, 24, 24), tooltip, action);
+		addGuiButton(x, y, Game.getImage("system/icons.png").getSubimage(icon.x * 24, icon.y * 24, 24, 24), tooltip, desc, buildingCosts, minCityLevel, action);
 	}
 	
 	@Override

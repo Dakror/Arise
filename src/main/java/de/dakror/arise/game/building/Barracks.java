@@ -1,8 +1,6 @@
 package de.dakror.arise.game.building;
 
-import java.awt.Point;
 
-import de.dakror.gamesetup.ui.ClickEvent;
 
 /**
  * @author Dakror
@@ -25,12 +23,7 @@ public class Barracks extends Building
 		by = 4;
 		bh -= 4;
 		
-		addGuiButton(0, 1, new Point(4, 0), "Schwertkämpfer", new ClickEvent()
-		{
-			@Override
-			public void trigger()
-			{}
-		});
+		// addGuiButton(0,1,new Point(4,0),"");
 		
 		init();
 	}

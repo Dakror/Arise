@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Barn;
@@ -17,11 +16,9 @@ import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
-import de.dakror.arise.ui.BuildingButton;
+import de.dakror.arise.ui.BuildButton;
 import de.dakror.arise.ui.ResourceLabel;
-import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
-import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Confirm;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
@@ -36,11 +33,11 @@ import de.dakror.gamesetup.util.Helper;
 public class CityHUDLayer extends Layer
 {
 	public static Building selectedBuilding;
+	public static BuildButton upgrade, deconstruct;
 	public static CityLayer cl;
 	
 	public boolean anyComponentClicked;
 	
-	IconButton upgrade, deconstruct;
 	BufferedImage cache;
 	
 	boolean goBackToWorld;
@@ -88,7 +85,7 @@ public class CityHUDLayer extends Layer
 			};
 			components.add(name);
 			
-			BuildingButton lumberjack = new BuildingButton(15, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(72, 0, 24, 24), new Lumberjack(0, 0, 0));
+			BuildButton lumberjack = new BuildButton(15, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(72, 0, 24, 24), new Lumberjack(0, 0, 0));
 			lumberjack.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -99,7 +96,7 @@ public class CityHUDLayer extends Layer
 			});
 			components.add(lumberjack);
 			
-			BuildingButton mine = new BuildingButton(15 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
+			BuildButton mine = new BuildButton(15 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
 			mine.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -110,7 +107,7 @@ public class CityHUDLayer extends Layer
 			});
 			components.add(mine);
 			
-			BuildingButton quarry = new BuildingButton(15 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
+			BuildButton quarry = new BuildButton(15 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
 			quarry.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -121,7 +118,7 @@ public class CityHUDLayer extends Layer
 			});
 			components.add(quarry);
 			
-			BuildingButton barracks = new BuildingButton(15 + 144 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(0, 96, 24, 24), new Barracks(0, 0, 0));
+			BuildButton barracks = new BuildButton(15 + 144 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(0, 96, 24, 24), new Barracks(0, 0, 0));
 			barracks.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -132,7 +129,7 @@ public class CityHUDLayer extends Layer
 			});
 			components.add(barracks);
 			
-			BuildingButton barn = new BuildingButton(15 + 144 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 96, 24, 24), new Barn(0, 0, 0));
+			BuildButton barn = new BuildButton(15 + 144 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 96, 24, 24), new Barn(0, 0, 0));
 			barn.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -162,65 +159,21 @@ public class CityHUDLayer extends Layer
 			
 			updateBuildingbar();
 			
-			upgrade = new IconButton(-1000, -1000, 32, 32, Game.getImage("system/upgrade.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
+			upgrade = new BuildButton(-1000, -1000, 32, 32, Game.getImage("system/upgrade.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 			upgrade.addClickEvent(new ClickEvent()
 			{
 				@Override
 				public void trigger()
 				{
 					upgrade.state = 0;
-					final Resources costs = selectedBuilding.getUpgradeCosts();
-					final Resources scale = selectedBuilding.getScale();
-					final Resources scaleProducts = selectedBuilding.getScalingProducts();
-					String costText = "\n";
-					ArrayList<Resource> filled = costs.getFilled();
-					ArrayList<Resource> scfilled = scale.getFilled();
 					
-					boolean canEffort = true;
-					
-					for (int i = 0; i < filled.size(); i++)
-					{
-						costText += costs.get(filled.get(i)) + " " + filled.get(i).getName() + (i < filled.size() - 2 ? ", " : (i < filled.size() - 1 ? " und " : ""));
-						if (CityLayer.resources.get(filled.get(i)) < costs.get(filled.get(i))) canEffort = false;
-					}
-					
-					float duration = selectedBuilding.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
-					
-					String improvements = "";
-					for (Resource r : scfilled)
-					{
-						improvements += r.getName() + ": " + (r.isUsable() ? +scaleProducts.get(r) * Game.world.getSpeed() + "/h" : scaleProducts.get(r)) + " -> " + (r.isUsable() ? (scaleProducts.get(r) + scale.get(r)) * Game.world.getSpeed() + "/h" : (scaleProducts.get(r) + scale.get(r))) + "\n";
-					}
-					
-					String s = " \nDurch den Ausbau wird verbessert: \n" + improvements + " \n" + (canEffort ? "Die Ausbaudauer beträgt " + Assistant.formatSeconds((long) duration) + "." : "Dies kannst du dir aktuell nicht leisten.");
-					
-					if (!canEffort)
-					{
-						Game.currentGame.addLayer(new Alert("Das Ausbauen kostet " + costText + s, null));
-					}
-					else
-					{
-						Game.currentGame.addLayer(new Confirm("Das Ausbauen kostet " + costText + s, new ClickEvent()
-						{
-							@Override
-							public void trigger()
-							{
-								CityLayer.resources.add(Resources.mul(costs, -1));
-								selectedBuilding.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-								selectedBuilding.setStage(3);
-								
-								cl.saveData();
-							}
-						}, null));
-					}
 				}
 			});
-			upgrade.tooltip = "Gebäude ausbauen";
 			upgrade.mode1 = true;
 			upgrade.enabled = false;
 			components.add(upgrade);
 			
-			deconstruct = new IconButton(-1000, -1000, 32, 32, Game.getImage("system/bomb.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
+			deconstruct = new BuildButton(-1000, -1000, 32, 32, Game.getImage("system/bomb.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
 			deconstruct.addClickEvent(new ClickEvent()
 			{
 				@Override
@@ -240,7 +193,6 @@ public class CityHUDLayer extends Layer
 					}, null));
 				}
 			});
-			deconstruct.tooltip = "Gebäude abreißen";
 			deconstruct.mode1 = true;
 			components.add(deconstruct);
 			

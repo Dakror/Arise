@@ -2,6 +2,9 @@ package de.dakror.arise.game.building;
 
 import java.awt.Point;
 
+import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.gamesetup.ui.ClickEvent;
@@ -27,7 +30,7 @@ public class Barracks extends Building
 		by = 4;
 		bh -= 4;
 		
-		Resources r = new Resources();
+		final Resources r = new Resources();
 		r.add(Resource.GOLD, 20);
 		r.add(Resource.WOOD, 10);
 		r.add(Resource.STONE, 2);
@@ -35,9 +38,56 @@ public class Barracks extends Building
 		{
 			@Override
 			public void trigger()
-			{}
+			{
+				CityLayer.resources.add(Resources.mul(r, -1));
+				
+				setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+				setStage(4);
+				
+				CityHUDLayer.cl.saveData();
+			}
+		});
+		
+		final Resources r2 = new Resources();
+		r2.add(Resource.GOLD, 40);
+		r2.add(Resource.WOOD, 20);
+		addGuiButton(1, 1, new Point(4, 1), "Lanzenträger", "Ein mäßig stark und gepanzerter, jedoch schneller Nahkämpfer.", r2, 0, new ClickEvent()
+		{
+			@Override
+			public void trigger()
+			{
+				CityLayer.resources.add(Resources.mul(r2, -1));
+				
+				setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+				setStage(5);
+				
+				CityHUDLayer.cl.saveData();
+			}
 		});
 		
 		init();
+	}
+	
+	@Override
+	protected float getStageChangeDuration()
+	{
+		return (stage <= 3) ? super.getStageChangeDuration() : Math.round(Building.WARRIOR_BUILDTIME / Game.world.getSpeed());
+	}
+	
+	@Override
+	public void handleSpecificStageChange()
+	{
+		if (stage == 4)
+		{
+			CityLayer.resources.add(Resource.SWORDFIGHTER, 1);
+			setStage(1);
+			CityHUDLayer.cl.saveData();
+		}
+		if (stage == 5)
+		{
+			CityLayer.resources.add(Resource.LANCEBEARER, 1);
+			setStage(1);
+			CityHUDLayer.cl.saveData();
+		}
 	}
 }

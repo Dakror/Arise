@@ -29,6 +29,7 @@ public abstract class Building extends ClickableComponent
 	public static float DECONSTRUCT_FACTOR;
 	public static float UPGRADE_FACTOR;
 	public static int MAX_LEVEL;
+	public static int WARRIOR_BUILDTIME;
 	
 	protected int tx, ty, tw, th, typeId, level, maxLevel, minCityLevel;
 	public int bx, by, bw, bh;
@@ -37,6 +38,7 @@ public abstract class Building extends ClickableComponent
 	 * 1 = built<br>
 	 * 2 = deconstruction<br>
 	 * 3 = upgrading<br>
+	 * >3 = everything building specific<br>
 	 */
 	protected int stage, prevStage;
 	protected int stageChangeSeconds;
@@ -119,7 +121,7 @@ public abstract class Building extends ClickableComponent
 			
 			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this, g);
 			
-			float duration = Math.round(stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
+			float duration = getStageChangeDuration();
 			long destTimeStamp = stageChangeTimestamp + (long) duration;
 			long deltaEnd = (destTimeStamp - System.currentTimeMillis() / 1000);
 			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeTimestamp);
@@ -211,11 +213,16 @@ public abstract class Building extends ClickableComponent
 		stageChangeTimestamp = s;
 	}
 	
+	protected float getStageChangeDuration()
+	{
+		return Math.round(stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
+	}
+	
 	public boolean isStageChangeReady()
 	{
 		if (stageChangeTimestamp == 0) return false;
 		
-		return System.currentTimeMillis() / 1000 - stageChangeTimestamp >= stageChangeSeconds * (stage == 0 ? 1 : DECONSTRUCT_FACTOR) / Game.world.getSpeed();
+		return System.currentTimeMillis() / 1000 - stageChangeTimestamp >= getStageChangeDuration();
 	}
 	
 	public String getName()
@@ -309,6 +316,9 @@ public abstract class Building extends ClickableComponent
 		level++;
 		stage = 1;
 	}
+	
+	public void handleSpecificStageChange()
+	{}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)
 	{

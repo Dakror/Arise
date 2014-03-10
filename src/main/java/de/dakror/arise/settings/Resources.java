@@ -20,6 +20,9 @@ public class Resources
 		WOOD("Holz", 3, 0, 4, true),
 		STONE("Stein", 1, 1, 2, true),
 		BUILDINGS("Gebäude", 3, 3, 0, false),
+		SWORDFIGHTER("Schwertkämpfer", 4, 0, 0, false),
+		LANCEBEARER("Lanzenträger", 4, 1, 0, false),
+		ARMY("Truppen", 0, 4, 0, false),
 		
 		;
 		

@@ -71,6 +71,7 @@ public class City extends ClickableComponent
 		if (Game.currentGame.alpha == 1 && gotoCity)
 		{
 			CityLayer cl = new CityLayer(City.this);
+			CityHUDLayer.cl = cl;
 			Game.currentGame.addLayer(cl);
 			Game.currentGame.addLayer(new CityHUDLayer(cl));
 			gotoCity = false;

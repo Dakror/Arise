@@ -16,6 +16,7 @@ import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.arise.ui.BuildButton;
 import de.dakror.arise.ui.ResourceLabel;
 import de.dakror.gamesetup.GameFrame;
@@ -140,22 +141,25 @@ public class CityHUDLayer extends Layer
 			});
 			components.add(barn);
 			
-			ResourceLabel gold = new ResourceLabel(20, 20, CityLayer.resources, Resource.GOLD);
+			ResourceLabel gold = new ResourceLabel(20, 20, Resource.GOLD);
 			components.add(gold);
 			
-			ResourceLabel wood = new ResourceLabel(190 + gold.getX(), 20, CityLayer.resources, Resource.WOOD);
+			ResourceLabel wood = new ResourceLabel(190 + gold.getX(), 20, Resource.WOOD);
 			components.add(wood);
 			
-			ResourceLabel stone = new ResourceLabel(400 + gold.getX(), 20, CityLayer.resources, Resource.STONE);
+			ResourceLabel stone = new ResourceLabel(400 + gold.getX(), 20, Resource.STONE);
 			components.add(stone);
 			
-			ResourceLabel buildings = new ResourceLabel(70 + gold.getX(), 60, CityLayer.resources, Resource.BUILDINGS);
+			ResourceLabel buildings = new ResourceLabel(gold.getX(), 60, Resource.BUILDINGS);
 			buildings.off = new Center(0, 0, cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS);
 			components.add(buildings);
 			
-			ResourceLabel people = new ResourceLabel(270 + gold.getX(), 60, CityLayer.resources, Resource.PEOPLE);
+			ResourceLabel people = new ResourceLabel(wood.getX(), 60, Resource.PEOPLE);
 			people.off = 20;
 			components.add(people);
+			
+			ArmyLabel army = new ArmyLabel(stone.getX(), 60);
+			components.add(army);
 			
 			updateBuildingbar();
 			
@@ -267,7 +271,12 @@ public class CityHUDLayer extends Layer
 			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
 			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1;
 			
-			selectedBuilding.getGuiContainer().update(tick);
+			if (selectedBuilding.getStage() == 1) selectedBuilding.getGuiContainer().update(tick);
+			else
+			{
+				for (Component c : selectedBuilding.getGuiContainer().components)
+					c.enabled = false;
+			}
 			
 			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}

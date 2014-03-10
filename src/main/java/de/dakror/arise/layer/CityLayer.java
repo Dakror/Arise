@@ -25,6 +25,7 @@ import de.dakror.arise.game.building.Center;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
@@ -47,8 +48,14 @@ public class CityLayer extends Layer
 	public CityLayer(City city)
 	{
 		modal = true;
-		placedBuildings = false;
 		this.city = city;
+	}
+	
+	@Override
+	public void init()
+	{
+		placedBuildings = false;
+		
 		try
 		{
 			data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId())));
@@ -56,6 +63,15 @@ public class CityLayer extends Layer
 			resources.set(Resource.WOOD, (float) data.getDouble("WOOD"));
 			resources.set(Resource.GOLD, (float) data.getDouble("GOLD"));
 			resources.set(Resource.STONE, (float) data.getDouble("STONE"));
+			
+			String a = data.getString("ARMY");
+			if (a.trim().length() > 0)
+			{
+				String[] army = a.split(":");
+				for (int i = 0; i < army.length; i++)
+					resources.set(ArmyLabel.ARMY[i], Integer.parseInt(army[i]));
+			}
+			
 			placeBuildings();
 			updateBuildingStages();
 			saveData();
@@ -65,10 +81,6 @@ public class CityLayer extends Layer
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void init()
-	{}
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -160,17 +172,18 @@ public class CityLayer extends Layer
 			{
 				((Building) c).setStageChangeTimestamp(0);
 				if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
-				else if (((Building) c).getStage() == 3)
-				{
-					((Building) c).levelUp();
-					if (c instanceof Center) city.levelUp();
-				}
-				else
+				else if (((Building) c).getStage() == 2)
 				{
 					components.remove(c);
 					CityHUDLayer.selectedBuilding = null;
 					resources.add(Resource.BUILDINGS, -1);
 				}
+				else if (((Building) c).getStage() == 3)
+				{
+					((Building) c).levelUp();
+					if (c instanceof Center) city.levelUp();
+				}
+				else ((Building) c).handleSpecificStageChange();
 				
 				changedOne = true;
 			}
@@ -217,6 +230,7 @@ public class CityLayer extends Layer
 			url += "&wood=" + resources.getF(Resource.WOOD);
 			url += "&stone=" + resources.getF(Resource.STONE);
 			url += "&gold=" + resources.getF(Resource.GOLD);
+			url += "&army=" + resources.get(Resource.SWORDFIGHTER) + ":" + resources.get(Resource.LANCEBEARER);
 			url += "&level=" + city.getLevel();
 			url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
 			

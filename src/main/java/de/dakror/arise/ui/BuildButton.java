@@ -162,7 +162,6 @@ public class BuildButton extends IconButton
 			if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
 			if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
 			
-			
 			g.drawImage(tooltipCache, x1, y1, null);
 			
 			for (int i = 0; i < resources.size(); i++)

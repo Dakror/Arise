@@ -272,11 +272,7 @@ public class CityHUDLayer extends Layer
 			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1;
 			
 			if (selectedBuilding.getStage() == 1) selectedBuilding.getGuiContainer().update(tick);
-			else
-			{
-				for (Component c : selectedBuilding.getGuiContainer().components)
-					c.enabled = false;
-			}
+			else selectedBuilding.updateGuiButtons();
 			
 			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}

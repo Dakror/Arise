@@ -97,6 +97,7 @@ public class Game extends GameApplet
 			Building.UPGRADE_FACTOR = (float) buildingsConfig.getDouble("upgrade");
 			Building.MAX_LEVEL = buildingsConfig.getInt("maxlevel");
 			Building.WARRIOR_BUILDTIME = buildingsConfig.getInt("warriortime");
+			Building.MAX_QUEUE = buildingsConfig.getInt("maxqueue");
 			
 			Calendar calendar = new GregorianCalendar();
 			calendar.set(Calendar.MILLISECOND, 0);

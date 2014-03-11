@@ -30,6 +30,7 @@ public abstract class Building extends ClickableComponent
 	public static float UPGRADE_FACTOR;
 	public static int MAX_LEVEL;
 	public static int WARRIOR_BUILDTIME;
+	public static int MAX_QUEUE;
 	
 	protected int tx, ty, tw, th, typeId, level, maxLevel, minCityLevel;
 	public int bx, by, bw, bh;
@@ -318,6 +319,9 @@ public abstract class Building extends ClickableComponent
 	}
 	
 	public void handleSpecificStageChange()
+	{}
+	
+	public void updateGuiButtons()
 	{}
 	
 	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)

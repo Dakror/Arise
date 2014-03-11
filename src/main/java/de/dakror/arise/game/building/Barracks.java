@@ -39,31 +39,35 @@ public class Barracks extends Building
 			@Override
 			public void trigger()
 			{
-				CityLayer.resources.add(Resources.mul(r, -1));
-				
-				setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-				setStage(4);
-				
-				CityHUDLayer.cl.saveData();
+				boolean inrange = stage > 3 && stage - 3 < Building.MAX_QUEUE - 1;
+				if (inrange)
+				{
+					CityLayer.resources.add(Resources.mul(r, -1));
+					
+					if (stageChangeTimestamp == 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+					setStage(stage + 1);
+					
+					CityHUDLayer.cl.saveData();
+				}
 			}
 		});
 		
-		final Resources r2 = new Resources();
-		r2.add(Resource.GOLD, 40);
-		r2.add(Resource.WOOD, 20);
-		addGuiButton(1, 1, new Point(4, 1), "Lanzenträger", "Ein mäßig stark und gepanzerter, jedoch schneller Nahkämpfer.", r2, 0, new ClickEvent()
-		{
-			@Override
-			public void trigger()
-			{
-				CityLayer.resources.add(Resources.mul(r2, -1));
-				
-				setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-				setStage(5);
-				
-				CityHUDLayer.cl.saveData();
-			}
-		});
+		// final Resources r2 = new Resources();
+		// r2.add(Resource.GOLD, 40);
+		// r2.add(Resource.WOOD, 20);
+		// addGuiButton(1, 1, new Point(4, 1), "Lanzenträger", "Ein mäßig stark und gepanzerter, jedoch schneller Nahkämpfer.", r2, 0, new ClickEvent()
+		// {
+		// @Override
+		// public void trigger()
+		// {
+		// CityLayer.resources.add(Resources.mul(r2, -1));
+		//
+		// setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+		// setStage(5);
+		//
+		// CityHUDLayer.cl.saveData();
+		// }
+		// });
 		
 		init();
 	}
@@ -77,17 +81,26 @@ public class Barracks extends Building
 	@Override
 	public void handleSpecificStageChange()
 	{
-		if (stage == 4)
+		if (stage > 3 && stage - 3 < Building.MAX_QUEUE)
 		{
 			CityLayer.resources.add(Resource.SWORDFIGHTER, 1);
-			setStage(1);
+			setStage(stage - 1);
+			if (stage > 3 && stage - 3 < Building.MAX_QUEUE) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
 			CityHUDLayer.cl.saveData();
 		}
-		if (stage == 5)
-		{
-			CityLayer.resources.add(Resource.LANCEBEARER, 1);
-			setStage(1);
-			CityHUDLayer.cl.saveData();
-		}
+		
+		
+		// if (stage == 5)
+		// {
+		// CityLayer.resources.add(Resource.LANCEBEARER, 1);
+		// setStage(1);
+		// CityHUDLayer.cl.saveData();
+		// }
+	}
+	
+	@Override
+	public void updateGuiButtons()
+	{
+		guiContainer.components.get(0).enabled = stage > 3 && stage - 3 < Building.MAX_QUEUE;
 	}
 }

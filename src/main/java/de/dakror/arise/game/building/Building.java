@@ -33,7 +33,7 @@ public abstract class Building extends ClickableComponent
 	public static JSONObject TROOPS;
 	public static int MAX_QUEUE;
 	
-	protected int tx, ty, tw, th, typeId, level, maxLevel, minCityLevel;
+	protected int tx, ty, tw, th, typeId, level, maxLevel, levelFac, minCityLevel;
 	public int bx, by, bw, bh;
 	/**
 	 * 0 = construction<br>
@@ -95,6 +95,7 @@ public abstract class Building extends ClickableComponent
 				stageChangeSeconds = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
 				minCityLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
 				maxLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("maxlevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("maxlevel") : MAX_LEVEL;
+				levelFac = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("levelfac") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("levelfac") : MAX_LEVEL;
 			}
 		}
 		catch (JSONException e)
@@ -254,7 +255,7 @@ public abstract class Building extends ClickableComponent
 		res.add(buildingCosts);
 		
 		for (Resource r : res.getFilled())
-			res.set(r, (int) Math.round((MAX_LEVEL / (float) maxLevel) * res.get(r) * Math.pow(UPGRADE_FACTOR, level + 1)));
+			res.set(r, (int) Math.round((MAX_LEVEL / (float) levelFac) * res.get(r) * Math.pow(UPGRADE_FACTOR, level + 1)));
 		
 		return res;
 	}

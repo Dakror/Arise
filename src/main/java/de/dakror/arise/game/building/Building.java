@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
@@ -29,7 +30,7 @@ public abstract class Building extends ClickableComponent
 	public static float DECONSTRUCT_FACTOR;
 	public static float UPGRADE_FACTOR;
 	public static int MAX_LEVEL;
-	public static int WARRIOR_BUILDTIME;
+	public static JSONObject TROOPS;
 	public static int MAX_QUEUE;
 	
 	protected int tx, ty, tw, th, typeId, level, maxLevel, minCityLevel;
@@ -39,12 +40,12 @@ public abstract class Building extends ClickableComponent
 	 * 1 = built<br>
 	 * 2 = deconstruction<br>
 	 * 3 = upgrading<br>
-	 * >3 = everything building specific<br>
 	 */
 	protected int stage, prevStage;
 	protected int stageChangeSeconds;
 	protected long stageChangeTimestamp;
 	protected String name, desc;
+	protected String metadata;
 	protected Resources buildingCosts, products, scale;
 	protected Container guiContainer;
 	
@@ -59,6 +60,7 @@ public abstract class Building extends ClickableComponent
 		bx = by = 0;
 		bw = width;
 		bh = height;
+		metadata = "";
 		guiContainer = new Container.DefaultContainer();
 		
 		addClickEvent(new ClickEvent()
@@ -116,7 +118,7 @@ public abstract class Building extends ClickableComponent
 		
 		if (stage > 0) drawStage1(g);
 		
-		if (stage != 1 && stageChangeTimestamp > 0)
+		if (stageChangeTimestamp > 0)
 		{
 			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
 			
@@ -238,7 +240,7 @@ public abstract class Building extends ClickableComponent
 	
 	public String getData()
 	{
-		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeTimestamp;
+		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeTimestamp + (metadata.length() > 0 ? ":" + metadata : "");
 	}
 	
 	public Resources getBuildingCosts()
@@ -291,6 +293,11 @@ public abstract class Building extends ClickableComponent
 		return maxLevel;
 	}
 	
+	public void setMetadata(String s)
+	{
+		metadata = s;
+	}
+	
 	protected void addGuiButton(int x, int y, Image icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action)
 	{
 		BuildButton b = new BuildButton(x * 56 + Game.getWidth() - 270, y * 56 + Game.getHeight() - 170, 32, 32, icon);
@@ -306,6 +313,9 @@ public abstract class Building extends ClickableComponent
 		addGuiButton(x, y, Game.getImage("system/icons.png").getSubimage(icon.x * 24, icon.y * 24, 24, 24), tooltip, desc, buildingCosts, minCityLevel, action);
 	}
 	
+	public void onSpecificChange()
+	{}
+	
 	@Override
 	public boolean contains(int x, int y)
 	{
@@ -317,9 +327,6 @@ public abstract class Building extends ClickableComponent
 		level++;
 		stage = 1;
 	}
-	
-	public void handleSpecificStageChange()
-	{}
 	
 	public void updateGuiButtons()
 	{}

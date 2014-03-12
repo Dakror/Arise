@@ -2,6 +2,7 @@ package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
@@ -272,7 +273,7 @@ public class CityHUDLayer extends Layer
 			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1;
 			
 			if (selectedBuilding.getStage() == 1) selectedBuilding.getGuiContainer().update(tick);
-			else selectedBuilding.updateGuiButtons();
+			selectedBuilding.updateGuiButtons();
 			
 			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}
@@ -318,6 +319,7 @@ public class CityHUDLayer extends Layer
 					break;
 				}
 			}
+			if (new Rectangle(Game.getWidth() - 300, Game.getHeight() - 200, 300, 200).contains(e.getPoint())) anyComponentClicked = true;
 		}
 		super.mousePressed(e);
 		

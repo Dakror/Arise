@@ -96,8 +96,7 @@ public class Game extends GameApplet
 			Building.DECONSTRUCT_FACTOR = (float) buildingsConfig.getDouble("deconstruct");
 			Building.UPGRADE_FACTOR = (float) buildingsConfig.getDouble("upgrade");
 			Building.MAX_LEVEL = buildingsConfig.getInt("maxlevel");
-			Building.WARRIOR_BUILDTIME = buildingsConfig.getInt("warriortime");
-			Building.MAX_QUEUE = buildingsConfig.getInt("maxqueue");
+			Building.TROOPS = buildingsConfig.getJSONObject("troops");
 			
 			Calendar calendar = new GregorianCalendar();
 			calendar.set(Calendar.MILLISECOND, 0);
@@ -119,19 +118,22 @@ public class Game extends GameApplet
 					}
 				}
 			}, calendar.getTime(), INTERVAL * 1000);
+			
+			
+			world = new World(worldID);
+			
+			Building.MAX_QUEUE = buildingsConfig.getInt("maxqueue") * world.getSpeed();
+			
+			layers.clear();
+			
+			addLayer(world);
+			
+			fadeTo(0, 0.05f);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		
-		world = new World(worldID);
-		
-		layers.clear();
-		
-		addLayer(world);
-		
-		fadeTo(0, 0.05f);
 	}
 	
 	public void readManifest() throws Exception

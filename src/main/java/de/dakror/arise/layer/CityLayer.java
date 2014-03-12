@@ -183,7 +183,7 @@ public class CityLayer extends Layer
 					((Building) c).levelUp();
 					if (c instanceof Center) city.levelUp();
 				}
-				else ((Building) c).handleSpecificStageChange();
+				else ((Building) c).onSpecificChange();
 				
 				changedOne = true;
 			}
@@ -203,8 +203,8 @@ public class CityLayer extends Layer
 			String[] parts = building.split(":");
 			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
 			b.setStage(Integer.parseInt(parts[4]));
-			
 			b.setStageChangeTimestamp(Long.parseLong(parts[5]));
+			if (parts.length == 7) b.setMetadata(parts[6].trim());
 			
 			components.add(b);
 			resources.add(Resource.BUILDINGS, 1);

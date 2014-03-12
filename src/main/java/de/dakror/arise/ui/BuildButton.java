@@ -28,6 +28,7 @@ public class BuildButton extends IconButton
 	String desc;
 	BufferedImage tooltipCache;
 	int tooltipRows, tooltipHeight, minCityLevel, level, maxLevel;
+	public int number;
 	boolean upgradeMode;
 	
 	public BuildButton(int x, int y, int width, int height, Image img)
@@ -94,6 +95,14 @@ public class BuildButton extends IconButton
 	public Resources getBuildingCosts()
 	{
 		return buildingCosts;
+	}
+	
+	@Override
+	public void draw(Graphics2D g)
+	{
+		super.draw(g);
+		
+		if (number > 0) Helper.drawRightAlignedString(number + "", x + width + 7, y + height + 5, g, 35);
 	}
 	
 	@Override

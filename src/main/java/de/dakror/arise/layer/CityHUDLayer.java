@@ -140,7 +140,7 @@ public class CityHUDLayer extends Layer
 					cl.activeBuilding = new Barn(0, 0, 0);
 				}
 			});
-			components.add(barn);
+			// components.add(barn);
 			
 			ResourceLabel gold = new ResourceLabel(20, 20, Resource.GOLD);
 			components.add(gold);

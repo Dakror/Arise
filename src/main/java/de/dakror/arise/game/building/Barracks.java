@@ -63,8 +63,7 @@ public class Barracks extends Building
 	
 	protected void queue(Resources r, String n)
 	{
-		boolean inrange = metadata.length() < Building.MAX_QUEUE;
-		if (inrange)
+		if (metadata.length() < Building.MAX_QUEUE)
 		{
 			CityLayer.resources.add(Resources.mul(r, -1));
 			if (metadata.length() == 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);

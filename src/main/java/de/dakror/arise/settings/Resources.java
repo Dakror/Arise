@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.settings;
+package de.dakror.arise.settings;
 
 import java.util.ArrayList;
 import java.util.HashMap;

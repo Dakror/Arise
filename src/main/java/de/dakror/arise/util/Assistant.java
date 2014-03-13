@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.util;
+package de.dakror.arise.util;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -6,10 +6,10 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
+import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arisewebsite.game.Game;
 import de.dakror.arisewebsite.game.building.Building;
-import de.dakror.arisewebsite.settings.Resources;
-import de.dakror.arisewebsite.settings.Resources.Resource;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.util.Helper;
 

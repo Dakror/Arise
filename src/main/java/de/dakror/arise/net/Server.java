@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
-import de.dakror.arisewebsite.settings.CFG;
+import de.dakror.arise.settings.CFG;
 
 /**
  * @author Dakror
@@ -32,7 +32,7 @@ public class Server extends Thread
 			socket = new DatagramSocket(new InetSocketAddress(ip, Server.PORT));
 			setName("Server-Thread");
 			setPriority(MAX_PRIORITY);
-			CFG.p("[SERVER]: Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
+			CFG.p("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			start();
 		}
 		catch (SocketException e)
@@ -118,7 +118,5 @@ public class Server extends Thread
 		running = false;
 		// if (updater != null) updater.closeRequested = true;
 		socket.close();
-		CFG.p("[SERVER]: Server closed");
 	}
-	
 }

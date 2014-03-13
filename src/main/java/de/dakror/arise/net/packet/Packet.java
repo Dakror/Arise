@@ -10,6 +10,7 @@ public abstract class Packet
 	public static enum PacketTypes
 	{
 		INVALID,
+		HANDSHAKE,
 		
 		;
 		public int getID()

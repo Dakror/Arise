@@ -14,13 +14,12 @@ import java.util.jar.Manifest;
 
 import org.json.JSONObject;
 
-import com.sun.security.ntlm.Client;
-
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
+import de.dakror.arise.net.Client;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.InputField;

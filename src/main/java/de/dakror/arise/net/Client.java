@@ -103,6 +103,7 @@ public class Client extends Thread
 			}
 			catch (Exception e)
 			{
+				e.printStackTrace();
 				socket.setSoTimeout(0);
 				return false;
 			}

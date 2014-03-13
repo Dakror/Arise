@@ -35,7 +35,7 @@ public class LoginLayer extends Layer
 	TextButton login;
 	InputField username, password;
 	
-	ResourceBundle labels = ResourceBundle.getBundle("MessagesBundle", Locale.getDefault());
+	ResourceBundle labels = ResourceBundle.getBundle("lang.MessagesBundle", Locale.getDefault());
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -228,7 +228,7 @@ public class LoginLayer extends Layer
 		
 		if (e.getKeyCode() == KeyEvent.VK_F2)
 		{
-			String id = JOptionPane.showInputDialog("ID der gewünschten Welt: ", 1);
+			String id = JOptionPane.showInputDialog(labels.getString("login.worldselect"), 1);
 			try
 			{
 				int i = Integer.parseInt(id);

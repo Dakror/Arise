@@ -85,6 +85,7 @@ public class Server extends Thread
 				try
 				{
 					sendPacket(new Packet00Handshake(), new User("", address, port));
+					CFG.p("shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
 				catch (IOException e)

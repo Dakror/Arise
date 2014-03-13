@@ -12,6 +12,9 @@ import java.security.MessageDigest;
 
 import javax.swing.JOptionPane;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import de.dakror.arise.Arise;
@@ -31,6 +34,8 @@ public class LoginLayer extends Layer
 	BufferedImage cache;
 	TextButton login;
 	InputField username, password;
+	
+	ResourceBundle labels = ResourceBundle.getBundle("MessagesBundle", Locale.getDefault());
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -74,7 +79,7 @@ public class LoginLayer extends Layer
 		login = null;
 		components.clear();
 		
-		TextButton login = new TextButton((Game.getWidth() - (TextButton.WIDTH + 40)) / 2 + 20, 320, "Anmelden");
+		TextButton login = new TextButton((Game.getWidth() - (TextButton.WIDTH + 40)) / 2 + 20, 320, labels.getString("logon"));
 		login.addClickEvent(new ClickEvent()
 		{
 			@Override
@@ -84,7 +89,7 @@ public class LoginLayer extends Layer
 			}
 		});
 		components.add(login);
-		TextButton register = new TextButton(login.getX(), login.getY() + TextButton.HEIGHT, "Registrieren");
+		TextButton register = new TextButton(login.getX(), login.getY() + TextButton.HEIGHT, labels.getString("register"));
 		register.addClickEvent(new ClickEvent()
 		{
 			@Override
@@ -102,7 +107,7 @@ public class LoginLayer extends Layer
 			}
 		});
 		components.add(register);
-		TextButton exit = new TextButton(login.getX(), register.getY() + TextButton.HEIGHT * 2, "Beenden");
+		TextButton exit = new TextButton(login.getX(), register.getY() + TextButton.HEIGHT * 2, labels.getString("exit"));
 		exit.addClickEvent(new ClickEvent()
 		{
 			@Override
@@ -125,7 +130,7 @@ public class LoginLayer extends Layer
 	public void initSecondPage()
 	{
 		components.clear();
-		TextButton back = new TextButton((Game.getWidth() - (TextButton.WIDTH + 40)) / 2 + 20, 320, "Zurück");
+		TextButton back = new TextButton((Game.getWidth() - (TextButton.WIDTH + 40)) / 2 + 20, 320, labels.getString("back"));
 		back.addClickEvent(new ClickEvent()
 		{
 			@Override
@@ -138,7 +143,7 @@ public class LoginLayer extends Layer
 		
 		username = new InputField(back.getX(), back.getY() + TextButton.HEIGHT, TextButton.WIDTH, 40);
 		username.setAllowed("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890öäüÖÄÜß");
-		username.setHint("Benutzername");
+		username.setHint(labels.getString("username"));
 		components.add(username);
 		
 		password = new InputField(back.getX(), back.getY() + TextButton.HEIGHT * 2, TextButton.WIDTH, 40);
@@ -146,10 +151,10 @@ public class LoginLayer extends Layer
 		String allowed = password.getAllowed();
 		allowed += ",;.:-_#'+*~!§$%&/()=?<>| ";
 		password.setAllowed(allowed);
-		password.setHint("Passwort");
+		password.setHint(labels.getString("password"));
 		components.add(password);
 		
-		login = new TextButton(back.getX(), back.getY() + TextButton.HEIGHT * 3, "Anmelden");
+		login = new TextButton(back.getX(), back.getY() + TextButton.HEIGHT * 3, labels.getString("logon"));
 		login.enabled = false;
 		login.addClickEvent(new ClickEvent()
 		{
@@ -194,7 +199,7 @@ public class LoginLayer extends Layer
 	{
 		if (!response.contains("true"))
 		{
-			Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
+			Game.currentGame.addLayer(new Alert(labels.getString("incorrect_login"), new ClickEvent()
 			{
 				@Override
 				public void trigger()

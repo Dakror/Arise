@@ -84,7 +84,11 @@ public class Client extends Thread
 	
 	public boolean connectToServer() throws Exception
 	{
-		if (!Game.inLan) serverIP = InetAddress.getByName("arisesv.dakror.de");
+		if (!Game.inLan)
+		{
+			serverIP = InetAddress.getByName("arisesv.dakror.de");
+			sendPacket(new Packet00Handshake());
+		}
 		else serverIP = getLanServerIP();
 		
 		return serverIP != null;

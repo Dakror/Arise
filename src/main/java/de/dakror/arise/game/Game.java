@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -14,14 +15,18 @@ import java.util.jar.Manifest;
 
 import org.json.JSONObject;
 
+import de.dakror.arise.Arise;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.net.Client;
 import de.dakror.gamesetup.applet.GameApplet;
+import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
+import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.util.Helper;
 
@@ -61,13 +66,43 @@ public class Game extends GameApplet
 		{
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
 			readManifest();
+			
+			addLayer(new LoginLayer());
+			LoadingLayer ll = new LoadingLayer();
+			addLayer(ll);
+			
+			client = new Client();
+			if (!client.connectToServer())
+			{
+				addLayer(new Alert("Anscheinend ist der Server aktuell nicht erreichbar. Wir untersuchen dieses Problem bereits, um es so schnell wie möglich zu beheben.", new ClickEvent()
+				{
+					@Override
+					public void trigger()
+					{
+						try
+						{
+							if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
+							else System.exit(0);
+						}
+						catch (MalformedURLException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}));
+			}
+			else
+			{
+				removeLayer(ll);
+				client.start();
+			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 		
-		addLayer(new LoginLayer());
+		
 	}
 	
 	@Override

@@ -11,6 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
+import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.settings.CFG;
 
 /**
@@ -78,6 +79,18 @@ public class Server extends Thread
 			{
 				CFG.p("Received invalid packet: " + new String(data));
 				break;
+			}
+			case HANDSHAKE:
+			{
+				try
+				{
+					sendPacket(new Packet00Handshake(), new User("", address, port));
+					break;
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 			default:
 				CFG.p("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");

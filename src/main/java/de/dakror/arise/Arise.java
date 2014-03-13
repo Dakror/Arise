@@ -75,7 +75,7 @@ public class Arise extends JApplet
 	{
 		try
 		{
-			if (args.length >= 0 && args[0].equals("-lan")) Game.inLan = true;
+			if (args.length > 0 && args[0].equals("-lan")) Game.inLan = true;
 			
 			File jar = new File(Arise.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 			

@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite;
+package de.dakror.arise;
 
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
@@ -14,8 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import de.dakror.arisewebsite.game.Game;
-import de.dakror.arisewebsite.game.UpdateThread;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.game.UpdateThread;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -75,6 +75,8 @@ public class Arise extends JApplet
 	{
 		try
 		{
+			if (args.length >= 0 && args[0].equals("-lan")) Game.inLan = true;
+			
 			File jar = new File(Arise.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 			
 			long time = Long.parseLong(Helper.getURLContent(new URL("http://dakror.de/arise/bin/version")).trim());

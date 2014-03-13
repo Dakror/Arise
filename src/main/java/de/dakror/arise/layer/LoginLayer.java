@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.layer;
+package de.dakror.arise.layer;
 
 import java.awt.Desktop;
 import java.awt.Graphics2D;
@@ -14,8 +14,8 @@ import javax.swing.JOptionPane;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
-import de.dakror.arisewebsite.Arise;
-import de.dakror.arisewebsite.game.Game;
+import de.dakror.arise.Arise;
+import de.dakror.arise.game.Game;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;

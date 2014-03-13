@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.layer;
+package de.dakror.arise.layer;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
@@ -19,13 +19,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.dakror.arisewebsite.game.Game;
-import de.dakror.arisewebsite.game.building.Building;
-import de.dakror.arisewebsite.game.building.Center;
-import de.dakror.arisewebsite.game.world.City;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.building.Center;
+import de.dakror.arise.game.world.City;
+import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.arisewebsite.settings.Resources;
 import de.dakror.arisewebsite.settings.Resources.Resource;
-import de.dakror.arisewebsite.ui.ArmyLabel;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;

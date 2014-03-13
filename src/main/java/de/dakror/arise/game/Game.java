@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.game;
+package de.dakror.arise.game;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -14,8 +14,10 @@ import java.util.jar.Manifest;
 
 import org.json.JSONObject;
 
-import de.dakror.arisewebsite.game.building.Building;
-import de.dakror.arisewebsite.game.world.World;
+import com.sun.security.ntlm.Client;
+
+import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.world.World;
 import de.dakror.arisewebsite.layer.CityHUDLayer;
 import de.dakror.arisewebsite.layer.LoginLayer;
 import de.dakror.arisewebsite.layer.PauseLayer;
@@ -32,11 +34,13 @@ public class Game extends GameApplet
 	public static JSONObject buildingsConfig;
 	public static Game currentGame;
 	public static World world;
+	public static Client client;
 	public static int userID;
 	public static int worldID = 1;
 	public static String buildDate = "from now";
 	public static long buildTimestamp = 0;
 	public static int secondInMinute;
+	public static boolean inLan = false;
 	
 	public static final int INTERVAL = 10;
 	

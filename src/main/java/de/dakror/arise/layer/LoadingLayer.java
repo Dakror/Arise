@@ -1,8 +1,8 @@
-package de.dakror.arisewebsite.layer;
+package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
 
-import de.dakror.arisewebsite.game.Game;
+import de.dakror.arise.game.Game;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.util.Helper;
 

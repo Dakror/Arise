@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.ui;
+package de.dakror.arise.ui;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -13,28 +13,38 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class ArmyLabel extends Component
+public class ResourceLabel extends Component
 {
-	public static Resource[] ARMY = { Resource.SWORDFIGHTER, Resource.LANCEBEARER };
+	Resource r;
 	
-	public ArmyLabel(int x, int y)
+	public int off, perHour;
+	
+	public ResourceLabel(int x, int y, Resource r)
 	{
 		super(x, y, 0, 25);
+		
+		this.r = r;
+		off = -1;
+		perHour = 0;
 	}
 	
 	@Override
 	public void draw(Graphics2D g)
 	{
-		int army = 0;
-		for (Resource r : ARMY)
-			army += CityLayer.resources.get(r);
+		String perhour = perHour + "";
+		if (perhour.length() > 3) perhour = perhour.substring(0, perhour.length() - 3) + "k";
+		if (perhour.length() > 5) perhour = perhour.substring(0, perhour.length() - 5) + "m";
 		
-		String string = army + "";
-		if (string.length() > 3) string = string.substring(0, string.length() - 3) + "k";
-		if (string.length() > 5) string = string.substring(0, string.length() - 5) + "m";
+		String string = CityLayer.resources.get(r) + "" + (off > -1 ? " / " + off : "") + (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + perhour + "/h)" : "");
 		
 		if (width == 0) width = 25 + g.getFontMetrics(g.getFont().deriveFont(25f)).stringWidth(string);
-		Assistant.drawLabelWithIcon(x, y, 25, new Point(Resource.ARMY.getIconX(), Resource.ARMY.getIconY()), string, 25, g);
+		
+		Assistant.drawLabelWithIcon(x, y, 25, new Point(r.getIconX(), r.getIconY()), string, 25, g);
+	}
+	
+	public Resource getResource()
+	{
+		return r;
 	}
 	
 	@Override
@@ -44,8 +54,8 @@ public class ArmyLabel extends Component
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		int width = 150;
-		int height = ARMY.length * 30 + 70;
+		int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(r.getName()) + 30;
+		int height = 64;
 		int x1 = x;
 		int y1 = y;
 		
@@ -53,11 +63,6 @@ public class ArmyLabel extends Component
 		if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
 		
 		Helper.drawShadow(x1, y1, width, height, g);
-		Helper.drawString("Truppen", x1 + 20, y1 + 40, g, 35);
-		for (int i = 0; i < ARMY.length; i++)
-		{
-			Resource r = ARMY[i];
-			Assistant.drawResource(CityLayer.resources, r, x1 + 20, y1 + i * 30 + 50, 30, 30, g);
-		}
+		Helper.drawString(r.getName(), x1 + 15, y1 + 40, g, 30);
 	}
 }

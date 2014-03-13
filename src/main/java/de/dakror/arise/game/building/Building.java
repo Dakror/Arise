@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.game.building;
+package de.dakror.arise.game.building;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -9,11 +9,11 @@ import java.awt.Rectangle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.dakror.arisewebsite.game.Game;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.ui.BuildButton;
 import de.dakror.arisewebsite.layer.CityHUDLayer;
 import de.dakror.arisewebsite.settings.Resources;
 import de.dakror.arisewebsite.settings.Resources.Resource;
-import de.dakror.arisewebsite.ui.BuildButton;
 import de.dakror.arisewebsite.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.ClickEvent;

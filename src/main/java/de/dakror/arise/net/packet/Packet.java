@@ -11,6 +11,7 @@ public abstract class Packet
 	{
 		INVALID,
 		HANDSHAKE,
+		LOGIN,
 		
 		;
 		public int getID()

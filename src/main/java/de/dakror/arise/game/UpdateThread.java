@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.game;
+package de.dakror.arise.game;
 
 import de.dakror.gamesetup.Updater;
 

@@ -1,11 +1,11 @@
-package de.dakror.arisewebsite.layer;
+package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.dakror.arisewebsite.Arise;
-import de.dakror.arisewebsite.game.Game;
+import de.dakror.arise.Arise;
+import de.dakror.arise.game.Game;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.button.TextButton;

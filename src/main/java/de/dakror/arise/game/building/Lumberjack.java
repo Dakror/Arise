@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.game.building;
+package de.dakror.arise.game.building;
 
 
 /**

@@ -11,10 +11,10 @@ import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.ui.BuildButton;
-import de.dakror.arisewebsite.layer.CityHUDLayer;
-import de.dakror.arisewebsite.settings.Resources;
-import de.dakror.arisewebsite.settings.Resources.Resource;
-import de.dakror.arisewebsite.util.Assistant;
+import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;

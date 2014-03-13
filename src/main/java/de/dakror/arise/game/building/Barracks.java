@@ -6,10 +6,10 @@ import org.json.JSONException;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.ui.BuildButton;
-import de.dakror.arisewebsite.layer.CityHUDLayer;
-import de.dakror.arisewebsite.layer.CityLayer;
-import de.dakror.arisewebsite.settings.Resources;
-import de.dakror.arisewebsite.settings.Resources.Resource;
+import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.gamesetup.ui.ClickEvent;
 
 /**

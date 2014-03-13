@@ -315,7 +315,7 @@ public class CityLayer extends Layer
 			@Override
 			public int compare(Component o1, Component o2)
 			{
-				return Integer.compare(o1.getY() + ((Building) o1).by * Building.GRID, o2.getY() + ((Building) o2).by * Building.GRID);
+				return Float.compare(o1.getY() + ((Building) o1).by * Building.GRID, o2.getY() + ((Building) o2).by * Building.GRID);
 			}
 		});
 		

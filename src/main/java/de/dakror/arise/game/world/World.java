@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.game.world;
+package de.dakror.arise.game.world;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,7 +11,7 @@ import java.net.URL;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import de.dakror.arisewebsite.game.Game;
+import de.dakror.arise.game.Game;
 import de.dakror.arisewebsite.layer.CityLayer;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Layer;

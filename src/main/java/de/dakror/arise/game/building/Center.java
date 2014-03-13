@@ -1,9 +1,9 @@
-package de.dakror.arisewebsite.game.building;
+package de.dakror.arise.game.building;
 
 import java.awt.Graphics2D;
 
-import de.dakror.arisewebsite.game.Game;
-import de.dakror.arisewebsite.game.world.City;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.game.world.City;
 import de.dakror.gamesetup.util.Helper;
 
 /**

@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.ui;
+package de.dakror.arise.ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -7,9 +7,9 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import de.dakror.arisewebsite.game.Game;
-import de.dakror.arisewebsite.game.building.Building;
-import de.dakror.arisewebsite.game.building.Center;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.building.Center;
 import de.dakror.arisewebsite.layer.CityHUDLayer;
 import de.dakror.arisewebsite.layer.CityLayer;
 import de.dakror.arisewebsite.settings.Resources;

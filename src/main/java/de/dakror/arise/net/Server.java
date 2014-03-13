@@ -1,6 +1,7 @@
 package de.dakror.arise.net;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -34,6 +35,10 @@ public class Server extends Thread
 			setPriority(MAX_PRIORITY);
 			CFG.p("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			start();
+		}
+		catch (BindException e)
+		{
+			CFG.p("There is a server already running on this machine!");
 		}
 		catch (SocketException e)
 		{
@@ -71,10 +76,11 @@ public class Server extends Thread
 		{
 			case INVALID:
 			{
+				CFG.p("Received invalid packet: " + new String(data));
 				break;
 			}
 			default:
-				CFG.p("[SERVER]: reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
+				CFG.p("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
 		}
 	}
 	

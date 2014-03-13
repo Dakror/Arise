@@ -1,15 +1,15 @@
-package de.dakror.arisewebsite.game.building;
+package de.dakror.arise.game.building;
 
 import java.awt.Point;
 
 import org.json.JSONException;
 
-import de.dakror.arisewebsite.game.Game;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.ui.BuildButton;
 import de.dakror.arisewebsite.layer.CityHUDLayer;
 import de.dakror.arisewebsite.layer.CityLayer;
 import de.dakror.arisewebsite.settings.Resources;
 import de.dakror.arisewebsite.settings.Resources.Resource;
-import de.dakror.arisewebsite.ui.BuildButton;
 import de.dakror.gamesetup.ui.ClickEvent;
 
 /**

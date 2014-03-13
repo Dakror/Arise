@@ -1,4 +1,4 @@
-package de.dakror.arisewebsite.layer;
+package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -6,20 +6,20 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import de.dakror.arisewebsite.game.Game;
-import de.dakror.arisewebsite.game.building.Barn;
-import de.dakror.arisewebsite.game.building.Barracks;
-import de.dakror.arisewebsite.game.building.Building;
-import de.dakror.arisewebsite.game.building.Center;
-import de.dakror.arisewebsite.game.building.Lumberjack;
-import de.dakror.arisewebsite.game.building.Mine;
-import de.dakror.arisewebsite.game.building.Quarry;
-import de.dakror.arisewebsite.game.world.City;
+import de.dakror.arise.game.Game;
+import de.dakror.arise.game.building.Barn;
+import de.dakror.arise.game.building.Barracks;
+import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.building.Center;
+import de.dakror.arise.game.building.Lumberjack;
+import de.dakror.arise.game.building.Mine;
+import de.dakror.arise.game.building.Quarry;
+import de.dakror.arise.game.world.City;
+import de.dakror.arise.ui.ArmyLabel;
+import de.dakror.arise.ui.BuildButton;
+import de.dakror.arise.ui.ResourceLabel;
 import de.dakror.arisewebsite.settings.Resources;
 import de.dakror.arisewebsite.settings.Resources.Resource;
-import de.dakror.arisewebsite.ui.ArmyLabel;
-import de.dakror.arisewebsite.ui.BuildButton;
-import de.dakror.arisewebsite.ui.ResourceLabel;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Confirm;
 import de.dakror.gamesetup.layer.Layer;

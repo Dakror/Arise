@@ -87,7 +87,25 @@ public class Client extends Thread
 		if (!Game.inLan)
 		{
 			serverIP = InetAddress.getByName("arisesv.dakror.de");
+			
+			socket.setSoTimeout(1000);
 			sendPacket(new Packet00Handshake());
+			DatagramPacket packet = new DatagramPacket(new byte[Server.PACKETSIZE], Server.PACKETSIZE);
+			try
+			{
+				socket.receive(packet);
+				
+				PacketTypes type = Packet.lookupPacket(packet.getData()[0]);
+				
+				socket.setSoTimeout(0);
+				
+				return type == PacketTypes.HANDSHAKE;
+			}
+			catch (Exception e)
+			{
+				socket.setSoTimeout(0);
+				return false;
+			}
 		}
 		else serverIP = getLanServerIP();
 		

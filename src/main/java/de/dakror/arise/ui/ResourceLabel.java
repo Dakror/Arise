@@ -3,9 +3,9 @@ package de.dakror.arise.ui;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
-import de.dakror.arisewebsite.layer.CityLayer;
-import de.dakror.arisewebsite.settings.Resources.Resource;
-import de.dakror.arisewebsite.util.Assistant;
+import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;

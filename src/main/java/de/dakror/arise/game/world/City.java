@@ -8,8 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arisewebsite.layer.CityHUDLayer;
-import de.dakror.arisewebsite.layer.CityLayer;
+import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.layer.CityLayer;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 

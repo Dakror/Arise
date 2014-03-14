@@ -12,6 +12,7 @@ public abstract class Packet
 		INVALID,
 		HANDSHAKE,
 		LOGIN,
+		DISCONNECT,
 		
 		;
 		public int getID()

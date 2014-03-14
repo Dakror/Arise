@@ -200,6 +200,8 @@ public class LoginLayer extends MPLayer
 	@Override
 	public void onReceivePacket(Packet p)
 	{
+		super.onReceivePacket(p);
+		
 		if (p.getType() == PacketTypes.LOGIN)
 		{
 			Game.currentGame.removeLoadingLayer();

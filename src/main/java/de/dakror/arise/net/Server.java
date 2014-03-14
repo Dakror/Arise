@@ -8,13 +8,17 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.net.packet.Packet01Login;
-import de.dakror.arise.settings.CFG;
+import de.dakror.arise.net.packet.Packet02Disconnect;
+import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -37,12 +41,12 @@ public class Server extends Thread
 			socket = new DatagramSocket(new InetSocketAddress(ip, Server.PORT));
 			setName("Server-Thread");
 			setPriority(MAX_PRIORITY);
-			CFG.p("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
+			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			start();
 		}
 		catch (BindException e)
 		{
-			CFG.e("There is a server already running on this machine!");
+			err("There is a server already running on this machine!");
 		}
 		catch (SocketException e)
 		{
@@ -80,15 +84,15 @@ public class Server extends Thread
 		{
 			case INVALID:
 			{
-				CFG.e("Received invalid packet: " + new String(data));
+				err("Received invalid packet: " + new String(data));
 				break;
 			}
 			case HANDSHAKE:
 			{
 				try
 				{
-					sendPacket(new Packet00Handshake(), new User("", address, port));
-					CFG.p("Shook hands with: " + address.getHostAddress() + ":" + port);
+					sendPacket(new Packet00Handshake(), new User(0, address, port));
+					out("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
 				catch (IOException e)
@@ -103,14 +107,14 @@ public class Server extends Thread
 					Packet01Login p = new Packet01Login(data);
 					String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + p.getUsername() + "&password=" + p.getPwdMd5()));
 					boolean loggedIn = s.contains("true");
-					User u = new User(p.getUsername(), address, port);
+					User u = new User(Integer.parseInt(s.replace("true:", "").trim()), address, port);
 					if (loggedIn)
 					{
-						CFG.p("User logged in: " + p.getUsername() + " (#" + Integer.parseInt(s.replace("true:", "").trim()) + ")");
+						out("User logged in: " + p.getUsername() + " (#" + u.getId() + ")");
 						clients.add(u);
 					}
 					
-					sendPacket(new Packet01Login(p.getUsername(), loggedIn ? Integer.parseInt(s.replace("true:", "").trim()) : 0, loggedIn), u);
+					sendPacket(new Packet01Login(p.getUsername(), loggedIn ? u.getId() : 0, loggedIn), u);
 				}
 				catch (Exception e)
 				{
@@ -118,8 +122,29 @@ public class Server extends Thread
 				}
 				break;
 			}
+			case DISCONNECT:
+			{
+				Packet02Disconnect p = new Packet02Disconnect(data);
+				for (User u : clients)
+				{
+					if (u.getId() == p.getUserId() && address.equals(u.getIP()))
+					{
+						try
+						{
+							sendPacket(new Packet02Disconnect(0, Cause.SERVER_CONFIRMED), u);
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+						clients.remove(u);
+						out("User disconnected: #" + u.getId() + " (" + p.getCause().name() + ")");
+					}
+				}
+				break;
+			}
 			default:
-				CFG.e("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
+				err("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
 		}
 	}
 	
@@ -133,11 +158,11 @@ public class Server extends Thread
 	{
 		for (User u : clients)
 		{
-			if (exception.getUsername() == null)
+			if (exception.getId() == 0)
 			{
 				if (exception.getIP().equals(u.getIP()) && exception.getPort() == u.getPort()) continue;
 			}
-			else if (exception.getUsername().equals(u.getUsername())) continue;
+			else if (exception.getId() == u.getId()) continue;
 			sendPacket(p, u);
 		}
 	}
@@ -152,16 +177,30 @@ public class Server extends Thread
 	
 	public void shutdown()
 	{
-		// try
-		// {
-		// sendPacketToAllClients(new Packet01Disconnect("##", de.dakror.spamwars.net.packet.Packet01Disconnect.Cause.SERVER_CLOSED));
-		// }
-		// catch (Exception e)
-		// {
-		// e.printStackTrace();
-		// }
+		try
+		{
+			sendPacketToAllClients(new Packet02Disconnect(0, Packet02Disconnect.Cause.SERVER_CLOSED));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		running = false;
 		// if (updater != null) updater.closeRequested = true;
 		socket.close();
+	}
+	
+	public void out(Object... p)
+	{
+		String timestamp = new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date());
+		if (p.length == 1) System.out.println(timestamp + p[0]);
+		else System.out.println(timestamp + Arrays.toString(p));
+	}
+	
+	public void err(Object... p)
+	{
+		String timestamp = new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date());
+		if (p.length == 1) System.err.println(timestamp + p[0]);
+		else System.err.println(timestamp + Arrays.toString(p));
 	}
 }

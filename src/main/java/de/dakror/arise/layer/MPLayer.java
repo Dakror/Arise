@@ -5,5 +5,6 @@ import de.dakror.gamesetup.layer.Layer;
 
 public abstract class MPLayer extends Layer
 {
-	public abstract void onReceivePacket(Packet p);
+	public void onReceivePacket(Packet p)
+	{}
 }

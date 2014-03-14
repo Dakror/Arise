@@ -13,6 +13,7 @@ import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.net.packet.Packet01Login;
+import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.layer.Layer;
@@ -78,6 +79,11 @@ public class Client extends Thread
 			case LOGIN:
 			{
 				p = new Packet01Login(data);
+				break;
+			}
+			case DISCONNECT:
+			{
+				p = new Packet02Disconnect(data);
 				break;
 			}
 			default:

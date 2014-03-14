@@ -198,4 +198,18 @@ public class Game extends GameApplet
 		if (e.getKeyCode() == KeyEvent.VK_F1) debug = !debug;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) toggleLayer(new PauseLayer());
 	}
+	
+	public static void exit()
+	{
+		try
+		{
+			client.running = false;
+			if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
+			else System.exit(0);
+		}
+		catch (MalformedURLException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

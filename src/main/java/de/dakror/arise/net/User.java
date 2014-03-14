@@ -1,7 +1,6 @@
 package de.dakror.arise.net;
 
 import java.net.InetAddress;
-import java.nio.ByteBuffer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,13 +13,13 @@ public class User
 {
 	private InetAddress ip;
 	private int port;
-	private String username;
+	private int id;
 	
-	public User(String username, InetAddress ip, int port)
+	public User(int id, InetAddress ip, int port)
 	{
 		this.ip = ip;
 		this.port = port;
-		this.username = username;
+		this.id = id;
 	}
 	
 	public User(JSONObject o)
@@ -29,7 +28,7 @@ public class User
 		{
 			if (o.has("i")) ip = InetAddress.getByName(o.getString("i"));
 			if (o.has("p")) port = o.getInt("p");
-			username = o.getString("u");
+			id = o.getInt("u");
 		}
 		catch (Exception e)
 		{
@@ -57,14 +56,9 @@ public class User
 		this.port = port;
 	}
 	
-	public String getUsername()
+	public int getId()
 	{
-		return username;
-	}
-	
-	public void setUsername(String username)
-	{
-		this.username = username;
+		return id;
 	}
 	
 	public String serialize()
@@ -73,7 +67,7 @@ public class User
 		
 		try
 		{
-			o.put("u", username);
+			o.put("u", id);
 			o.put("i", ip.getHostAddress());
 			o.put("p", port);
 		}
@@ -82,17 +76,7 @@ public class User
 			e.printStackTrace();
 		}
 		
-		
 		return o.toString();
-	}
-	
-	public byte[] getBytes()
-	{
-		ByteBuffer bb = ByteBuffer.allocate(username.length() + 5);
-		bb.put((byte) username.length());
-		bb.put(username.getBytes());
-		
-		return bb.array();
 	}
 	
 	@Override

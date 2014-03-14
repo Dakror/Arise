@@ -1,11 +1,13 @@
 package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.IOException;
 
-import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
+import de.dakror.arise.net.packet.Packet;
+import de.dakror.arise.net.packet.Packet.PacketTypes;
+import de.dakror.arise.net.packet.Packet02Disconnect;
+import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.button.TextButton;
@@ -14,7 +16,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class PauseLayer extends Layer
+public class PauseLayer extends MPLayer
 {
 	boolean gotoMenu;
 	
@@ -70,8 +72,16 @@ public class PauseLayer extends Layer
 			@Override
 			public void trigger()
 			{
-				gotoMenu = true;
-				Game.currentGame.fadeTo(1, 0.05f);
+				try
+				{
+					gotoMenu = true;
+					if (Game.userID != 0) Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
+					else Game.exit();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		});
 		if (Game.userID != 0) components.add(logout);
@@ -84,15 +94,27 @@ public class PauseLayer extends Layer
 			{
 				try
 				{
-					if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
-					else System.exit(0);
+					if (Game.userID != 0) Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
+					else Game.exit();
 				}
-				catch (MalformedURLException e)
+				catch (IOException e)
 				{
 					e.printStackTrace();
 				}
 			}
 		});
 		components.add(exit);
+	}
+	
+	@Override
+	public void onReceivePacket(Packet p)
+	{
+		super.onReceivePacket(p);
+		
+		if (p.getType() == PacketTypes.DISCONNECT && ((Packet02Disconnect) p).getCause() == Cause.SERVER_CONFIRMED)
+		{
+			if (gotoMenu) Game.currentGame.fadeTo(1, 0.05f);
+			else Game.exit();
+		}
 	}
 }

@@ -68,8 +68,7 @@ public class Game extends GameApplet
 			readManifest();
 			
 			addLayer(new LoginLayer());
-			LoadingLayer ll = new LoadingLayer();
-			addLayer(ll);
+			addLayer(new LoadingLayer());
 			
 			client = new Client();
 			if (!client.connectToServer())
@@ -93,7 +92,7 @@ public class Game extends GameApplet
 			}
 			else
 			{
-				removeLayer(ll);
+				removeLoadingLayer();
 				client.start();
 			}
 		}
@@ -101,6 +100,12 @@ public class Game extends GameApplet
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public void removeLoadingLayer()
+	{
+		for (Layer l : layers)
+			if (l instanceof LoadingLayer) layers.remove(l);
 	}
 	
 	@Override

@@ -17,6 +17,7 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
+import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.ui.ClickEvent;
@@ -162,26 +163,6 @@ public class LoginLayer extends MPLayer
 					final String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
 					Game.client.sendPacket(new Packet01Login(username.getText(), pw));
 					Game.currentGame.addLayer(new LoadingLayer());
-					
-					// new Thread()
-					// {
-					// @Override
-					// public void run()
-					// {
-					// try
-					// {
-					// String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + username.getText() + "&password=" + pw));
-					//
-					// Game.currentGame.removeLayer(Game.currentGame.getActiveLayer());
-					//
-					// login(s);
-					// }
-					// catch (MalformedURLException e)
-					// {
-					// e.printStackTrace();
-					// }
-					// }
-					// }.start();
 				}
 				catch (Exception e)
 				{
@@ -190,26 +171,6 @@ public class LoginLayer extends MPLayer
 			}
 		});
 		components.add(login);
-	}
-	
-	public void login(String response)
-	{
-		if (!response.contains("true"))
-		{
-			Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
-			{
-				@Override
-				public void trigger()
-				{
-					password.setText("");
-				}
-			}));
-		}
-		else
-		{
-			Game.userID = Integer.parseInt(response.replace("true:", "").trim());
-			Game.currentGame.fadeTo(1, 0.05f);
-		}
 	}
 	
 	@Override
@@ -238,5 +199,26 @@ public class LoginLayer extends MPLayer
 	
 	@Override
 	public void onReceivePacket(Packet p)
-	{}
+	{
+		if (p.getType() == PacketTypes.LOGIN)
+		{
+			Game.currentGame.removeLoadingLayer();
+			if (!((Packet01Login) p).isLoggedIn())
+			{
+				Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
+				{
+					@Override
+					public void trigger()
+					{
+						password.setText("");
+					}
+				}));
+			}
+			else
+			{
+				Game.userID = ((Packet01Login) p).getUserId();
+				Game.currentGame.fadeTo(1, 0.05f);
+			}
+		}
+	}
 }

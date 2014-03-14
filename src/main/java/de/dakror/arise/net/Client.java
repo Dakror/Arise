@@ -72,7 +72,7 @@ public class Client extends Thread
 		{
 			case INVALID:
 			{
-				CFG.p("received invalid packet: " + new String(data));
+				CFG.e("received invalid packet: " + new String(data));
 				return;
 			}
 			case LOGIN:
@@ -81,7 +81,7 @@ public class Client extends Thread
 				break;
 			}
 			default:
-				CFG.p("reveived unhandled packet: " + type + " [" + Packet.readData(data) + "]");
+				CFG.e("reveived unhandled packet: " + type + " [" + Packet.readData(data) + "]");
 				
 		}
 		if (p != null)
@@ -153,7 +153,6 @@ public class Client extends Thread
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			socket.setBroadcast(false);
 			socket.setSoTimeout(0);
 			return null;

@@ -1,5 +1,6 @@
 package de.dakror.arise.net.packet;
 
+
 /**
  * @author Dakror
  */
@@ -28,6 +29,7 @@ public class Packet01Login extends Packet
 	public Packet01Login(byte[] data)
 	{
 		super(1);
+		
 		String[] parts = readData(data).split(":");
 		username = parts[0];
 		if (parts.length == 3)

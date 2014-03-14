@@ -21,4 +21,10 @@ public class CFG
 		if (p.length == 1) System.out.println(p[0]);
 		else System.out.println(Arrays.toString(p));
 	}
+	
+	public static void e(Object... p)
+	{
+		if (p.length == 1) System.err.println(p[0]);
+		else System.err.println(Arrays.toString(p));
+	}
 }

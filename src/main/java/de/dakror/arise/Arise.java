@@ -76,12 +76,15 @@ public class Arise extends JApplet
 	{
 		try
 		{
-			System.setProperty("http.proxyHost", "192.168.0.7");
-			System.setProperty("http.proxyPort", "800");
 			System.setProperty("java.net.preferIPv4Stack", "true");
 			
 			if (args.length > 0 && args[0].equals("-lan")) Game.inLan = true;
-			if (args.length > 1) lanserverIP = args[1];
+			if (args.length > 1) // school fixes :D
+			{
+				lanserverIP = args[1];
+				System.setProperty("http.proxyHost", "192.168.0.7");
+				System.setProperty("http.proxyPort", "800");
+			}
 			
 			File jar = new File(Arise.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 			
@@ -109,9 +112,10 @@ public class Arise extends JApplet
 			arise.setSize(1280, 720);
 			frame.setSize(frame.getWidth() + (1280 - arise.getWidth()), frame.getHeight() + (720 - arise.getHeight()));
 			Game.size = new Dimension(1280, 720);
-			arise.init();
 			
 			frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(Game.buildTimestamp));
+			
+			arise.init();
 			
 			if (Game.buildTimestamp > 0 && time - Game.buildTimestamp > 60000)
 			{

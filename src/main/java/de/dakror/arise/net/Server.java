@@ -7,12 +7,15 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.net.URL;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
+import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.settings.CFG;
+import de.dakror.gamesetup.util.Helper;
 
 /**
  * @author Dakror
@@ -39,7 +42,7 @@ public class Server extends Thread
 		}
 		catch (BindException e)
 		{
-			CFG.p("There is a server already running on this machine!");
+			CFG.e("There is a server already running on this machine!");
 		}
 		catch (SocketException e)
 		{
@@ -77,7 +80,7 @@ public class Server extends Thread
 		{
 			case INVALID:
 			{
-				CFG.p("Received invalid packet: " + new String(data));
+				CFG.e("Received invalid packet: " + new String(data));
 				break;
 			}
 			case HANDSHAKE:
@@ -85,7 +88,7 @@ public class Server extends Thread
 				try
 				{
 					sendPacket(new Packet00Handshake(), new User("", address, port));
-					CFG.p("shook hands with: " + address.getHostAddress() + ":" + port);
+					CFG.p("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
 				catch (IOException e)
@@ -93,8 +96,30 @@ public class Server extends Thread
 					e.printStackTrace();
 				}
 			}
+			case LOGIN:
+			{
+				try
+				{
+					Packet01Login p = new Packet01Login(data);
+					String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + p.getUsername() + "&password=" + p.getPwdMd5()));
+					boolean loggedIn = s.contains("true");
+					User u = new User(p.getUsername(), address, port);
+					if (loggedIn)
+					{
+						CFG.p("User logged in: " + p.getUsername() + " (#" + Integer.parseInt(s.replace("true:", "").trim()) + ")");
+						clients.add(u);
+					}
+					
+					sendPacket(new Packet01Login(p.getUsername(), loggedIn ? Integer.parseInt(s.replace("true:", "").trim()) : 0, loggedIn), u);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+				break;
+			}
 			default:
-				CFG.p("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
+				CFG.e("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
 		}
 	}
 	

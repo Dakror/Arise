@@ -5,6 +5,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
@@ -78,5 +82,28 @@ public class Assistant
 		hours = hours.length() == 1 ? "0" + hours : hours;
 		
 		return (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
+	}
+	
+	public static InetAddress getBroadcastAddress()
+	{
+		try
+		{
+			Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements())
+			{
+				NetworkInterface networkInterface = interfaces.nextElement();
+				if (networkInterface.isLoopback()) continue;
+				for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses())
+				{
+					InetAddress broadcast = interfaceAddress.getBroadcast();
+					if (broadcast != null) return broadcast;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

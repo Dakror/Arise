@@ -101,8 +101,6 @@ public class Game extends GameApplet
 		{
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	@Override

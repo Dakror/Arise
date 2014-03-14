@@ -6,11 +6,13 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.util.Assistant;
 
 /**
  * @author Dakror
@@ -119,7 +121,7 @@ public class Client extends Thread
 		socket.setSoTimeout(1000);
 		
 		byte[] data = new Packet00Handshake().getData();
-		socket.send(new DatagramPacket(data, data.length, InetAddress.getByName("255.255.255.255"), Server.PORT));
+		socket.send(new DatagramPacket(data, data.length, Arise.lanserverIP == null ? Assistant.getBroadcastAddress() : InetAddress.getByName(Arise.lanserverIP), Server.PORT));
 		DatagramPacket packet = new DatagramPacket(new byte[Server.PACKETSIZE], Server.PACKETSIZE);
 		try
 		{
@@ -135,6 +137,7 @@ public class Client extends Thread
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			socket.setBroadcast(false);
 			socket.setSoTimeout(0);
 			return null;

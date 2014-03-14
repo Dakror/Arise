@@ -16,8 +16,9 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
+import de.dakror.arise.net.packet.Packet;
+import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.gamesetup.layer.Alert;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.InputField;
 import de.dakror.gamesetup.ui.button.TextButton;
@@ -26,7 +27,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class LoginLayer extends Layer
+public class LoginLayer extends MPLayer
 {
 	BufferedImage cache;
 	TextButton login;
@@ -159,27 +160,28 @@ public class LoginLayer extends Layer
 				try
 				{
 					final String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
+					Game.client.sendPacket(new Packet01Login(username.getText(), pw));
 					Game.currentGame.addLayer(new LoadingLayer());
 					
-					new Thread()
-					{
-						@Override
-						public void run()
-						{
-							try
-							{
-								String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + username.getText() + "&password=" + pw));
-								
-								Game.currentGame.removeLayer(Game.currentGame.getActiveLayer());
-								
-								login(s);
-							}
-							catch (MalformedURLException e)
-							{
-								e.printStackTrace();
-							}
-						}
-					}.start();
+					// new Thread()
+					// {
+					// @Override
+					// public void run()
+					// {
+					// try
+					// {
+					// String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + username.getText() + "&password=" + pw));
+					//
+					// Game.currentGame.removeLayer(Game.currentGame.getActiveLayer());
+					//
+					// login(s);
+					// }
+					// catch (MalformedURLException e)
+					// {
+					// e.printStackTrace();
+					// }
+					// }
+					// }.start();
 				}
 				catch (Exception e)
 				{
@@ -233,4 +235,8 @@ public class LoginLayer extends Layer
 			{}
 		}
 	}
+	
+	@Override
+	public void onReceivePacket(Packet p)
+	{}
 }

@@ -8,11 +8,14 @@ import java.net.SocketException;
 
 import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
+import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.util.Assistant;
+import de.dakror.gamesetup.layer.Layer;
 
 /**
  * @author Dakror
@@ -63,6 +66,8 @@ public class Client extends Thread
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
 		
+		Packet p = null;
+		
 		switch (type)
 		{
 			case INVALID:
@@ -70,8 +75,19 @@ public class Client extends Thread
 				CFG.p("received invalid packet: " + new String(data));
 				return;
 			}
+			case LOGIN:
+			{
+				p = new Packet01Login(data);
+				break;
+			}
 			default:
 				CFG.p("reveived unhandled packet: " + type + " [" + Packet.readData(data) + "]");
+				
+		}
+		if (p != null)
+		{
+			for (Layer l : Game.currentGame.layers)
+				if (l instanceof MPLayer) ((MPLayer) l).onReceivePacket(p);
 		}
 	}
 	

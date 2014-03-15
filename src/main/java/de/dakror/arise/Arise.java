@@ -37,6 +37,7 @@ public class Arise extends JApplet
 	@Override
 	public void init()
 	{
+		if (getParameter("-lan") != null) Game.inLan = true;
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

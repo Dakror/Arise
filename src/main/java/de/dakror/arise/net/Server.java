@@ -21,8 +21,8 @@ import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.arise.net.packet.Packet03World;
+import de.dakror.arise.server.DBManager;
 import de.dakror.arise.settings.CFG;
-import de.dakror.arise.util.DBManager;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -161,6 +161,7 @@ public class Server extends Thread
 				try
 				{
 					Packet03World p = new Packet03World(data);
+					out("Player's first visit on world? " + DBManager.spawnPlayer(p.getId(), getUserForIP(address, port)));
 					sendPacket(DBManager.getWorldForId(p.getId()), new User(0, address, port));
 					break;
 				}
@@ -199,6 +200,14 @@ public class Server extends Thread
 		DatagramPacket packet = new DatagramPacket(data, data.length, u.getIP(), u.getPort());
 		
 		socket.send(packet);
+	}
+	
+	public User getUserForIP(InetAddress address, int port)
+	{
+		for (User u : clients)
+			if (u.getIP().equals(address) && u.getPort() == port) return u;
+		
+		return null;
 	}
 	
 	public void shutdown()

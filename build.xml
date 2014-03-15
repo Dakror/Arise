@@ -62,14 +62,13 @@
 		<signjar jar="Arise.jar" keystore="ariseKeystore" alias="arise"
 			storepass="ariseKeystore" />
 
-		<!-- Disabled because of complete remodeling -->
-		<!--echo message="starting FTP file upload" />
+		<echo message="starting FTP file upload" />
 		<java classname="de.dakror.ariseftp.AriseFTP">
 			<classpath>
 				<pathelement location="AriseFTP.jar" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
-		</java-->
+		</java>
 
 		<delete dir="bin" />
 

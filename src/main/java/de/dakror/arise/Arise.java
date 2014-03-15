@@ -101,7 +101,7 @@ public class Arise extends JApplet
 				@Override
 				public void windowClosing(WindowEvent e)
 				{
-					Game.applet.stop();
+					Game.exit();
 				}
 			});
 			frame.setLocationRelativeTo(null);

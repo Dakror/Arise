@@ -1,5 +1,6 @@
 package de.dakror.arise.net;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
@@ -19,6 +20,8 @@ import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
+import de.dakror.arise.settings.CFG;
+import de.dakror.arise.util.DBManager;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -29,6 +32,8 @@ public class Server extends Thread
 	public static final int PORT = 14744;
 	public static final int PACKETSIZE = 255; // bytes
 	
+	public static File dir;
+	
 	public boolean running;
 	public CopyOnWriteArrayList<User> clients = new CopyOnWriteArrayList<>();
 	
@@ -38,9 +43,14 @@ public class Server extends Thread
 	{
 		try
 		{
+			dir = new File(CFG.DIR, "Server");
+			dir.mkdir();
 			socket = new DatagramSocket(new InetSocketAddress(ip, Server.PORT));
 			setName("Server-Thread");
 			setPriority(MAX_PRIORITY);
+			out("Connecting to database");
+			DBManager.init();
+			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			start();
 		}
@@ -132,13 +142,13 @@ public class Server extends Thread
 						try
 						{
 							sendPacket(new Packet02Disconnect(0, Cause.SERVER_CONFIRMED), u);
+							out("User disconnected: #" + u.getId() + " (" + p.getCause().name() + ")");
+							clients.remove(u);
 						}
 						catch (IOException e)
 						{
 							e.printStackTrace();
 						}
-						clients.remove(u);
-						out("User disconnected: #" + u.getId() + " (" + p.getCause().name() + ")");
 					}
 				}
 				break;
@@ -190,14 +200,14 @@ public class Server extends Thread
 		socket.close();
 	}
 	
-	public void out(Object... p)
+	public static void out(Object... p)
 	{
 		String timestamp = new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date());
 		if (p.length == 1) System.out.println(timestamp + p[0]);
 		else System.out.println(timestamp + Arrays.toString(p));
 	}
 	
-	public void err(Object... p)
+	public static void err(Object... p)
 	{
 		String timestamp = new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date());
 		if (p.length == 1) System.err.println(timestamp + p[0]);

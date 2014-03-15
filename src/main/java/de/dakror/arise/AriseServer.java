@@ -20,7 +20,7 @@ import de.dakror.arise.ui.MessageConsole;
  */
 public class AriseServer
 {
-	static Server server;
+	public static Server server;
 	
 	public static void main(String[] args) throws Exception
 	{
@@ -37,7 +37,7 @@ public class AriseServer
 		frame.setContentPane(new JScrollPane(jtp));
 		MessageConsole mc = new MessageConsole(jtp);
 		mc.redirectOut(null, System.out);
-		mc.redirectErr(Color.RED, null);
+		mc.redirectErr(Color.RED, System.err);
 		mc.setMessageLines(100);
 		
 		server = new Server(args.length > 0 ? InetAddress.getByName(args[0]) : InetAddress.getLocalHost());

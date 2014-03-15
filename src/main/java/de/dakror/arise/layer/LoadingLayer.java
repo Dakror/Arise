@@ -3,13 +3,12 @@ package de.dakror.arise.layer;
 import java.awt.Graphics2D;
 
 import de.dakror.arise.game.Game;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.util.Helper;
 
 /**
  * @author Dakror
  */
-public class LoadingLayer extends Layer
+public class LoadingLayer extends MPLayer
 {
 	int frame = 0;
 	

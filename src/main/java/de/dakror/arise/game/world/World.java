@@ -13,15 +13,16 @@ import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.layer.MPLayer;
+import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.gamesetup.GameFrame;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;
 
 /**
  * @author Dakror
  */
-public class World extends Layer
+public class World extends MPLayer
 {
 	public static int CHUNKSIZE = 256;
 	
@@ -37,14 +38,13 @@ public class World extends Layer
 	
 	Point dragStart, worldDragStart;
 	
-	public World(int id)
+	public World(Packet03World packet)
 	{
 		try
 		{
-			this.id = id;
-			JSONObject data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/world?get=" + id)));
-			speed = data.getInt("SPEED");
-			name = data.getString("NAME");
+			id = packet.getId();
+			name = packet.getName();
+			speed = packet.getSpeed();
 			
 			minX = minY = 0;
 			

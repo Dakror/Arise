@@ -15,14 +15,13 @@ import de.dakror.arise.game.building.Lumberjack;
 import de.dakror.arise.game.building.Mine;
 import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
+import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.arise.ui.BuildButton;
 import de.dakror.arise.ui.ResourceLabel;
-import de.dakror.arise.settings.Resources;
-import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Confirm;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.ui.InputField;
@@ -32,7 +31,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class CityHUDLayer extends Layer
+public class CityHUDLayer extends MPLayer
 {
 	public static Building selectedBuilding;
 	public static BuildButton upgrade, deconstruct;

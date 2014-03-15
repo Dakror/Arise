@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
@@ -19,6 +20,7 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet01Login;
+import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.InputField;
@@ -33,6 +35,8 @@ public class LoginLayer extends MPLayer
 	BufferedImage cache;
 	TextButton login;
 	InputField username, password;
+	
+	Packet03World world;
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -67,7 +71,7 @@ public class LoginLayer extends MPLayer
 		
 		if (Game.currentGame.alpha == 1)
 		{
-			Game.currentGame.startGame();
+			Game.currentGame.startGame(world);
 		}
 	}
 	
@@ -186,7 +190,7 @@ public class LoginLayer extends MPLayer
 		
 		if (e.getKeyCode() == KeyEvent.VK_F2)
 		{
-			String id = JOptionPane.showInputDialog("ID der gewünschten Welt: ", 1);
+			String id = JOptionPane.showInputDialog("ID der gewünschten Welt: ", Game.worldID);
 			try
 			{
 				int i = Integer.parseInt(id);
@@ -204,9 +208,9 @@ public class LoginLayer extends MPLayer
 		
 		if (p.getType() == PacketTypes.LOGIN)
 		{
-			Game.currentGame.removeLoadingLayer();
 			if (!((Packet01Login) p).isLoggedIn())
 			{
+				Game.currentGame.removeLoadingLayer();
 				Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
 				{
 					@Override
@@ -218,9 +222,24 @@ public class LoginLayer extends MPLayer
 			}
 			else
 			{
+				Game.username = ((Packet01Login) p).getUsername();
 				Game.userID = ((Packet01Login) p).getUserId();
-				Game.currentGame.fadeTo(1, 0.05f);
+				try
+				{
+					Game.client.sendPacket(new Packet03World(Game.worldID));
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
+		}
+		
+		if (p.getType() == PacketTypes.WORLD)
+		{
+			world = (Packet03World) p;
+			Game.currentGame.removeLoadingLayer();
+			Game.currentGame.fadeTo(1, 0.05f);
 		}
 	}
 }

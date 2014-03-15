@@ -109,8 +109,6 @@ public class PauseLayer extends MPLayer
 	@Override
 	public void onReceivePacket(Packet p)
 	{
-		super.onReceivePacket(p);
-		
 		if (p.getType() == PacketTypes.DISCONNECT && ((Packet02Disconnect) p).getCause() == Cause.SERVER_CONFIRMED)
 		{
 			if (gotoMenu) Game.currentGame.fadeTo(1, 0.05f);

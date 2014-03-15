@@ -12,8 +12,6 @@ import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
-import de.dakror.arise.net.packet.Packet01Login;
-import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.layer.Layer;
@@ -67,7 +65,7 @@ public class Client extends Thread
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
 		
-		Packet p = null;
+		Packet p = Packet.newInstance(type, data);
 		
 		switch (type)
 		{
@@ -76,20 +74,10 @@ public class Client extends Thread
 				CFG.e("received invalid packet: " + new String(data));
 				return;
 			}
-			case LOGIN:
-			{
-				p = new Packet01Login(data);
-				break;
-			}
-			case DISCONNECT:
-			{
-				p = new Packet02Disconnect(data);
-				break;
-			}
 			default:
-				CFG.e("reveived unhandled packet: " + type + " [" + Packet.readData(data) + "]");
-				
+				break;
 		}
+		
 		if (p != null)
 		{
 			for (Layer l : Game.currentGame.layers)

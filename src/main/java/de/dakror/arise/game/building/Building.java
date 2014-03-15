@@ -87,15 +87,15 @@ public abstract class Building extends ClickableComponent
 	{
 		try
 		{
-			if (Game.buildingsConfig.getJSONObject("buildings").has("" + typeId))
+			if (Game.config.getJSONObject("buildings").has("" + typeId))
 			{
-				buildingCosts = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("costs"));
-				products = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
-				scale = new Resources(Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
-				stageChangeSeconds = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
-				minCityLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
-				maxLevel = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("maxlevel") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("maxlevel") : MAX_LEVEL;
-				levelFac = Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").has("levelfac") ? Game.buildingsConfig.getJSONObject("buildings").getJSONObject(typeId + "").getInt("levelfac") : MAX_LEVEL;
+				buildingCosts = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("costs"));
+				products = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
+				scale = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
+				stageChangeSeconds = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
+				minCityLevel = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
+				maxLevel = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("maxlevel") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("maxlevel") : MAX_LEVEL;
+				levelFac = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("levelfac") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("levelfac") : MAX_LEVEL;
 			}
 		}
 		catch (JSONException e)

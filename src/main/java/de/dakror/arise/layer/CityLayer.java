@@ -23,9 +23,9 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.building.Center;
 import de.dakror.arise.game.world.City;
-import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
@@ -35,7 +35,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class CityLayer extends Layer
+public class CityLayer extends MPLayer
 {
 	public static Resources resources;
 	JSONObject data;

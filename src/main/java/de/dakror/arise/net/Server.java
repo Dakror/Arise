@@ -20,6 +20,7 @@ import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
+import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.util.DBManager;
 import de.dakror.gamesetup.util.Helper;
@@ -90,6 +91,7 @@ public class Server extends Thread
 	public void parsePacket(byte[] data, InetAddress address, int port)
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
+		
 		switch (type)
 		{
 			case INVALID:
@@ -117,14 +119,15 @@ public class Server extends Thread
 					Packet01Login p = new Packet01Login(data);
 					String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + p.getUsername() + "&password=" + p.getPwdMd5()));
 					boolean loggedIn = s.contains("true");
-					User u = new User(Integer.parseInt(s.replace("true:", "").trim()), address, port);
 					if (loggedIn)
 					{
-						out("User logged in: " + p.getUsername() + " (#" + u.getId() + ")");
+						String[] parts = s.split(":");
+						User u = new User(Integer.parseInt(parts[1].trim()), address, port);
+						out("User " + parts[2].trim() + " logged in. " + "(#" + u.getId() + ")");
+						sendPacket(new Packet01Login(parts[2], u.getId(), loggedIn), u);
 						clients.add(u);
 					}
-					
-					sendPacket(new Packet01Login(p.getUsername(), loggedIn ? u.getId() : 0, loggedIn), u);
+					else sendPacket(new Packet01Login(p.getUsername(), 0, loggedIn), new User(0, address, port));
 				}
 				catch (Exception e)
 				{
@@ -152,6 +155,19 @@ public class Server extends Thread
 					}
 				}
 				break;
+			}
+			case WORLD:
+			{
+				try
+				{
+					Packet03World p = new Packet03World(data);
+					sendPacket(DBManager.getWorldForId(p.getId()), new User(0, address, port));
+					break;
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 			default:
 				err("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");

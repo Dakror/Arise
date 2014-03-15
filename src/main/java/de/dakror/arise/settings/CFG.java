@@ -29,16 +29,20 @@ public class CFG
 	public static void p(Object... p)
 	{
 		if (AriseServer.server != null) Server.out(p);
-		
-		if (p.length == 1) System.out.println(p[0]);
-		else System.out.println(Arrays.toString(p));
+		else
+		{
+			if (p.length == 1) System.out.println(p[0]);
+			else System.out.println(Arrays.toString(p));
+		}
 	}
 	
 	public static void e(Object... p)
 	{
 		if (AriseServer.server != null) Server.err(p);
-		
-		if (p.length == 1) System.err.println(p[0]);
-		else System.err.println(Arrays.toString(p));
+		else
+		{
+			if (p.length == 1) System.err.println(p[0]);
+			else System.err.println(Arrays.toString(p));
+		}
 	}
 }

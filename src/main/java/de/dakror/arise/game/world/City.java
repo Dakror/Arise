@@ -4,12 +4,10 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -30,15 +28,15 @@ public class City extends ClickableComponent
 	
 	boolean gotoCity;
 	
-	public City(int x, int y, JSONObject data) throws JSONException
+	public City(int x, int y, Packet04City data)
 	{
 		super(x, y, SIZE, SIZE);
 		
-		name = data.getString("NAME");
-		username = data.getString("USERNAME");
-		userId = data.getInt("USER_ID");
-		id = data.getInt("ID");
-		level = data.getInt("LEVEL");
+		name = data.getCityName();
+		username = data.getUsername();
+		userId = data.getUserId();
+		id = data.getCityId();
+		level = data.getLevel();
 	}
 	
 	@Override

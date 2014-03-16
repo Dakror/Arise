@@ -248,7 +248,6 @@ public class CityHUDLayer extends MPLayer
 		if (Game.currentGame.alpha == 1 && goBackToWorld)
 		{
 			cl.saveData();
-			Game.world.updateWorld();
 			Game.currentGame.removeLayer(CityHUDLayer.this);
 			Game.currentGame.removeLayer(cl);
 			goBackToWorld = false;

@@ -18,7 +18,6 @@ import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.net.Client;
-import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
@@ -134,7 +133,7 @@ public class Game extends GameApplet
 		}
 	}
 	
-	public void startGame(Packet03World packet)
+	public void startGame()
 	{
 		try
 		{
@@ -161,14 +160,8 @@ public class Game extends GameApplet
 			// }
 			// }, calendar.getTime(), INTERVAL * 1000);
 			
-			world = new World(packet);
-			
-			Building.MAX_QUEUE = config.getInt("maxqueue") * world.getSpeed();
-			
-			layers.clear();
+			setLayer(world);
 			System.gc();
-			
-			addLayer(world);
 			
 			fadeTo(0, 0.05f);
 		}

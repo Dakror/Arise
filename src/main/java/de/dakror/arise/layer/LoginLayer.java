@@ -17,10 +17,13 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
+import de.dakror.arise.game.building.Building;
+import de.dakror.arise.game.world.World;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.net.packet.Packet03World;
+import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.InputField;
@@ -35,8 +38,6 @@ public class LoginLayer extends MPLayer
 	BufferedImage cache;
 	TextButton login;
 	InputField username, password;
-	
-	Packet03World world;
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -69,10 +70,7 @@ public class LoginLayer extends MPLayer
 	{
 		if (login != null) login.enabled = username.getText().length() >= 4 && password.getText().length() > 0;
 		
-		if (Game.currentGame.alpha == 1)
-		{
-			Game.currentGame.startGame(world);
-		}
+		if (Game.currentGame.alpha == 1) Game.currentGame.startGame();
 	}
 	
 	public void initFirstPage()
@@ -237,9 +235,26 @@ public class LoginLayer extends MPLayer
 		
 		if (p.getType() == PacketTypes.WORLD)
 		{
-			world = (Packet03World) p;
-			Game.currentGame.removeLoadingLayer();
-			Game.currentGame.fadeTo(1, 0.05f);
+			try
+			{
+				Game.world = new World((Packet03World) p);
+				Building.MAX_QUEUE = Game.config.getInt("maxqueue") * Game.world.getSpeed();
+				Game.client.sendPacket(new Packet04City(Game.worldID));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		if (p.getType() == PacketTypes.CITY)
+		{
+			Game.world.onReceivePacket(p);
+			
+			if (Game.world.components.size() >= ((Packet04City) p).getCities())
+			{
+				Game.currentGame.removeLoadingLayer();
+				Game.currentGame.fadeTo(1, 0.05f);
+			}
 		}
 	}
 }

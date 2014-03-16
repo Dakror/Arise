@@ -14,6 +14,8 @@ public abstract class Packet
 		LOGIN,
 		DISCONNECT,
 		WORLD,
+		CITY,
+		CITYDATA,
 		
 		;
 		public int getID()

@@ -21,6 +21,7 @@ import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.arise.net.packet.Packet03World;
+import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.util.Helper;
@@ -161,14 +162,31 @@ public class Server extends Thread
 				try
 				{
 					Packet03World p = new Packet03World(data);
-					out("Player's first visit on world? " + DBManager.spawnPlayer(p.getId(), getUserForIP(address, port)));
-					sendPacket(DBManager.getWorldForId(p.getId()), new User(0, address, port));
+					User user = getUserForIP(address, port);
+					boolean spawn = DBManager.spawnPlayer(p.getId(), user);
+					out("Player's first visit on world? " + spawn);
+					sendPacket(DBManager.getWorldForId(p.getId()), user);
+					sendPacketToAllClientsExceptOne(DBManager.getSpawnCity(p.getId(), user.getId()), user);
 					break;
 				}
 				catch (IOException e)
 				{
 					e.printStackTrace();
 				}
+			}
+			case CITY:
+			{
+				Packet04City p = new Packet04City(data);
+				try
+				{
+					for (Packet04City packet : DBManager.getCities(p.getWorldId()))
+						sendPacket(packet, getUserForIP(address, port));
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+				break;
 			}
 			default:
 				err("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
@@ -181,7 +199,7 @@ public class Server extends Thread
 			sendPacket(p, u);
 	}
 	
-	public void sendPacketToAllClientsExceptOne(Packet p, User exception) throws Exception
+	public void sendPacketToAllClientsExceptOne(Packet p, User exception) throws IOException
 	{
 		for (User u : clients)
 		{

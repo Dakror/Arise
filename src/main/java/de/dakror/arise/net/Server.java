@@ -22,6 +22,7 @@ import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
+import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.util.Helper;
@@ -187,6 +188,19 @@ public class Server extends Thread
 					e.printStackTrace();
 				}
 				break;
+			}
+			case RESOURCES:
+			{
+				try
+				{
+					Packet05Resources p = new Packet05Resources(data);
+					sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), getUserForIP(address, port));
+					break;
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 			default:
 				err("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");

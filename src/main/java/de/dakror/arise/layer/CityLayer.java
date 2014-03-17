@@ -9,26 +9,16 @@ import java.awt.Rectangle;
 import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
-import de.dakror.arise.game.building.Center;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.settings.Resources;
-import de.dakror.arise.settings.Resources.Resource;
-import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.gamesetup.GameFrame;
-import de.dakror.gamesetup.layer.Alert;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;
 
@@ -38,7 +28,6 @@ import de.dakror.gamesetup.util.Helper;
 public class CityLayer extends MPLayer
 {
 	public static Resources resources;
-	JSONObject data;
 	public City city;
 	
 	Building activeBuilding;
@@ -49,6 +38,7 @@ public class CityLayer extends MPLayer
 	{
 		modal = true;
 		this.city = city;
+		resources = city.resourcePacket.getResources();
 	}
 	
 	@Override
@@ -58,23 +48,23 @@ public class CityLayer extends MPLayer
 		
 		try
 		{
-			data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId())));
-			resources = new Resources();
-			resources.set(Resource.WOOD, (float) data.getDouble("WOOD"));
-			resources.set(Resource.GOLD, (float) data.getDouble("GOLD"));
-			resources.set(Resource.STONE, (float) data.getDouble("STONE"));
-			
-			String a = data.getString("ARMY");
-			if (a.trim().length() > 0)
-			{
-				String[] army = a.split(":");
-				for (int i = 0; i < army.length; i++)
-					resources.set(ArmyLabel.ARMY[i], Integer.parseInt(army[i]));
-			}
-			
-			placeBuildings();
-			updateBuildingStages();
-			saveData();
+			// data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId())));
+			// resources = new Resources();
+			// resources.set(Resource.WOOD, (float) data.getDouble("WOOD"));
+			// resources.set(Resource.GOLD, (float) data.getDouble("GOLD"));
+			// resources.set(Resource.STONE, (float) data.getDouble("STONE"));
+			//
+			// String a = data.getString("ARMY");
+			// if (a.trim().length() > 0)
+			// {
+			// String[] army = a.split(":");
+			// for (int i = 0; i < army.length; i++)
+			// resources.set(ArmyLabel.ARMY[i], Integer.parseInt(army[i]));
+			// }
+			//
+			// placeBuildings();
+			// updateBuildingStages();
+			// saveData();
 		}
 		catch (Exception e)
 		{
@@ -148,103 +138,103 @@ public class CityLayer extends MPLayer
 		updateComponents(tick);
 	}
 	
-	public void updateResources()
-	{
-		Resources products = new Resources();
-		for (Component c : components)
-			if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getScalingProducts());
-		
-		products = Resources.mul(products, Game.world.getSpeed());
-		
-		for (Resource r : products.getFilled())
-		{
-			float persecond = products.get(r) / 3600f;
-			if (r.isUsable()) resources.add(r, persecond * Game.INTERVAL);
-		}
-	}
+	// public void updateResources()
+	// {
+	// Resources products = new Resources();
+	// for (Component c : components)
+	// if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getScalingProducts());
+	//
+	// products = Resources.mul(products, Game.world.getSpeed());
+	//
+	// for (Resource r : products.getFilled())
+	// {
+	// float persecond = products.get(r) / 3600f;
+	// if (r.isUsable()) resources.add(r, persecond * Game.INTERVAL);
+	// }
+	// }
 	
-	public boolean updateBuildingStages()
-	{
-		boolean changedOne = false;
-		for (Component c : components)
-		{
-			if (c instanceof Building && ((Building) c).isStageChangeReady())
-			{
-				((Building) c).setStageChangeTimestamp(0);
-				if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
-				else if (((Building) c).getStage() == 2)
-				{
-					components.remove(c);
-					CityHUDLayer.selectedBuilding = null;
-					resources.add(Resource.BUILDINGS, -1);
-				}
-				else if (((Building) c).getStage() == 3)
-				{
-					((Building) c).levelUp();
-					if (c instanceof Center) city.levelUp();
-				}
-				else ((Building) c).onSpecificChange();
-				
-				changedOne = true;
-			}
-		}
-		
-		return changedOne;
-	}
+	// public boolean updateBuildingStages()
+	// {
+	// boolean changedOne = false;
+	// for (Component c : components)
+	// {
+	// if (c instanceof Building && ((Building) c).isStageChangeReady())
+	// {
+	// ((Building) c).setStageChangeTimestamp(0);
+	// if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
+	// else if (((Building) c).getStage() == 2)
+	// {
+	// components.remove(c);
+	// CityHUDLayer.selectedBuilding = null;
+	// resources.add(Resource.BUILDINGS, -1);
+	// }
+	// else if (((Building) c).getStage() == 3)
+	// {
+	// ((Building) c).levelUp();
+	// if (c instanceof Center) city.levelUp();
+	// }
+	// else ((Building) c).onSpecificChange();
+	//
+	// changedOne = true;
+	// }
+	// }
+	//
+	// return changedOne;
+	// }
 	
-	public void placeBuildings() throws JSONException
-	{
-		String[] buildings = data.getString("DATA").split(";");
-		for (int i = 0; i < buildings.length; i++)
-		{
-			String building = buildings[i];
-			if (!building.contains(":")) continue;
-			
-			String[] parts = building.split(":");
-			Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
-			b.setStage(Integer.parseInt(parts[4]));
-			b.setStageChangeTimestamp(Long.parseLong(parts[5]));
-			if (parts.length == 7) b.setMetadata(parts[6].trim());
-			
-			components.add(b);
-			resources.add(Resource.BUILDINGS, 1);
-		}
-		
-		placedBuildings = true;
-		sortComponents();
-	}
+	// public void placeBuildings() throws JSONException
+	// {
+	// String[] buildings = data.getString("DATA").split(";");
+	// for (int i = 0; i < buildings.length; i++)
+	// {
+	// String building = buildings[i];
+	// if (!building.contains(":")) continue;
+	//
+	// String[] parts = building.split(":");
+	// Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
+	// b.setStage(Integer.parseInt(parts[4]));
+	// b.setStageChangeTimestamp(Long.parseLong(parts[5]));
+	// if (parts.length == 7) b.setMetadata(parts[6].trim());
+	//
+	// components.add(b);
+	// resources.add(Resource.BUILDINGS, 1);
+	// }
+	//
+	// placedBuildings = true;
+	// sortComponents();
+	// }
 	
-	public void saveData()
-	{
-		String data = "";
-		for (Component c : components)
-			if (c instanceof Building) data += ((Building) c).getData() + ";";
-		
-		try
-		{
-			String url = "http://dakror.de/arise/city?keepAlive=true";
-			url += "&userid=" + Game.userID;
-			url += "&worldid=" + Game.worldID;
-			url += "&id=" + city.getId();
-			url += "&data=" + data;
-			url += "&wood=" + resources.getF(Resource.WOOD);
-			url += "&stone=" + resources.getF(Resource.STONE);
-			url += "&gold=" + resources.getF(Resource.GOLD);
-			url += "&army=" + resources.get(Resource.SWORDFIGHTER) + ":" + resources.get(Resource.LANCEBEARER);
-			url += "&level=" + city.getLevel();
-			url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
-			
-			if (!Helper.getURLContent(new URL(url)).contains("true"))
-			{
-				Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist dieser im Moment down.", null));
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise bist du nicht mit dem Internet verbunden.", null));
-		}
-	}
+	// public void saveData()
+	// {
+	// String data = "";
+	// for (Component c : components)
+	// if (c instanceof Building) data += ((Building) c).getData() + ";";
+	//
+	// try
+	// {
+	// String url = "http://dakror.de/arise/city?keepAlive=true";
+	// url += "&userid=" + Game.userID;
+	// url += "&worldid=" + Game.worldID;
+	// url += "&id=" + city.getId();
+	// url += "&data=" + data;
+	// url += "&wood=" + resources.getF(Resource.WOOD);
+	// url += "&stone=" + resources.getF(Resource.STONE);
+	// url += "&gold=" + resources.getF(Resource.GOLD);
+	// url += "&army=" + resources.get(Resource.SWORDFIGHTER) + ":" + resources.get(Resource.LANCEBEARER);
+	// url += "&level=" + city.getLevel();
+	// url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
+	//
+	// if (!Helper.getURLContent(new URL(url)).contains("true"))
+	// {
+	// Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist dieser im Moment down.", null));
+	// }
+	// }
+	// catch (Exception e)
+	// {
+	// e.printStackTrace();
+	// Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise bist du nicht mit dem Internet verbunden.", null));
+	// }
+	// }
 	
 	public boolean intersectsBuildings(Rectangle r)
 	{
@@ -259,52 +249,52 @@ public class CityLayer extends MPLayer
 	{
 		super.mousePressed(e);
 		
-		boolean anyBuildingActive = false;
-		for (Component c : components)
-		{
-			if (c instanceof Building && c.state == 1)
-			{
-				anyBuildingActive = true;
-				break;
-			}
-		}
-		
-		CityHUDLayer chl = null;
-		
-		if (!anyBuildingActive)
-		{
-			for (Layer l : Game.currentGame.layers)
-				if (l instanceof CityHUDLayer)
-				{
-					chl = (CityHUDLayer) l;
-					break;
-				}
-			if (!chl.anyComponentClicked) CityHUDLayer.selectedBuilding = null;
-		}
-		
-		if (activeBuilding != null)
-		{
-			if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor()))
-			{
-				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
-				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
-				
-				Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId());
-				b.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-				components.add(b);
-				resources.add(Resource.BUILDINGS, 1);
-				resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
-				activeBuilding = null;
-				chl.updateBuildingbar();
-				sortComponents();
-				saveData();
-			}
-			if (e.getButton() == MouseEvent.BUTTON3)
-			{
-				activeBuilding = null;
-				Game.applet.setCursor(Cursor.getDefaultCursor());
-			}
-		}
+		// boolean anyBuildingActive = false;
+		// for (Component c : components)
+		// {
+		// if (c instanceof Building && c.state == 1)
+		// {
+		// anyBuildingActive = true;
+		// break;
+		// }
+		// }
+		//
+		// CityHUDLayer chl = null;
+		//
+		// if (!anyBuildingActive)
+		// {
+		// for (Layer l : Game.currentGame.layers)
+		// if (l instanceof CityHUDLayer)
+		// {
+		// chl = (CityHUDLayer) l;
+		// break;
+		// }
+		// if (!chl.anyComponentClicked) CityHUDLayer.selectedBuilding = null;
+		// }
+		//
+		// if (activeBuilding != null)
+		// {
+		// if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor()))
+		// {
+		// int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
+		// int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
+		//
+		// Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId());
+		// b.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+		// components.add(b);
+		// resources.add(Resource.BUILDINGS, 1);
+		// resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
+		// activeBuilding = null;
+		// chl.updateBuildingbar();
+		// sortComponents();
+		// saveData();
+		// }
+		// if (e.getButton() == MouseEvent.BUTTON3)
+		// {
+		// activeBuilding = null;
+		// Game.applet.setCursor(Cursor.getDefaultCursor());
+		// }
+		// }
 	}
 	
 	public void sortComponents()

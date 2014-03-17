@@ -16,6 +16,8 @@ import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
+import de.dakror.arise.net.packet.Packet05Resources;
+import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;
@@ -36,6 +38,8 @@ public class World extends MPLayer
 	
 	BufferedImage chunk;
 	JSONArray citiesData;
+	
+	City gotoCity;
 	
 	Point dragStart, worldDragStart;
 	
@@ -234,6 +238,15 @@ public class World extends MPLayer
 				components.add(c);
 				updateSize();
 			}
+		}
+		if (p.getType() == PacketTypes.RESOURCES && gotoCity != null)
+		{
+			if (gotoCity.getId() == ((Packet05Resources) p).getCityId())
+			{
+				gotoCity.resourcePacket = (Packet05Resources) p;
+				Game.currentGame.fadeTo(1, 0.05f);
+			}
+			else CFG.e("Received invalid packet05resources: current gotoCity.id=" + gotoCity.getId() + ", packet.id=" + ((Packet05Resources) p).getCityId());
 		}
 	}
 }

@@ -15,7 +15,7 @@ public abstract class Packet
 		DISCONNECT,
 		WORLD,
 		CITY,
-		CITYDATA,
+		RESOURCES,
 		
 		;
 		public int getID()

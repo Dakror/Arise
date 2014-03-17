@@ -1,5 +1,6 @@
 package de.dakror.arise.settings;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -85,6 +86,8 @@ public class Resources
 		}
 	}
 	
+	public static final Resource[] serializableResources = { Resource.GOLD, Resource.WOOD, Resource.STONE, Resource.SWORDFIGHTER, Resource.LANCEBEARER };
+	
 	HashMap<Resource, Float> res = new HashMap<>();
 	
 	public Resources()
@@ -102,6 +105,15 @@ public class Resources
 		{
 			res.put(Resource.valueOf(names.getString(i)), (float) data.getDouble(names.getString(i)));
 		}
+	}
+	
+	public Resources(byte[] data)
+	{
+		this();
+		
+		ByteBuffer bb = ByteBuffer.wrap(data);
+		for (int i = 0; i < serializableResources.length; i++)
+			set(serializableResources[i], bb.getFloat());
 	}
 	
 	public int get(Resource t)
@@ -187,6 +199,17 @@ public class Resources
 			e.printStackTrace();
 		}
 		return o;
+	}
+	
+	public byte[] getBinaryData()
+	{
+		ByteBuffer bb = ByteBuffer.allocate(serializableResources.length * 4);
+		for (Resource r : serializableResources)
+		{
+			bb.putFloat(getF(r));
+		}
+		
+		return bb.array();
 	}
 	
 	public static Resources mul(Resources res, int f)

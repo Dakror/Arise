@@ -8,7 +8,6 @@ import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.button.TextButton;
 import de.dakror.gamesetup.util.Helper;
@@ -44,8 +43,8 @@ public class PauseLayer extends MPLayer
 			Game.world = null;
 			Game.worldID = 1;
 			
-			for (Layer l : Game.currentGame.layers)
-				if (l instanceof CityLayer) ((CityLayer) l).saveData();
+			// for (Layer l : Game.currentGame.layers)
+			// if (l instanceof CityLayer) ((CityLayer) l).saveData();
 			
 			Game.currentGame.setLayer(new LoginLayer());
 			gotoMenu = false;

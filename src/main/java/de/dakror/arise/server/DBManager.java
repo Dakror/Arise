@@ -16,6 +16,9 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
+import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -153,5 +156,31 @@ public class DBManager
 			e.printStackTrace();
 			return null;
 		}
+	}
+	
+	public static Resources getCityResources(int cityId)
+	{
+		Resources res = new Resources();
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY, WOOD, STONE, GOLD FROM CITIES WHERE ID = " + cityId);
+			rs.next();
+			
+			String a = rs.getString(1);
+			if (a.trim().length() > 0)
+			{
+				String[] army = a.split(":");
+				for (int i = 0; i < army.length; i++)
+					res.set(ArmyLabel.ARMY[i], Integer.parseInt(army[i]));
+			}
+			res.set(Resource.WOOD, rs.getFloat(2));
+			res.set(Resource.STONE, rs.getFloat(3));
+			res.set(Resource.GOLD, rs.getFloat(4));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return res;
 	}
 }

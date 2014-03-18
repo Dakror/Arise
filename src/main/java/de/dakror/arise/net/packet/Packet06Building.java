@@ -5,8 +5,8 @@ package de.dakror.arise.net.packet;
  */
 public class Packet06Building extends Packet
 {
-	String rawData;
-	int cityId;
+	int cityId, id, type, level, x, y, stage, timeleft;
+	String meta;
 	
 	public Packet06Building(int cityId)
 	{
@@ -14,11 +14,19 @@ public class Packet06Building extends Packet
 		this.cityId = cityId;
 	}
 	
-	public Packet06Building(String s, int cityId)
+	public Packet06Building(int cityId, int id, int type, int level, int x, int y, int stage, int timeleft, String meta)
 	{
 		super(6);
-		rawData = s;
+		
 		this.cityId = cityId;
+		this.id = id;
+		this.type = type;
+		this.level = level;
+		this.x = x;
+		this.y = y;
+		this.stage = stage;
+		this.timeleft = timeleft;
+		this.meta = meta;
 	}
 	
 	public Packet06Building(byte[] data)
@@ -27,15 +35,25 @@ public class Packet06Building extends Packet
 		String s = readData(data);
 		if (s.contains(":"))
 		{
-			cityId = Integer.parseInt(s.substring(0, s.indexOf(":")));
-			rawData = s.substring(s.indexOf(":") + 1);
+			String[] parts = s.split(":");
+			cityId = Integer.parseInt(parts[0]);
+			id = Integer.parseInt(parts[1]);
+			type = Integer.parseInt(parts[2]);
+			level = Integer.parseInt(parts[3]);
+			x = Integer.parseInt(parts[4]);
+			y = Integer.parseInt(parts[5]);
+			stage = Integer.parseInt(parts[6]);
+			timeleft = Integer.parseInt(parts[7]);
+			if (parts.length == 9) meta = parts[8];
 		}
-		else cityId = Integer.parseInt(s);
+		else cityId = Integer.parseInt(s.trim());
 	}
 	
-	public String getRawData()
+	@Override
+	protected byte[] getPacketData()
 	{
-		return rawData;
+		if (type != 0) return (cityId + ":" + id + ":" + type + ":" + level + ":" + x + ":" + y + ":" + stage + ":" + timeleft + (meta != null ? ":" + meta : "")).getBytes();
+		else return (cityId + "").getBytes();
 	}
 	
 	public int getCityId()
@@ -43,53 +61,38 @@ public class Packet06Building extends Packet
 		return cityId;
 	}
 	
-	public int getTypeId()
+	public int getBuildingType()
 	{
-		String[] p = rawData.split(":");
-		return Integer.parseInt(p[0]);
+		return type;
 	}
 	
 	public int getLevel()
 	{
-		String[] p = rawData.split(":");
-		return Integer.parseInt(p[1]);
+		return level;
 	}
 	
 	public int getX()
 	{
-		String[] p = rawData.split(":");
-		return Integer.parseInt(p[2]);
+		return x;
 	}
 	
 	public int getY()
 	{
-		String[] p = rawData.split(":");
-		return Integer.parseInt(p[3]);
+		return y;
 	}
 	
 	public int getStage()
 	{
-		String[] p = rawData.split(":");
-		return Integer.parseInt(p[4]);
+		return stage;
 	}
 	
-	public int getSecondsLeft()
+	public int getTimeleft()
 	{
-		String[] p = rawData.split(":");
-		return Integer.parseInt(p[5]);
+		return timeleft;
 	}
 	
-	public String getMetadata()
+	public String getMeta()
 	{
-		String[] p = rawData.split(":");
-		if (p.length == 7) return p[6];
-		return null;
-	}
-	
-	@Override
-	protected byte[] getPacketData()
-	{
-		if (rawData == null) return (cityId + "").getBytes();
-		return (cityId + ":" + rawData).getBytes();
+		return meta;
 	}
 }

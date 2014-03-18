@@ -16,6 +16,7 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
+import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -43,6 +44,7 @@ public class DBManager
 			Statement s = connection.createStatement();
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS WORLDS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, SPEED INTEGER NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, DATA text NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL,STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text)");
 		}
 		catch (Exception e)
 		{
@@ -79,6 +81,11 @@ public class DBManager
 			int cities = rs2.getInt(1);
 			Point p = CitySpawner.spawnCity(cities, worldId);
 			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, DATA, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0, '1:0:15:7:1:0;', '0:0', 300, 300, 300)");
+			
+			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId());
+			int cityId = rs3.getInt(1);
+			
+			connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", 1, 0, 15, 7, 1, 0)");
 			
 			return true;
 		}
@@ -182,5 +189,21 @@ public class DBManager
 			e.printStackTrace();
 		}
 		return res;
+	}
+	
+	public static ArrayList<Packet06Building> getCityBuildings(int cityId)
+	{
+		ArrayList<Packet06Building> p = new ArrayList<>();
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT, META FROM BUILDINGS WHERE CITY_ID = " + cityId);
+			while (rs.next())
+				p.add(new Packet06Building(cityId, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getString(8)));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return p;
 	}
 }

@@ -1,7 +1,6 @@
 package de.dakror.arise.net;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -23,6 +22,7 @@ import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
+import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.util.Helper;
@@ -109,7 +109,7 @@ public class Server extends Thread
 					out("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
-				catch (IOException e)
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -150,7 +150,7 @@ public class Server extends Thread
 							out("User disconnected: #" + u.getId() + " (" + p.getCause().name() + ")");
 							clients.remove(u);
 						}
-						catch (IOException e)
+						catch (Exception e)
 						{
 							e.printStackTrace();
 						}
@@ -170,7 +170,7 @@ public class Server extends Thread
 					sendPacketToAllClientsExceptOne(DBManager.getSpawnCity(p.getId(), user.getId()), user);
 					break;
 				}
-				catch (IOException e)
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -183,7 +183,7 @@ public class Server extends Thread
 					for (Packet04City packet : DBManager.getCities(p.getWorldId()))
 						sendPacket(packet, getUserForIP(address, port));
 				}
-				catch (IOException e)
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
@@ -197,10 +197,27 @@ public class Server extends Thread
 					sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), getUserForIP(address, port));
 					break;
 				}
-				catch (IOException e)
+				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
+			}
+			case BUILDING:
+			{
+				Packet06Building p = new Packet06Building(data);
+				if (p.getBuildingType() == 0) // validity check
+				{
+					try
+					{
+						for (Packet06Building packet : DBManager.getCityBuildings(p.getCityId()))
+							sendPacket(packet, getUserForIP(address, port));
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+				break;
 			}
 			default:
 				err("Reveived unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
@@ -213,7 +230,7 @@ public class Server extends Thread
 			sendPacket(p, u);
 	}
 	
-	public void sendPacketToAllClientsExceptOne(Packet p, User exception) throws IOException
+	public void sendPacketToAllClientsExceptOne(Packet p, User exception) throws Exception
 	{
 		for (User u : clients)
 		{
@@ -226,8 +243,10 @@ public class Server extends Thread
 		}
 	}
 	
-	public void sendPacket(Packet p, User u) throws IOException
+	public void sendPacket(Packet p, User u) throws Exception
 	{
+		if (u == null) throw new NullPointerException("user = null");
+		
 		byte[] data = p.getData();
 		DatagramPacket packet = new DatagramPacket(data, data.length, u.getIP(), u.getPort());
 		

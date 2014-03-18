@@ -18,6 +18,7 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.net.packet.Packet;
+import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -144,7 +145,10 @@ public class CityLayer extends MPLayer
 	{
 		super.onReceivePacket(p);
 		
-		
+		if (p.getType() == PacketTypes.BUILDING)
+		{	
+			
+		}
 	}
 	
 	public boolean intersectsBuildings(Rectangle r)

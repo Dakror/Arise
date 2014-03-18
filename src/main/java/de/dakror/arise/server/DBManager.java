@@ -173,6 +173,10 @@ public class DBManager
 			ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY, WOOD, STONE, GOLD FROM CITIES WHERE ID = " + cityId);
 			rs.next();
 			
+			ResultSet rs2 = connection.createStatement().executeQuery("SELECT COUNT() FROM BUILDINGS WHERE CITY_ID = " + cityId);
+			rs2.next();
+			int buildings = rs2.getInt(1);
+			
 			String a = rs.getString(1);
 			if (a.trim().length() > 0)
 			{
@@ -183,6 +187,7 @@ public class DBManager
 			res.set(Resource.WOOD, rs.getFloat(2));
 			res.set(Resource.STONE, rs.getFloat(3));
 			res.set(Resource.GOLD, rs.getFloat(4));
+			res.set(Resource.BUILDINGS, buildings);
 		}
 		catch (SQLException e)
 		{

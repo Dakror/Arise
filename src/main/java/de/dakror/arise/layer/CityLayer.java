@@ -19,6 +19,7 @@ import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
+import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -146,8 +147,16 @@ public class CityLayer extends MPLayer
 		super.onReceivePacket(p);
 		
 		if (p.getType() == PacketTypes.BUILDING)
-		{	
+		{
+			Packet06Building packet = (Packet06Building) p;
+			Building b = Building.getBuildingByTypeId(packet.getX(), packet.getY(), packet.getLevel(), packet.getBuildingType());
+			b.setStage(packet.getStage());
+			b.setStageChangeSecondsLeft(packet.getTimeleft());
+			b.setMetadata(packet.getMeta());
 			
+			components.add(b);
+			
+			sortComponents();
 		}
 	}
 	

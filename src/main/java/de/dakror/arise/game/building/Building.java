@@ -41,7 +41,7 @@ public abstract class Building extends ClickableComponent
 	 */
 	protected int stage, prevStage;
 	protected int stageChangeDuration;
-	protected long stageChangeSecondsLeft;
+	protected int stageChangeSecondsLeft;
 	protected String name, desc;
 	protected String metadata;
 	protected Resources buildingCosts, products, scale;
@@ -202,7 +202,7 @@ public abstract class Building extends ClickableComponent
 		return stageChangeDuration;
 	}
 	
-	public long getStageChangeTimestamp()
+	public long getStageChangeSecondsLeft()
 	{
 		return stageChangeSecondsLeft;
 	}
@@ -210,7 +210,7 @@ public abstract class Building extends ClickableComponent
 	/**
 	 * @param s - time in seconds
 	 */
-	public void setStageChangeTimestamp(long s)
+	public void setStageChangeSecondsLeft(int s)
 	{
 		stageChangeSecondsLeft = s;
 	}

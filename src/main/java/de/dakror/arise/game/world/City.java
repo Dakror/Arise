@@ -9,6 +9,7 @@ import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
+import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -69,13 +70,20 @@ public class City extends ClickableComponent
 	{
 		if (Game.currentGame.alpha == 1 && resourcePacket != null)
 		{
-			CityLayer cl = new CityLayer(City.this);
 			// CityHUDLayer.cl = cl;
-			Game.currentGame.addLayer(cl);
+			Game.currentGame.addLayer(new CityLayer(City.this));
 			// Game.currentGame.addLayer(new CityHUDLayer(cl));
 			Game.currentGame.fadeTo(0, 0.05f);
 			Game.world.gotoCity = null;
 			resourcePacket = null;
+			try
+			{
+				Game.client.sendPacket(new Packet06Building(id));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	

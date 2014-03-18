@@ -10,12 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arise.ui.BuildButton;
-import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.BuildButton;
 import de.dakror.arise.util.Assistant;
-import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.ui.Container;
@@ -42,8 +40,8 @@ public abstract class Building extends ClickableComponent
 	 * 3 = upgrading<br>
 	 */
 	protected int stage, prevStage;
-	protected int stageChangeSeconds;
-	protected long stageChangeTimestamp;
+	protected int stageChangeDuration;
+	protected long stageChangeSecondsLeft;
 	protected String name, desc;
 	protected String metadata;
 	protected Resources buildingCosts, products, scale;
@@ -68,17 +66,17 @@ public abstract class Building extends ClickableComponent
 			@Override
 			public void trigger()
 			{
-				CityHUDLayer.selectedBuilding = Building.this;
-				
-				float duration = stageChangeSeconds * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
-				
-				CityHUDLayer.upgrade.setUpgradeMode("Ausbau", "Die Stufe des Gebäudes wird erhöht. \nDauer: " + Assistant.formatSeconds((long) duration), getUpgradeCosts(), 0);
-				CityHUDLayer.upgrade.setProducts(products);
-				CityHUDLayer.upgrade.setScale(scale);
-				CityHUDLayer.upgrade.setLevel(Building.this.level);
-				CityHUDLayer.upgrade.setMaxLevel(maxLevel);
-				
-				CityHUDLayer.deconstruct.setUpgradeMode("Abriss", "Das Gebäudes wird abgerissen. Es werden keine Resourcen zurückgegeben.", new Resources(), 0);
+				// CityHUDLayer.selectedBuilding = Building.this;
+				//
+				// float duration = stageChangeDuration * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
+				//
+				// CityHUDLayer.upgrade.setUpgradeMode("Ausbau", "Die Stufe des Gebäudes wird erhöht. \nDauer: " + Assistant.formatSeconds((long) duration), getUpgradeCosts(), 0);
+				// CityHUDLayer.upgrade.setProducts(products);
+				// CityHUDLayer.upgrade.setScale(scale);
+				// CityHUDLayer.upgrade.setLevel(Building.this.level);
+				// CityHUDLayer.upgrade.setMaxLevel(maxLevel);
+				//
+				// CityHUDLayer.deconstruct.setUpgradeMode("Abriss", "Das Gebäudes wird abgerissen. Es werden keine Resourcen zurückgegeben.", new Resources(), 0);
 			}
 		});
 	}
@@ -92,7 +90,7 @@ public abstract class Building extends ClickableComponent
 				buildingCosts = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("costs"));
 				products = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
 				scale = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
-				stageChangeSeconds = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
+				stageChangeDuration = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
 				minCityLevel = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
 				maxLevel = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("maxlevel") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("maxlevel") : MAX_LEVEL;
 				levelFac = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("levelfac") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("levelfac") : MAX_LEVEL;
@@ -109,26 +107,26 @@ public abstract class Building extends ClickableComponent
 	{
 		if (Game.world == null) return;
 		
-		if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)))
-		{
-			Color c = g.getColor();
-			g.setColor(Color.black);
-			g.drawRect(x + bx * GRID - 1, y + by * GRID - 1, bw * GRID + 2, bh * GRID + 2);
-			g.setColor(c);
-		}
+		// if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)))
+		// {
+		// Color c = g.getColor();
+		// g.setColor(Color.black);
+		// g.drawRect(x + bx * GRID - 1, y + by * GRID - 1, bw * GRID + 2, bh * GRID + 2);
+		// g.setColor(c);
+		// }
 		
 		if (stage > 0) drawStage1(g);
 		
-		if (stageChangeTimestamp > 0)
+		if (stageChangeSecondsLeft > 0)
 		{
 			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
 			
 			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this, g);
 			
 			float duration = getStageChangeDuration();
-			long destTimeStamp = stageChangeTimestamp + (long) duration;
+			long destTimeStamp = stageChangeSecondsLeft + (long) duration;
 			long deltaEnd = (destTimeStamp - System.currentTimeMillis() / 1000);
-			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeTimestamp);
+			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeSecondsLeft);
 			
 			if (deltaEnd >= 0)
 			{
@@ -152,21 +150,21 @@ public abstract class Building extends ClickableComponent
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
-		{
-			String string = getTooltipText();
-			
-			int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30;
-			int height = 64;
-			int x1 = x;
-			int y1 = y;
-			
-			if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
-			if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
-			
-			Helper.drawShadow(x1, y1, width, height, g);
-			Helper.drawString(string, x1 + 15, y1 + 40, g, 30);
-		}
+		// if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
+		// {
+		// String string = getTooltipText();
+		//
+		// int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30;
+		// int height = 64;
+		// int x1 = x;
+		// int y1 = y;
+		//
+		// if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
+		// if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
+		//
+		// Helper.drawShadow(x1, y1, width, height, g);
+		// Helper.drawString(string, x1 + 15, y1 + 40, g, 30);
+		// }
 	}
 	
 	@Override
@@ -201,12 +199,12 @@ public abstract class Building extends ClickableComponent
 	
 	public int getStageChangeSeconds()
 	{
-		return stageChangeSeconds;
+		return stageChangeDuration;
 	}
 	
 	public long getStageChangeTimestamp()
 	{
-		return stageChangeTimestamp;
+		return stageChangeSecondsLeft;
 	}
 	
 	/**
@@ -214,19 +212,19 @@ public abstract class Building extends ClickableComponent
 	 */
 	public void setStageChangeTimestamp(long s)
 	{
-		stageChangeTimestamp = s;
+		stageChangeSecondsLeft = s;
 	}
 	
 	protected float getStageChangeDuration()
 	{
-		return Math.round(stageChangeSeconds * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
+		return Math.round(stageChangeDuration * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
 	}
 	
 	public boolean isStageChangeReady()
 	{
-		if (stageChangeTimestamp == 0) return false;
+		if (stageChangeSecondsLeft == 0) return false;
 		
-		return System.currentTimeMillis() / 1000 - stageChangeTimestamp >= getStageChangeDuration();
+		return System.currentTimeMillis() / 1000 - stageChangeSecondsLeft >= getStageChangeDuration();
 	}
 	
 	public String getName()
@@ -241,7 +239,7 @@ public abstract class Building extends ClickableComponent
 	
 	public String getData()
 	{
-		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeTimestamp + (metadata.length() > 0 ? ":" + metadata : "");
+		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeSecondsLeft + (metadata.length() > 0 ? ":" + metadata : "");
 	}
 	
 	public Resources getBuildingCosts()

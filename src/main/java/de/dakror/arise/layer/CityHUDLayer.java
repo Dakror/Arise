@@ -8,7 +8,6 @@
 //
 //import de.dakror.arise.game.Game;
 //import de.dakror.arise.game.building.Barn;
-//import de.dakror.arise.game.building.Barracks;
 //import de.dakror.arise.game.building.Building;
 //import de.dakror.arise.game.building.Center;
 //import de.dakror.arise.game.building.Lumberjack;

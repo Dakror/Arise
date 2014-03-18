@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.City;
+import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -138,103 +139,13 @@ public class CityLayer extends MPLayer
 		updateComponents(tick);
 	}
 	
-	// public void updateResources()
-	// {
-	// Resources products = new Resources();
-	// for (Component c : components)
-	// if (c instanceof Building && ((Building) c).getStage() == 1) products.add(((Building) c).getScalingProducts());
-	//
-	// products = Resources.mul(products, Game.world.getSpeed());
-	//
-	// for (Resource r : products.getFilled())
-	// {
-	// float persecond = products.get(r) / 3600f;
-	// if (r.isUsable()) resources.add(r, persecond * Game.INTERVAL);
-	// }
-	// }
-	
-	// public boolean updateBuildingStages()
-	// {
-	// boolean changedOne = false;
-	// for (Component c : components)
-	// {
-	// if (c instanceof Building && ((Building) c).isStageChangeReady())
-	// {
-	// ((Building) c).setStageChangeTimestamp(0);
-	// if (((Building) c).getStage() == 0) ((Building) c).setStage(1);
-	// else if (((Building) c).getStage() == 2)
-	// {
-	// components.remove(c);
-	// CityHUDLayer.selectedBuilding = null;
-	// resources.add(Resource.BUILDINGS, -1);
-	// }
-	// else if (((Building) c).getStage() == 3)
-	// {
-	// ((Building) c).levelUp();
-	// if (c instanceof Center) city.levelUp();
-	// }
-	// else ((Building) c).onSpecificChange();
-	//
-	// changedOne = true;
-	// }
-	// }
-	//
-	// return changedOne;
-	// }
-	
-	// public void placeBuildings() throws JSONException
-	// {
-	// String[] buildings = data.getString("DATA").split(";");
-	// for (int i = 0; i < buildings.length; i++)
-	// {
-	// String building = buildings[i];
-	// if (!building.contains(":")) continue;
-	//
-	// String[] parts = building.split(":");
-	// Building b = Building.getBuildingByTypeId(Integer.parseInt(parts[2]) + (96 / Building.GRID), Integer.parseInt(parts[3]) + (96 / Building.GRID), Integer.parseInt(parts[1]), Integer.parseInt(parts[0]));
-	// b.setStage(Integer.parseInt(parts[4]));
-	// b.setStageChangeTimestamp(Long.parseLong(parts[5]));
-	// if (parts.length == 7) b.setMetadata(parts[6].trim());
-	//
-	// components.add(b);
-	// resources.add(Resource.BUILDINGS, 1);
-	// }
-	//
-	// placedBuildings = true;
-	// sortComponents();
-	// }
-	
-	// public void saveData()
-	// {
-	// String data = "";
-	// for (Component c : components)
-	// if (c instanceof Building) data += ((Building) c).getData() + ";";
-	//
-	// try
-	// {
-	// String url = "http://dakror.de/arise/city?keepAlive=true";
-	// url += "&userid=" + Game.userID;
-	// url += "&worldid=" + Game.worldID;
-	// url += "&id=" + city.getId();
-	// url += "&data=" + data;
-	// url += "&wood=" + resources.getF(Resource.WOOD);
-	// url += "&stone=" + resources.getF(Resource.STONE);
-	// url += "&gold=" + resources.getF(Resource.GOLD);
-	// url += "&army=" + resources.get(Resource.SWORDFIGHTER) + ":" + resources.get(Resource.LANCEBEARER);
-	// url += "&level=" + city.getLevel();
-	// url += "&name=" + URLEncoder.encode(city.getName(), "UTF-8");
-	//
-	// if (!Helper.getURLContent(new URL(url)).contains("true"))
-	// {
-	// Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise ist dieser im Moment down.", null));
-	// }
-	// }
-	// catch (Exception e)
-	// {
-	// e.printStackTrace();
-	// Game.currentGame.addLayer(new Alert("Fehler! Deine Stadt konnte nicht mit dem Server synchronisiert werden. Möglicherweise bist du nicht mit dem Internet verbunden.", null));
-	// }
-	// }
+	@Override
+	public void onReceivePacket(Packet p)
+	{
+		super.onReceivePacket(p);
+		
+		
+	}
 	
 	public boolean intersectsBuildings(Rectangle r)
 	{

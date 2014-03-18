@@ -5,11 +5,9 @@ import java.awt.Point;
 import org.json.JSONException;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arise.ui.BuildButton;
-import de.dakror.arise.layer.CityHUDLayer;
-import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.ui.BuildButton;
 import de.dakror.gamesetup.ui.ClickEvent;
 
 /**
@@ -42,7 +40,7 @@ public class Barracks extends Building
 			@Override
 			public void trigger()
 			{
-				queue(r, "S");
+				// queue(r, "S");
 			}
 		});
 		
@@ -54,25 +52,25 @@ public class Barracks extends Building
 			@Override
 			public void trigger()
 			{
-				queue(r2, "L");
+				// queue(r2, "L");
 			}
 		});
 		
 		init();
 	}
 	
-	protected void queue(Resources r, String n)
-	{
-		if (metadata.length() < Building.MAX_QUEUE)
-		{
-			CityLayer.resources.add(Resources.mul(r, -1));
-			if (metadata.length() == 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-			metadata += n;
-			CityHUDLayer.cl.saveData();
-			
-			updateQueueDisplay();
-		}
-	}
+	// protected void queue(Resources r, String n)
+	// {
+	// if (metadata.length() < Building.MAX_QUEUE)
+	// {
+	// CityLayer.resources.add(Resources.mul(r, -1));
+	// if (metadata.length() == 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+	// metadata += n;
+	// CityHUDLayer.cl.saveData();
+	//
+	// updateQueueDisplay();
+	// }
+	// }
 	
 	@Override
 	protected float getStageChangeDuration()
@@ -91,21 +89,21 @@ public class Barracks extends Building
 	@Override
 	public void onSpecificChange()
 	{
-		if (stage == 1)
-		{
-			Resource r = getResourceNameForTroop(getFirstPlaceInQueue());
-			if (r != null)
-			{
-				metadata = (metadata.length() > 1 ? metadata.substring(1) : "");
-				CityLayer.resources.add(r, 10);
-				
-				if (metadata.length() > 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-				
-				CityHUDLayer.cl.saveData();
-				
-				updateQueueDisplay();
-			}
-		}
+		// if (stage == 1)
+		// {
+		// Resource r = getResourceNameForTroop(getFirstPlaceInQueue());
+		// if (r != null)
+		// {
+		// metadata = (metadata.length() > 1 ? metadata.substring(1) : "");
+		// CityLayer.resources.add(r, 10);
+		//
+		// if (metadata.length() > 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+		//
+		// CityHUDLayer.cl.saveData();
+		//
+		// updateQueueDisplay();
+		// }
+		// }
 	}
 	
 	protected String getFirstPlaceInQueue()

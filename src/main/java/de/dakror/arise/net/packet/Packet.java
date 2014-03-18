@@ -16,6 +16,7 @@ public abstract class Packet
 		WORLD,
 		CITY,
 		RESOURCES,
+		BUILDING
 		
 		;
 		public int getID()

@@ -21,6 +21,7 @@ public class Packet05Resources extends Packet
 	public Packet05Resources(int cityId, Resources res)
 	{
 		super(5);
+		this.cityId = cityId;
 		resources = res;
 	}
 	

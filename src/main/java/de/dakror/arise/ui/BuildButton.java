@@ -9,8 +9,6 @@ import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
-import de.dakror.arise.game.building.Center;
-import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -189,11 +187,11 @@ public class BuildButton extends IconButton
 				Assistant.drawResource(buildingCosts, r, x1 + 30, y1 + 100 + tooltipRows * 25 + i * 30, 25, 30, g);
 			}
 			
-			if (minCityLevel > 0)
-			{
-				g.setColor(CityHUDLayer.cl.city.getLevel() >= minCityLevel ? Color.white : Color.red);
-				Helper.drawString("min. Stadtlevel: " + (minCityLevel + 1), x1 + 25, y1 + 80 + tooltipRows * 25 + 40 + resources.size() * 30 + products.size() * 30, g, 25);
-			}
+			// if (minCityLevel > 0)
+			// {
+			// g.setColor(CityHUDLayer.cl.city.getLevel() >= minCityLevel ? Color.white : Color.red);
+			// Helper.drawString("min. Stadtlevel: " + (minCityLevel + 1), x1 + 25, y1 + 80 + tooltipRows * 25 + 40 + resources.size() * 30 + products.size() * 30, g, 25);
+			// }
 			
 			g.setColor(c);
 		}
@@ -233,9 +231,9 @@ public class BuildButton extends IconButton
 			}
 		}
 		
-		if (CityHUDLayer.cl.city.getLevel() < minCityLevel) canEffort = false;
+		// if (CityHUDLayer.cl.city.getLevel() < minCityLevel) canEffort = false;
 		
-		if (CityLayer.resources.get(Resource.BUILDINGS) >= new Center(0, 0, CityHUDLayer.cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS)) canEffort = false;
+		// if (CityLayer.resources.get(Resource.BUILDINGS) >= new Center(0, 0, CityHUDLayer.cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS)) canEffort = false;
 		
 		enabled = canEffort;
 	}

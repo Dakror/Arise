@@ -216,7 +216,7 @@ public class DBManager
 	{
 		try
 		{
-			connection.createStatement().executeQuery("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
+			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
 		}
 		catch (SQLException e)
 		{

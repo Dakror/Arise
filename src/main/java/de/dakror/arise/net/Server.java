@@ -24,6 +24,7 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.server.DBManager;
+import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.util.Helper;
 
@@ -40,6 +41,8 @@ public class Server extends Thread
 	public boolean running;
 	public CopyOnWriteArrayList<User> clients = new CopyOnWriteArrayList<>();
 	
+	ServerUpdater updater;
+	
 	DatagramSocket socket;
 	
 	public Server(InetAddress ip)
@@ -53,6 +56,7 @@ public class Server extends Thread
 			setPriority(MAX_PRIORITY);
 			out("Connecting to database");
 			DBManager.init();
+			updater = new ServerUpdater();
 			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			start();

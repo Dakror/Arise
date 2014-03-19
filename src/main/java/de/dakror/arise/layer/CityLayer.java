@@ -153,6 +153,7 @@ public class CityLayer extends MPLayer
 			b.setStage(packet.getStage());
 			b.setStageChangeSecondsLeft(packet.getTimeleft());
 			b.setMetadata(packet.getMeta());
+			b.setId(packet.getId());
 			
 			components.add(b);
 			

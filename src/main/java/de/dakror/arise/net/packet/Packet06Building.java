@@ -61,6 +61,11 @@ public class Packet06Building extends Packet
 		return cityId;
 	}
 	
+	public int getId()
+	{
+		return id;
+	}
+	
 	public int getBuildingType()
 	{
 		return type;

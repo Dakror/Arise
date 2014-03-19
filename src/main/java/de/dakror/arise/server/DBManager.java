@@ -211,4 +211,16 @@ public class DBManager
 		}
 		return p;
 	}
+	
+	public static void updateBuildingTimers()
+	{
+		try
+		{
+			connection.createStatement().executeQuery("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }

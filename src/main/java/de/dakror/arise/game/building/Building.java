@@ -31,7 +31,7 @@ public abstract class Building extends ClickableComponent
 	public static JSONObject TROOPS;
 	public static int MAX_QUEUE;
 	
-	protected int tx, ty, tw, th, typeId, level, maxLevel, levelFac, minCityLevel;
+	protected int tx, ty, tw, th, id, typeId, level, maxLevel, levelFac, minCityLevel;
 	public int bx, by, bw, bh;
 	/**
 	 * 0 = construction<br>
@@ -39,7 +39,7 @@ public abstract class Building extends ClickableComponent
 	 * 2 = deconstruction<br>
 	 * 3 = upgrading<br>
 	 */
-	protected int stage, prevStage;
+	protected int stage;
 	protected int stageChangeDuration;
 	protected int stageChangeSecondsLeft;
 	protected String name, desc;
@@ -79,6 +79,16 @@ public abstract class Building extends ClickableComponent
 				// CityHUDLayer.deconstruct.setUpgradeMode("Abriss", "Das Gebäudes wird abgerissen. Es werden keine Resourcen zurückgegeben.", new Resources(), 0);
 			}
 		});
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+	
+	public void setId(int id)
+	{
+		this.id = id;
 	}
 	
 	public void init()
@@ -193,7 +203,6 @@ public abstract class Building extends ClickableComponent
 	
 	public void setStage(int s)
 	{
-		prevStage = stage;
 		stage = s;
 	}
 	
@@ -218,13 +227,6 @@ public abstract class Building extends ClickableComponent
 	protected float getStageChangeDuration()
 	{
 		return Math.round(stageChangeDuration * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
-	}
-	
-	public boolean isStageChangeReady()
-	{
-		if (stageChangeSecondsLeft == 0) return false;
-		
-		return System.currentTimeMillis() / 1000 - stageChangeSecondsLeft >= getStageChangeDuration();
 	}
 	
 	public String getName()

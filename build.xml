@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="Arise">
+<project basedir="." default="sleep" name="Arise">
 	<property environment="env" />
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="target" value="1.7" />
@@ -9,6 +9,9 @@
 		<pathelement location="libs/JSON.jar" />
 		<pathelement location="libs/GameSetup.jar" />
 	</path>
+	<target name="sleep">
+	    <echo message = "Disabled compiling!"/>
+	</target>
 	<target name="build">
 		<delete file="Arise.jar" />
 
@@ -62,14 +65,13 @@
 		<signjar jar="Arise.jar" keystore="ariseKeystore" alias="arise"
 			storepass="ariseKeystore" />
 
-		<!-- Everything in code is broken! -->
-		<!--echo message="starting FTP file upload" />
+		<echo message="starting FTP file upload" />
 		<java classname="de.dakror.ariseftp.AriseFTP">
 			<classpath>
 				<pathelement location="AriseFTP.jar" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
-		</java-->
+		</java>
 
 		<delete dir="bin" />
 

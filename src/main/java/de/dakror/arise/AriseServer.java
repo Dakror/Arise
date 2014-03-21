@@ -9,7 +9,9 @@ import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -52,6 +54,8 @@ public class AriseServer
 		mc.redirectOut();
 		mc.redirectErr(Color.RED, null);
 		mc.setMessageLines(100);
+		jtp.setBorder(BorderFactory.createEmptyBorder());
+		jtp.setBackground(new JLabel().getBackground());
 		panel.add(new JScrollPane(jtp), BorderLayout.CENTER);
 		
 		final JTextField cmd = new JTextField();

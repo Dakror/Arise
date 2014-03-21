@@ -199,7 +199,7 @@ public class Server extends Thread
 				try
 				{
 					Packet05Resources p = new Packet05Resources(data);
-					sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+					if (DBManager.isCityFromUser(p.getCityId(), user)) sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 					break;
 				}
 				catch (Exception e)
@@ -210,7 +210,7 @@ public class Server extends Thread
 			case BUILDING:
 			{
 				Packet06Building p = new Packet06Building(data);
-				if (p.getBuildingType() == 0) // validity check
+				if (p.getBuildingType() == 0 && DBManager.isCityFromUser(p.getCityId(), user)) // validity check
 				{
 					try
 					{
@@ -227,14 +227,17 @@ public class Server extends Thread
 			case RENAMECITY:
 			{
 				Packet07Renamecity p = new Packet07Renamecity(data);
-				boolean worked = DBManager.renameCity(p.getCityId(), p.getNewName(), user);
-				try
+				if (DBManager.isCityFromUser(p.getCityId(), user))
 				{
-					sendPacket(new Packet07Renamecity(p.getCityId(), worked ? p.getNewName() : "#false#"), getUserForIP(address, port));
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
+					boolean worked = DBManager.renameCity(p.getCityId(), p.getNewName(), user);
+					try
+					{
+						sendPacket(new Packet07Renamecity(p.getCityId(), worked ? p.getNewName() : "#false#"), getUserForIP(address, port));
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 				break;
 			}

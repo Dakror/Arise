@@ -224,6 +224,21 @@ public class DBManager
 		}
 	}
 	
+	public static boolean isCityFromUser(int cityId, User user)
+	{
+		if (user == null) return false;
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId + " AND USER_ID = " + user.getId());
+			return rs.next();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public static boolean renameCity(int cityId, String newName, User user)
 	{
 		try

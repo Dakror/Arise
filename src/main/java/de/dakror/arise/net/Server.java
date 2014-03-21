@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
@@ -23,7 +24,8 @@ import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
-import de.dakror.arise.net.packet.Packet07Renamecity;
+import de.dakror.arise.net.packet.Packet07RenameCity;
+import de.dakror.arise.net.packet.Packet08PlaceBuilding;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -58,6 +60,8 @@ public class Server extends Thread
 			out("Connecting to database");
 			DBManager.init();
 			updater = new ServerUpdater();
+			out("Fetching configuration");
+			Game.loadConfig();
 			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			start();
@@ -226,17 +230,38 @@ public class Server extends Thread
 			}
 			case RENAMECITY:
 			{
-				Packet07Renamecity p = new Packet07Renamecity(data);
+				Packet07RenameCity p = new Packet07RenameCity(data);
 				if (DBManager.isCityFromUser(p.getCityId(), user))
 				{
 					boolean worked = DBManager.renameCity(p.getCityId(), p.getNewName(), user);
 					try
 					{
-						sendPacket(new Packet07Renamecity(p.getCityId(), worked ? p.getNewName() : "#false#"), getUserForIP(address, port));
+						sendPacket(new Packet07RenameCity(p.getCityId(), worked ? p.getNewName() : "#false#"), getUserForIP(address, port));
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
+					}
+				}
+				break;
+			}
+			case PLACEBUILDING:
+			{
+				Packet08PlaceBuilding p = new Packet08PlaceBuilding(data);
+				if (DBManager.isCityFromUser(p.getCityId(), user))
+				{
+					int id = DBManager.placeBuilding(p.getCityId(), p.getBuildingType(), p.getX(), p.getY());
+					if (id != 0)
+					{
+						try
+						{
+							sendPacket(DBManager.getCityBuilding(p.getCityId(), id), user);
+							sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
 					}
 				}
 				break;

@@ -18,7 +18,7 @@ import de.dakror.arise.game.building.Quarry;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
-import de.dakror.arise.net.packet.Packet07Renamecity;
+import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -81,7 +81,7 @@ public class CityHUDLayer extends MPLayer
 					{
 						try
 						{
-							Game.client.sendPacket(new Packet07Renamecity(cl.city.getId(), name.getText().trim()));
+							Game.client.sendPacket(new Packet07RenameCity(cl.city.getId(), name.getText().trim()));
 						}
 						catch (IOException e)
 						{
@@ -241,7 +241,6 @@ public class CityHUDLayer extends MPLayer
 		}
 		if (selectedBuilding != null) selectedBuilding.getGuiContainer().draw(g);
 		if (hovered != null && Game.currentGame.getActiveLayer() instanceof CityHUDLayer) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
-		
 	}
 	
 	@Override
@@ -349,7 +348,7 @@ public class CityHUDLayer extends MPLayer
 		
 		if (p.getType() == PacketTypes.RENAMECITY)
 		{
-			Packet07Renamecity packet = (Packet07Renamecity) p;
+			Packet07RenameCity packet = (Packet07RenameCity) p;
 			if (packet.getCityId() == cl.city.getId())
 			{
 				if (packet.getNewName().equals("#false#")) Game.currentGame.addLayer(new Alert("Ein Fehler ist aufgetreten. Die Stadt konnte nicht umbennant werden. Bitte probiere es erneut.", null));

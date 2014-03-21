@@ -1,18 +1,18 @@
 package de.dakror.arise.net.packet;
 
-public class Packet07Renamecity extends Packet
+public class Packet07RenameCity extends Packet
 {
 	int cityId;
 	String newName;
 	
-	public Packet07Renamecity(int cityId, String newName)
+	public Packet07RenameCity(int cityId, String newName)
 	{
 		super(7);
 		this.cityId = cityId;
 		this.newName = newName;
 	}
 	
-	public Packet07Renamecity(byte[] data)
+	public Packet07RenameCity(byte[] data)
 	{
 		super(7);
 		String[] parts = readData(data).split(":");

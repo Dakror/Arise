@@ -9,20 +9,34 @@ public abstract class Packet
 {
 	public static enum PacketTypes
 	{
-		INVALID,
-		HANDSHAKE,
-		LOGIN,
-		DISCONNECT,
-		WORLD,
-		CITY,
-		RESOURCES,
-		BUILDING,
-		RENAMECITY
+		INVALID(null),
+		HANDSHAKE(Packet00Handshake.class),
+		LOGIN(Packet01Login.class),
+		DISCONNECT(Packet02Disconnect.class),
+		WORLD(Packet03World.class),
+		CITY(Packet04City.class),
+		RESOURCES(Packet05Resources.class),
+		BUILDING(Packet06Building.class),
+		RENAMECITY(Packet07RenameCity.class),
+		PLACEBUILDING(Packet08PlaceBuilding.class)
 		
 		;
+		
+		private Class<?> class1;
+		
+		private PacketTypes(Class<?> class1)
+		{
+			this.class1 = class1;
+		}
+		
 		public int getID()
 		{
 			return ordinal() - 1;
+		}
+		
+		public Class<?> getPacketClass()
+		{
+			return class1;
 		}
 	}
 	
@@ -71,13 +85,9 @@ public abstract class Packet
 	{
 		if (type == PacketTypes.INVALID) return null;
 		
-		String idS = (type.ordinal() - 1) + "";
-		idS = idS.length() == 1 ? "0" + idS : idS;
-		String pt = type.name().toLowerCase();
-		String pName = "Packet" + idS + pt.substring(0, 1).toUpperCase() + pt.substring(1);
 		try
 		{
-			return (Packet) Class.forName("de.dakror.arise.net.packet." + pName).getConstructor(byte[].class).newInstance(data);
+			return (Packet) type.getPacketClass().getConstructor(byte[].class).newInstance(data);
 		}
 		catch (Exception e)
 		{

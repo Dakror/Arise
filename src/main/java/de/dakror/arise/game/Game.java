@@ -58,6 +58,22 @@ public class Game extends GameApplet
 		currentGame = this;
 	}
 	
+	public static void loadConfig()
+	{
+		try
+		{
+			config = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/config.json")));
+			Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
+			Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
+			Building.MAX_LEVEL = config.getInt("maxlevel");
+			Building.TROOPS = config.getJSONObject("troops");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void initGame()
 	{
@@ -71,11 +87,7 @@ public class Game extends GameApplet
 			addLayer(new LoginLayer());
 			addLayer(new LoadingLayer());
 			
-			config = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/config.json")));
-			Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
-			Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
-			Building.MAX_LEVEL = config.getInt("maxlevel");
-			Building.TROOPS = config.getJSONObject("troops");
+			loadConfig();
 			
 			client = new Client();
 			if (!client.connectToServer())

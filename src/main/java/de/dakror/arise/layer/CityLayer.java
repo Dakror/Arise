@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.awt.dnd.DragSource;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,9 +20,12 @@ import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.City;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
+import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
+import de.dakror.arise.net.packet.Packet08PlaceBuilding;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
+import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;
 
@@ -42,38 +46,12 @@ public class CityLayer extends MPLayer
 		modal = true;
 		this.city = city;
 		resources = city.resourcePacket.getResources();
+		placedBuildings = false;
 	}
 	
 	@Override
 	public void init()
-	{
-		placedBuildings = false;
-		
-		try
-		{
-			// data = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/city?userid=" + Game.userID + "&worldid=" + Game.worldID + "&id=" + city.getId())));
-			// resources = new Resources();
-			// resources.set(Resource.WOOD, (float) data.getDouble("WOOD"));
-			// resources.set(Resource.GOLD, (float) data.getDouble("GOLD"));
-			// resources.set(Resource.STONE, (float) data.getDouble("STONE"));
-			//
-			// String a = data.getString("ARMY");
-			// if (a.trim().length() > 0)
-			// {
-			// String[] army = a.split(":");
-			// for (int i = 0; i < army.length; i++)
-			// resources.set(ArmyLabel.ARMY[i], Integer.parseInt(army[i]));
-			// }
-			//
-			// placeBuildings();
-			// updateBuildingStages();
-			// saveData();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+	{}
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -141,26 +119,6 @@ public class CityLayer extends MPLayer
 		updateComponents(tick);
 	}
 	
-	@Override
-	public void onReceivePacket(Packet p)
-	{
-		super.onReceivePacket(p);
-		
-		if (p.getType() == PacketTypes.BUILDING)
-		{
-			Packet06Building packet = (Packet06Building) p;
-			Building b = Building.getBuildingByTypeId(packet.getX() + 3, packet.getY() + 3, packet.getLevel(), packet.getBuildingType());
-			b.setStage(packet.getStage());
-			b.setStageChangeSecondsLeft(packet.getTimeleft());
-			b.setMetadata(packet.getMeta());
-			b.setId(packet.getId());
-			
-			components.add(b);
-			
-			sortComponents();
-		}
-	}
-	
 	public boolean intersectsBuildings(Rectangle r)
 	{
 		for (Component c : components)
@@ -174,52 +132,61 @@ public class CityLayer extends MPLayer
 	{
 		super.mousePressed(e);
 		
-		// boolean anyBuildingActive = false;
-		// for (Component c : components)
-		// {
-		// if (c instanceof Building && c.state == 1)
-		// {
-		// anyBuildingActive = true;
-		// break;
-		// }
-		// }
-		//
-		// CityHUDLayer chl = null;
-		//
-		// if (!anyBuildingActive)
-		// {
-		// for (Layer l : Game.currentGame.layers)
-		// if (l instanceof CityHUDLayer)
-		// {
-		// chl = (CityHUDLayer) l;
-		// break;
-		// }
-		// if (!chl.anyComponentClicked) CityHUDLayer.selectedBuilding = null;
-		// }
-		//
-		// if (activeBuilding != null)
-		// {
-		// if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor()))
-		// {
-		// int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
-		// int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
-		//
-		// Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId());
-		// b.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-		// components.add(b);
-		// resources.add(Resource.BUILDINGS, 1);
-		// resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
-		// activeBuilding = null;
-		// chl.updateBuildingbar();
-		// sortComponents();
-		// saveData();
-		// }
-		// if (e.getButton() == MouseEvent.BUTTON3)
-		// {
-		// activeBuilding = null;
-		// Game.applet.setCursor(Cursor.getDefaultCursor());
-		// }
-		// }
+		boolean anyBuildingActive = false;
+		for (Component c : components)
+		{
+			if (c instanceof Building && c.state == 1)
+			{
+				anyBuildingActive = true;
+				break;
+			}
+		}
+		
+		CityHUDLayer chl = null;
+		
+		if (!anyBuildingActive)
+		{
+			for (Layer l : Game.currentGame.layers)
+				if (l instanceof CityHUDLayer)
+				{
+					chl = (CityHUDLayer) l;
+					break;
+				}
+			if (!chl.anyComponentClicked) CityHUDLayer.selectedBuilding = null;
+		}
+		
+		if (activeBuilding != null)
+		{
+			if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor()))
+			{
+				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
+				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
+				
+				try
+				{
+					Game.client.sendPacket(new Packet08PlaceBuilding(city.getId(), activeBuilding.getTypeId(), x / 32, y / 32));
+				}
+				catch (IOException e1)
+				{
+					e1.printStackTrace();
+				}
+				
+				// Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId());
+				// b.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
+				// components.add(b);
+				// resources.add(Resource.BUILDINGS, 1);
+				// resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
+				// activeBuilding = null;
+				// chl.updateBuildingbar();
+				// sortComponents();
+				// saveData();
+			}
+			if (e.getButton() == MouseEvent.BUTTON3)
+			{
+				activeBuilding = null;
+				Game.applet.setCursor(Cursor.getDefaultCursor());
+			}
+		}
 	}
 	
 	public void sortComponents()
@@ -235,5 +202,32 @@ public class CityLayer extends MPLayer
 		});
 		
 		components = new CopyOnWriteArrayList<>(c);
+	}
+	
+	@Override
+	public void onReceivePacket(Packet p)
+	{
+		super.onReceivePacket(p);
+		
+		if (p.getType() == PacketTypes.BUILDING)
+		{
+			activeBuilding = null;
+			
+			Packet06Building packet = (Packet06Building) p;
+			Building b = Building.getBuildingByTypeId(packet.getX() + 3, packet.getY() + 3, packet.getLevel(), packet.getBuildingType());
+			b.setStage(packet.getStage());
+			b.setStageChangeSecondsLeft(packet.getTimeleft());
+			b.setMetadata(packet.getMeta());
+			b.setId(packet.getId());
+			
+			components.add(b);
+			
+			sortComponents();
+		}
+		if (p.getType() == PacketTypes.RESOURCES)
+		{
+			Packet05Resources packet = (Packet05Resources) p;
+			resources = packet.getResources();
+		}
 	}
 }

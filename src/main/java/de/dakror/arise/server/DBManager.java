@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import de.dakror.arise.game.building.Building;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet03World;
@@ -43,7 +44,7 @@ public class DBManager
 			
 			Statement s = connection.createStatement();
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS WORLDS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, SPEED INTEGER NOT NULL)");
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, DATA text NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL,STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text)");
 		}
 		catch (Exception e)
@@ -80,7 +81,7 @@ public class DBManager
 			
 			int cities = rs2.getInt(1);
 			Point p = CitySpawner.spawnCity(cities, worldId);
-			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, DATA, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0, '1:0:15:7:1:0;', '0:0', 300, 300, 300)");
+			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0', 300, 300, 300)");
 			
 			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId());
 			int cityId = rs3.getInt(1);
@@ -212,6 +213,20 @@ public class DBManager
 		return p;
 	}
 	
+	public static Packet06Building getCityBuilding(int cityId, int buildingId)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT, META FROM BUILDINGS WHERE CITY_ID = " + cityId + " AND ID = " + buildingId);
+			if (rs.next()) return new Packet06Building(cityId, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getString(8));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static void updateBuildingTimers()
 	{
 		try
@@ -254,6 +269,45 @@ public class DBManager
 			e.printStackTrace();
 			return false;
 		}
+	}
+	
+	public static boolean buy(int cityId, Resources res)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ((WOOD - " + res.get(Resource.WOOD) + " >= 0) + (STONE - " + res.get(Resource.STONE) + " >= 0) + (GOLD - " + res.get(Resource.GOLD) + " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1");
+			if (!rs.next()) return false;
+			
+			connection.createStatement().executeUpdate("UPDATE CITIES SET WOOD = WOOD - " + res.get(Resource.WOOD) + ", STONE = STONE - " + res.get(Resource.STONE) + ", GOLD = GOLD - " + res.get(Resource.GOLD) + " WHERE ID = " + cityId);
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
 		
+	}
+	
+	public static int placeBuilding(int cityId, int type, int x, int y)
+	{
+		try
+		{
+			Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, type);
+			
+			if (buy(cityId, b.getBuildingCosts()))
+			{
+				connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + x + ", 0, " + b.getStageChangeSeconds() + ")");
+				ResultSet rs = connection.createStatement().executeQuery("SELECT last_insert_rowid()");
+				rs.next();
+				return rs.getInt(1);
+			}
+			else return 0;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return 0;
+		}
 	}
 }

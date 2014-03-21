@@ -2,7 +2,8 @@ package de.dakror.arise;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.InetAddress;
@@ -11,10 +12,12 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 
 import de.dakror.arise.net.Server;
+import de.dakror.arise.server.CommandHandler;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.ui.MessageConsole;
 
@@ -44,12 +47,27 @@ public class AriseServer
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		JTextPane jtp = new JTextPane();
-		jtp.setPreferredSize(new Dimension(800, 360));
+		jtp.setEditable(false);
 		MessageConsole mc = new MessageConsole(jtp);
 		mc.redirectOut();
 		mc.redirectErr(Color.RED, null);
 		mc.setMessageLines(100);
-		panel.add(new JScrollPane(jtp), BorderLayout.PAGE_START);
+		panel.add(new JScrollPane(jtp), BorderLayout.CENTER);
+		
+		final JTextField cmd = new JTextField();
+		cmd.addKeyListener(new KeyAdapter()
+		{
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && cmd.getText().trim().length() > 0)
+				{
+					CommandHandler.handle(cmd.getText());
+					cmd.setText("");
+				}
+			}
+		});
+		panel.add(cmd, BorderLayout.PAGE_END);
 		frame.setContentPane(panel);
 		
 		server = new Server(args.length > 1 ? InetAddress.getByName(args[1]) : InetAddress.getLocalHost());

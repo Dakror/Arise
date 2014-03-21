@@ -197,7 +197,7 @@ public class Game extends GameApplet
 	{
 		try
 		{
-			currentGame.updater.closeRequested = true;
+			if (currentGame.updater != null) currentGame.updater.closeRequested = true;
 			client.running = false;
 			if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
 			else System.exit(0);

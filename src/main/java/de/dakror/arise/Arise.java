@@ -18,6 +18,7 @@ import javax.swing.UIManager;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.UpdateThread;
 import de.dakror.arise.layer.LoadingLayer;
+import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.gamesetup.util.Helper;
@@ -119,6 +120,7 @@ public class Arise extends JApplet
 					{
 						if (Game.userID != 0)
 						{
+							Game.currentGame.addLayer(new PauseLayer());
 							Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
 							Game.currentGame.addLayer(new LoadingLayer());
 						}

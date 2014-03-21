@@ -43,6 +43,8 @@ public class Game extends GameApplet
 	public static int userID;
 	public static int worldID = 1;
 	
+	
+	public static boolean gotoMenu;
 	public static boolean inLan = false;
 	
 	public static long buildTimestamp = 0;

@@ -223,4 +223,22 @@ public class DBManager
 			e.printStackTrace();
 		}
 	}
+	
+	public static boolean renameCity(int cityId, String newName, User user)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return false;
+			
+			connection.createStatement().executeUpdate("UPDATE CITIES SET NAME = '" + newName + "' WHERE ID = " + cityId);
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		
+	}
 }

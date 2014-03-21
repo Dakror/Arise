@@ -117,13 +117,13 @@ public abstract class Building extends ClickableComponent
 	{
 		if (Game.world == null) return;
 		
-		// if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)))
-		// {
-		// Color c = g.getColor();
-		// g.setColor(Color.black);
-		// g.drawRect(x + bx * GRID - 1, y + by * GRID - 1, bw * GRID + 2, bh * GRID + 2);
-		// g.setColor(c);
-		// }
+		if (state != 0/* || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)) */)
+		{
+			Color c = g.getColor();
+			g.setColor(Color.black);
+			g.drawRect(x + bx * GRID - 1, y + by * GRID - 1, bw * GRID + 2, bh * GRID + 2);
+			g.setColor(c);
+		}
 		
 		if (stage > 0) drawStage1(g);
 		

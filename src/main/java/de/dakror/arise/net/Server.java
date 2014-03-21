@@ -23,6 +23,7 @@ import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
+import de.dakror.arise.net.packet.Packet07Renamecity;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -97,6 +98,7 @@ public class Server extends Thread
 	public void parsePacket(byte[] data, InetAddress address, int port)
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
+		User user = getUserForIP(address, port);
 		
 		switch (type)
 		{
@@ -167,7 +169,6 @@ public class Server extends Thread
 				try
 				{
 					Packet03World p = new Packet03World(data);
-					User user = getUserForIP(address, port);
 					boolean spawn = DBManager.spawnPlayer(p.getId(), user);
 					out("Player's first visit on world? " + spawn);
 					sendPacket(DBManager.getWorldForId(p.getId()), user);
@@ -185,7 +186,7 @@ public class Server extends Thread
 				try
 				{
 					for (Packet04City packet : DBManager.getCities(p.getWorldId()))
-						sendPacket(packet, getUserForIP(address, port));
+						sendPacket(packet, user);
 				}
 				catch (Exception e)
 				{
@@ -198,7 +199,7 @@ public class Server extends Thread
 				try
 				{
 					Packet05Resources p = new Packet05Resources(data);
-					sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), getUserForIP(address, port));
+					sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 					break;
 				}
 				catch (Exception e)
@@ -214,12 +215,26 @@ public class Server extends Thread
 					try
 					{
 						for (Packet06Building packet : DBManager.getCityBuildings(p.getCityId()))
-							sendPacket(packet, getUserForIP(address, port));
+							sendPacket(packet, user);
 					}
 					catch (Exception e)
 					{
 						e.printStackTrace();
 					}
+				}
+				break;
+			}
+			case RENAMECITY:
+			{
+				Packet07Renamecity p = new Packet07Renamecity(data);
+				boolean worked = DBManager.renameCity(p.getCityId(), p.getNewName(), user);
+				try
+				{
+					sendPacket(new Packet07Renamecity(p.getCityId(), worked ? p.getNewName() : "#false#"), getUserForIP(address, port));
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
 				}
 				break;
 			}

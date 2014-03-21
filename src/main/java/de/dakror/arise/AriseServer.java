@@ -1,12 +1,15 @@
 package de.dakror.arise;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.InetAddress;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
@@ -39,12 +42,15 @@ public class AriseServer
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		
+		JPanel panel = new JPanel(new BorderLayout());
 		JTextPane jtp = new JTextPane();
-		frame.setContentPane(new JScrollPane(jtp));
+		jtp.setPreferredSize(new Dimension(800, 360));
 		MessageConsole mc = new MessageConsole(jtp);
 		mc.redirectOut();
 		mc.redirectErr(Color.RED, null);
 		mc.setMessageLines(100);
+		panel.add(new JScrollPane(jtp), BorderLayout.PAGE_START);
+		frame.setContentPane(panel);
 		
 		server = new Server(args.length > 1 ? InetAddress.getByName(args[1]) : InetAddress.getLocalHost());
 		

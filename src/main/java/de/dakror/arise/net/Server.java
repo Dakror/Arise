@@ -294,7 +294,6 @@ public class Server extends Thread
 			e.printStackTrace();
 		}
 		running = false;
-		// if (updater != null) updater.closeRequested = true;
 		socket.close();
 	}
 	

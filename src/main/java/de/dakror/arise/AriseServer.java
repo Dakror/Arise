@@ -30,6 +30,8 @@ public class AriseServer
 {
 	public static Server server;
 	
+	public static JTextPane log;
+	
 	public static void main(String[] args) throws Exception
 	{
 		if (args.length > 0 && args[0].equals("-school")) // school fixes :D
@@ -48,15 +50,15 @@ public class AriseServer
 		frame.setLocationRelativeTo(null);
 		
 		JPanel panel = new JPanel(new BorderLayout());
-		JTextPane jtp = new JTextPane();
-		jtp.setEditable(false);
-		MessageConsole mc = new MessageConsole(jtp);
+		log = new JTextPane();
+		log.setEditable(false);
+		MessageConsole mc = new MessageConsole(log);
 		mc.redirectOut();
 		mc.redirectErr(Color.RED, null);
 		mc.setMessageLines(100);
-		jtp.setBorder(BorderFactory.createEmptyBorder());
-		jtp.setBackground(new JLabel().getBackground());
-		panel.add(new JScrollPane(jtp), BorderLayout.CENTER);
+		log.setBorder(BorderFactory.createEmptyBorder());
+		log.setBackground(new JLabel().getBackground());
+		panel.add(new JScrollPane(log), BorderLayout.CENTER);
 		
 		final JTextField cmd = new JTextField();
 		cmd.addKeyListener(new KeyAdapter()

@@ -38,6 +38,12 @@ public class LoginLayer extends MPLayer
 	BufferedImage cache;
 	TextButton login;
 	InputField username, password;
+	boolean startGame;
+	
+	public LoginLayer()
+	{
+		startGame = false;
+	}
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -70,7 +76,7 @@ public class LoginLayer extends MPLayer
 	{
 		if (login != null) login.enabled = username.getText().length() >= 4 && password.getText().length() > 0;
 		
-		if (Game.currentGame.alpha == 1) Game.currentGame.startGame();
+		if (Game.currentGame.alpha == 1 && startGame) Game.currentGame.startGame();
 	}
 	
 	public void initFirstPage()
@@ -252,6 +258,7 @@ public class LoginLayer extends MPLayer
 			
 			if (Game.world.components.size() >= ((Packet04City) p).getCities())
 			{
+				startGame = true;
 				Game.currentGame.removeLoadingLayer();
 				Game.currentGame.fadeTo(1, 0.05f);
 			}

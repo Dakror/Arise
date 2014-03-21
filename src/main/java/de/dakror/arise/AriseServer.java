@@ -46,7 +46,7 @@ public class AriseServer
 		mc.redirectErr(Color.RED, null);
 		mc.setMessageLines(100);
 		
-		server = new Server(args.length > 0 ? InetAddress.getByName(args[0]) : InetAddress.getLocalHost());
+		server = new Server(args.length > 1 ? InetAddress.getByName(args[1]) : InetAddress.getLocalHost());
 		
 		frame.addWindowListener(new WindowAdapter()
 		{

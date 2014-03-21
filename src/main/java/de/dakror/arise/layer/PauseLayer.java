@@ -36,19 +36,15 @@ public class PauseLayer extends MPLayer
 	@Override
 	public void update(int tick)
 	{
-		if (Game.currentGame.alpha == 1 && gotoMenu)
+		if (Game.currentGame.alpha == 1 && gotoMenu && Game.userID == 0)
 		{
-			Game.userID = 0;
 			Game.currentGame.removeLayer(Game.world);
 			Game.world = null;
 			Game.worldID = 1;
 			
-			// for (Layer l : Game.currentGame.layers)
-			// if (l instanceof CityLayer) ((CityLayer) l).saveData();
-			
+			Game.currentGame.fadeTo(0, 0.05f);
 			Game.currentGame.setLayer(new LoginLayer());
 			gotoMenu = false;
-			Game.currentGame.fadeTo(0, 0.05f);
 		}
 	}
 	
@@ -74,8 +70,8 @@ public class PauseLayer extends MPLayer
 				try
 				{
 					gotoMenu = true;
-					if (Game.userID != 0) Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
-					else Game.exit();
+					Game.currentGame.addLayer(new LoadingLayer());
+					Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
 				}
 				catch (IOException e)
 				{
@@ -93,7 +89,11 @@ public class PauseLayer extends MPLayer
 			{
 				try
 				{
-					if (Game.userID != 0) Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
+					if (Game.userID != 0)
+					{
+						Game.currentGame.addLayer(new LoadingLayer());
+						Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
+					}
 					else Game.exit();
 				}
 				catch (IOException e)
@@ -110,7 +110,11 @@ public class PauseLayer extends MPLayer
 	{
 		if (p.getType() == PacketTypes.DISCONNECT && ((Packet02Disconnect) p).getCause() == Cause.SERVER_CONFIRMED)
 		{
-			if (gotoMenu) Game.currentGame.fadeTo(1, 0.05f);
+			if (gotoMenu)
+			{
+				Game.userID = 0;
+				Game.currentGame.fadeTo(1, 0.05f);
+			}
 			else Game.exit();
 		}
 	}

@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildButton;
@@ -117,7 +118,7 @@ public abstract class Building extends ClickableComponent
 	{
 		if (Game.world == null) return;
 		
-		if (state != 0/* || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)) */)
+		if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)))
 		{
 			Color c = g.getColor();
 			g.setColor(Color.black);
@@ -160,21 +161,21 @@ public abstract class Building extends ClickableComponent
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		// if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
-		// {
-		// String string = getTooltipText();
-		//
-		// int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30;
-		// int height = 64;
-		// int x1 = x;
-		// int y1 = y;
-		//
-		// if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
-		// if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
-		//
-		// Helper.drawShadow(x1, y1, width, height, g);
-		// Helper.drawString(string, x1 + 15, y1 + 40, g, 30);
-		// }
+		if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
+		{
+			String string = getTooltipText();
+			
+			int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30;
+			int height = 64;
+			int x1 = x;
+			int y1 = y;
+			
+			if (x1 + width > Game.getWidth()) x1 -= (x1 + width) - Game.getWidth();
+			if (y1 + height > Game.getHeight()) y1 -= (y1 + height) - Game.getHeight();
+			
+			Helper.drawShadow(x1, y1, width, height, g);
+			Helper.drawString(string, x1 + 15, y1 + 40, g, 30);
+		}
 	}
 	
 	@Override

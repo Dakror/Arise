@@ -24,6 +24,12 @@ public class AriseServer
 	
 	public static void main(String[] args) throws Exception
 	{
+		if (args.length > 0 && args[0].equals("-school")) // school fixes :D
+		{
+			System.setProperty("http.proxyHost", "192.168.0.7");
+			System.setProperty("http.proxyPort", "800");
+		}
+		
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		JFrame frame = new JFrame("Arise Server Console");

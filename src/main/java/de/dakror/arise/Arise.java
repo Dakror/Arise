@@ -34,6 +34,7 @@ public class Arise extends JApplet
 	@Override
 	public void init()
 	{
+		if (!wrapper) DakrorBin.init(null, "Arise");
 		if (!wrapper && getParameter("-lan") != null) Game.inLan = true;
 		try
 		{

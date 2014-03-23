@@ -87,7 +87,7 @@ public class DBManager
 			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId());
 			int cityId = rs3.getInt(1);
 			
-			connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", 1, 0, 15, 7, 1, 0)");
+			connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", 1, 0, 18, 10, 1, 0)");
 			
 			return true;
 		}
@@ -294,11 +294,11 @@ public class DBManager
 	{
 		try
 		{
-			Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, type);
+			Building b = Building.getBuildingByTypeId(x, y, 0, type);
 			
 			if (buy(cityId, b.getBuildingCosts()))
 			{
-				connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + x + ", 0, " + b.getStageChangeSeconds() + ")");
+				connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() + ")");
 				ResultSet rs = connection.createStatement().executeQuery("SELECT last_insert_rowid()");
 				rs.next();
 				return rs.getInt(1);

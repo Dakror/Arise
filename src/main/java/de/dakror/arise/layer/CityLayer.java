@@ -214,7 +214,7 @@ public class CityLayer extends MPLayer
 			activeBuilding = null;
 			
 			Packet06Building packet = (Packet06Building) p;
-			Building b = Building.getBuildingByTypeId(packet.getX() + 3, packet.getY() + 3, packet.getLevel(), packet.getBuildingType());
+			Building b = Building.getBuildingByTypeId(packet.getX(), packet.getY(), packet.getLevel(), packet.getBuildingType());
 			b.setStage(packet.getStage());
 			b.setStageChangeSecondsLeft(packet.getTimeleft());
 			b.setMetadata(packet.getMeta());

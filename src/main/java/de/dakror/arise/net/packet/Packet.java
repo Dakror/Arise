@@ -18,7 +18,8 @@ public abstract class Packet
 		RESOURCES(Packet05Resources.class),
 		BUILDING(Packet06Building.class),
 		RENAMECITY(Packet07RenameCity.class),
-		PLACEBUILDING(Packet08PlaceBuilding.class)
+		PLACEBUILDING(Packet08PlaceBuilding.class),
+		BUILDINGSTAGECHANGE(Packet09BuildingStageChange.class),
 		
 		;
 		

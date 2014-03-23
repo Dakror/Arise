@@ -36,6 +36,8 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class Server extends Thread
 {
+	public static Server currentServer;
+	
 	public static final int PORT = 14744;
 	public static final int PACKETSIZE = 255; // bytes
 	
@@ -50,6 +52,7 @@ public class Server extends Thread
 	
 	public Server(InetAddress ip)
 	{
+		currentServer = this;
 		try
 		{
 			dir = new File(CFG.DIR, "Server");
@@ -304,6 +307,14 @@ public class Server extends Thread
 	{
 		for (User u : clients)
 			if (u.getIP().equals(address) && u.getPort() == port) return u;
+		
+		return null;
+	}
+	
+	public User getUserForId(int id)
+	{
+		for (User u : clients)
+			if (u.getId() == id) return u;
 		
 		return null;
 	}

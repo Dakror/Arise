@@ -18,6 +18,7 @@ import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet06Building;
+import de.dakror.arise.net.packet.Packet09BuildingStageChange;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -74,7 +75,7 @@ public class DBManager
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE USER_ID = " + user.getId());
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
 			if (rs.next()) return false;
 			
 			ResultSet rs2 = connection.createStatement().executeQuery("SELECT COUNT() as COUNT FROM CITIES WHERE WORLD_ID = " + worldId);
@@ -84,7 +85,7 @@ public class DBManager
 			Point p = CitySpawner.spawnCity(cities, worldId);
 			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0', 300, 300, 300)");
 			
-			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId());
+			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
 			int cityId = rs3.getInt(1);
 			
 			connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", 1, 0, 18, 10, 1, 0)");
@@ -290,6 +291,22 @@ public class DBManager
 		
 	}
 	
+	public static int getWorldSpeedForCity(int cityId)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT SPEED FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
+			if (!rs.next()) return 0;
+			
+			return rs.getInt(1);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	
 	public static int placeBuilding(int cityId, int type, int x, int y)
 	{
 		try
@@ -298,7 +315,7 @@ public class DBManager
 			
 			if (buy(cityId, b.getBuildingCosts()))
 			{
-				connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() + ")");
+				connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCity(cityId) + ")");
 				ResultSet rs = connection.createStatement().executeQuery("SELECT last_insert_rowid()");
 				rs.next();
 				return rs.getInt(1);
@@ -309,6 +326,39 @@ public class DBManager
 		{
 			e.printStackTrace();
 			return 0;
+		}
+	}
+	
+	public static void updateBuildingStage()
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDING.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID == CITIES.ID AND BUILDINGS.STAGE = 0 AND BUILDINGS.TIMELEFT = 0");
+			while (rs.next())
+			{
+				int stage = rs.getInt(2);
+				if (stage != 1) stage = 1;
+				else ; // handle specificly
+				
+				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt(1));
+				
+				User owner = Server.currentServer.getUserForId(rs.getInt(5));
+				if (owner != null)
+				{
+					try
+					{
+						Server.currentServer.sendPacket(new Packet09BuildingStageChange(rs.getInt(1), rs.getInt(4), stage), owner);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
 		}
 	}
 }

@@ -134,20 +134,14 @@ public abstract class Building extends ClickableComponent
 			
 			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this, g);
 			
-			float duration = getStageChangeDuration();
-			long destTimeStamp = stageChangeSecondsLeft + (long) duration;
-			long deltaEnd = (destTimeStamp - System.currentTimeMillis() / 1000);
-			long deltaStart = (System.currentTimeMillis() / 1000 - stageChangeSecondsLeft);
+			float duration = stageChangeDuration / Game.world.getSpeed();
 			
-			if (deltaEnd >= 0)
-			{
-				Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, deltaStart / duration, "ffc744", g);
-				
-				Color c = g.getColor();
-				g.setColor(Color.black);
-				Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(deltaEnd), tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
-				g.setColor(c);
-			}
+			Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, 1 - stageChangeSecondsLeft / duration, "ffc744", g);
+			
+			Color c = g.getColor();
+			g.setColor(Color.black);
+			Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(stageChangeSecondsLeft), tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
+			g.setColor(c);
 		}
 	}
 	
@@ -180,7 +174,9 @@ public abstract class Building extends ClickableComponent
 	
 	@Override
 	public void update(int tick)
-	{}
+	{
+		if (stageChangeSecondsLeft > 0 && tick % Game.currentGame.getUPS() == 0) stageChangeSecondsLeft--;
+	}
 	
 	public String getTooltipText()
 	{

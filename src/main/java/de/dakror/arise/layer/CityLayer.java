@@ -229,5 +229,9 @@ public class CityLayer extends MPLayer
 			Packet05Resources packet = (Packet05Resources) p;
 			resources = packet.getResources();
 		}
+		if (p.getType() == PacketTypes.BUILDINGSTAGECHANGE)
+		{
+			// Packet09BuildingStageChange packet = (Packet09BuildingStageChange) p;
+		}
 	}
 }

@@ -6,7 +6,7 @@
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="target" value="1.7" />
 	<property name="source" value="1.7" />
-	<property name="mainclass" value="arise.${project.name}" />
+	<property name="mainclass" value="arise.${project.name}" /> <!--  The only line that has to be changed -->
 	
 	<path id="classpath">
 		<pathelement location="bin" />
@@ -69,7 +69,7 @@
 			<zipgroupfileset dir="libs" excludes="META-INF/*.SF" includes="**/*.jar" />
 		</jar>
 
-		<signjar jar="${project.name}.jar" keystore="dakrorKeystore.jks" alias="dakror"
+		<signjar jar="${project.name}.jar" keystore="http://dakror.de/bin/dakrorKeystore.jks" alias="dakror"
 			storepass="dakrorKeystore" />
 
 		<echo message="starting FTP file upload" />

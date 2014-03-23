@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="Arise">
+<project basedir="." default="build">
+    
+    <basename property="project.name" file="${basedir}"/>
 	<property environment="env" />
 	<property name="debuglevel" value="source,lines,vars" />
 	<property name="target" value="1.7" />
 	<property name="source" value="1.7" />
-	<path id="Arise.classpath">
+	<property name="mainclass" value="arise.${project.name}" />
+	
+	<path id="classpath">
 		<pathelement location="bin" />
-		<pathelement location="libs/JSON.jar" />
-		<pathelement location="libs/GameSetup.jar" />
+		<fileset dir="libs">
+			<include name="**/*.jar" />
+		</fileset>
 	</path>
-	<target name="build">
-		<delete file="Arise.jar" />
+	
+	<target name="build">	    
+		<delete file="${project.name}.jar" />
 
 		<mkdir dir="bin" />
 
@@ -24,12 +30,17 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="libs">
+				<include name="DakrorBin.jar" />
+			</fileset>
+		</copy>
 
 		<javac debug="true" debuglevel="${debuglevel}" destdir="bin"
 			includeantruntime="false" source="${source}" target="${target}">
 			<src path="src/main/java" />
 			<src path="src/main/resources" />
-			<classpath refid="Arise.classpath" />
+			<classpath refid="classpath" />
 		</javac>
 
 		<tstamp>
@@ -42,11 +53,11 @@
   		]]>
 		</script>
 
-		<jar destfile="Arise.jar" filesetmanifest="mergewithoutmain">
+		<jar destfile="${project.name}.jar" filesetmanifest="mergewithoutmain">
 			<manifest>
-				<attribute name="Main-Class" value="de.dakror.arise.Arise" />
+				<attribute name="Main-Class" value="de.dakror.${mainclass}" />
 				<attribute name="Class-Path" value="." />
-				<attribute name="Application-Name" value="Arise" />
+				<attribute name="Application-Name" value="${project.name}" />
 				<attribute name="Build-Date" value="${DATE}" />
 				<attribute name="Build-Timestamp" value="${now}" />
 				<attribute name="Permissions" value="all-permissions" />
@@ -55,22 +66,21 @@
 			<fileset dir="bin">
 				<exclude name="**/*.applet" />
 			</fileset>
-			<zipfileset excludes="META-INF/*.SF" src="libs/GameSetup.jar" />
-			<zipfileset excludes="META-INF/*.SF" src="libs/JSON.jar" />
+			<zipgroupfileset dir="libs" excludes="META-INF/*.SF" includes="**/*.jar" />
 		</jar>
 
-		<signjar jar="Arise.jar" keystore="ariseKeystore" alias="arise"
-			storepass="ariseKeystore" />
+		<signjar jar="${project.name}.jar" keystore="dakrorKeystore.jks" alias="dakror"
+			storepass="dakrorKeystore" />
 
 		<echo message="starting FTP file upload" />
-		<java classname="de.dakror.ariseftp.AriseFTP">
+		<java classname="de.dakror.dakrorbin.DakrorBin">
+			<arg value="${project.name}" />
 			<classpath>
-				<pathelement location="AriseFTP.jar" />
+				<pathelement location="bin/DakrorBin.jar" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
 		</java>
 
 		<delete dir="bin" />
-
 	</target>
 </project>

@@ -6,8 +6,6 @@ import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
 
 import org.json.JSONObject;
 
@@ -18,6 +16,7 @@ import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.net.Client;
+import de.dakror.dakrorbin.DakrorBin;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.layer.Layer;
@@ -36,7 +35,6 @@ public class Game extends GameApplet
 	public static Game currentGame;
 	public static JSONObject config;
 	public static String username;
-	public static String buildDate = "from now";
 	public static World world;
 	
 	public static int secondInMinute;
@@ -46,8 +44,6 @@ public class Game extends GameApplet
 	
 	public static boolean gotoMenu;
 	public static boolean inLan = false;
-	
-	public static long buildTimestamp = 0;
 	
 	long usedMem;
 	
@@ -82,7 +78,6 @@ public class Game extends GameApplet
 		try
 		{
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
-			readManifest();
 			
 			addLayer(new LoginLayer());
 			addLayer(new LoadingLayer());
@@ -136,7 +131,7 @@ public class Game extends GameApplet
 		{
 			Layer.drawModality(g);
 			g.setColor(Color.white);
-			Helper.drawString("Build " + buildDate, 10, 26, g, 18);
+			Helper.drawString("Build " + DakrorBin.buildDate, 10, 26, g, 18);
 			Helper.drawString("FPS: " + getFPS(), 10, 52, g, 18);
 			Helper.drawString("UPS: " + getUPS(), 10, 52 + 26, g, 18);
 			
@@ -183,19 +178,6 @@ public class Game extends GameApplet
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	public void readManifest() throws Exception
-	{
-		String className = getClass().getSimpleName() + ".class";
-		String classPath = getClass().getResource(className).toString();
-		if (!classPath.startsWith("jar")) return;
-		
-		String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
-		Manifest manifest = new Manifest(new URL(manifestPath).openStream());
-		Attributes attr = manifest.getMainAttributes();
-		buildDate = attr.getValue("Build-Date");
-		buildTimestamp = Long.parseLong(attr.getValue("Build-Timestamp").trim());
 	}
 	
 	@Override

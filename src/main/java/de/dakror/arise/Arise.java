@@ -3,16 +3,12 @@ package de.dakror.arise;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import de.dakror.arise.game.Game;
@@ -21,7 +17,7 @@ import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
-import de.dakror.gamesetup.util.Helper;
+import de.dakror.dakrorbin.DakrorBin;
 
 /**
  * @author Dakror
@@ -91,8 +87,6 @@ public class Arise extends JApplet
 	{
 		try
 		{
-			System.setProperty("java.net.preferIPv4Stack", "true");
-			
 			if (args.length > 0 && args[0].equals("-lan")) Game.inLan = true;
 			if (args.length > 1) // school fixes :D
 			{
@@ -100,10 +94,6 @@ public class Arise extends JApplet
 				System.setProperty("http.proxyHost", "192.168.0.7");
 				System.setProperty("http.proxyPort", "800");
 			}
-			
-			File jar = new File(Arise.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-			
-			long time = Long.parseLong(Helper.getURLContent(new URL("http://dakror.de/arise/bin/version")).trim());
 			
 			wrapper = true;
 			
@@ -141,19 +131,13 @@ public class Arise extends JApplet
 			frame.setSize(frame.getWidth() + (1280 - arise.getWidth()), frame.getHeight() + (720 - arise.getHeight()));
 			Game.size = new Dimension(1280, 720);
 			
-			frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(Game.buildTimestamp));
+			DakrorBin.init(frame, "Arise");
+			
+			frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(DakrorBin.buildTimestamp));
 			
 			arise.init();
 			
-			if (Game.buildTimestamp > 0 && time - Game.buildTimestamp > 60000)
-			{
-				JOptionPane.showMessageDialog(frame, "Es ist eine neue Version von Arise verfügbar.\nDiese wird nun heruntergeladen.", "Update", JOptionPane.INFORMATION_MESSAGE);
-				File updater = new File(System.getProperty("user.home") + "/.dakror/SelfUpdate/SelfUpdate.jar");
-				updater.getParentFile().mkdirs();
-				if (!updater.exists()) Helper.copyInputStream(Arise.class.getResourceAsStream("/SelfUpdate.jar"), new FileOutputStream(updater));
-				Runtime.getRuntime().exec("javaw -jar \"" + updater.getPath() + "\" \"" + jar.getPath() + "\" \"http://dakror.de/arise/bin/Arise.jar\"");
-				System.exit(0);
-			}
+			DakrorBin.checkForUpdates();
 		}
 		catch (Exception e1)
 		{

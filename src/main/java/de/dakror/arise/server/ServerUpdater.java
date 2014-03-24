@@ -21,6 +21,7 @@ public class ServerUpdater extends Thread
 			while (running)
 			{
 				DBManager.updateBuildingTimers();
+				DBManager.updateBuildingStage();
 				Thread.sleep(1000);
 			}
 		}

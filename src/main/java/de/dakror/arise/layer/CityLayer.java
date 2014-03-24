@@ -23,6 +23,8 @@ import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
+import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Layer;
@@ -231,7 +233,22 @@ public class CityLayer extends MPLayer
 		}
 		if (p.getType() == PacketTypes.BUILDINGSTAGECHANGE)
 		{
-			// Packet09BuildingStageChange packet = (Packet09BuildingStageChange) p;
+			Packet09BuildingStageChange packet = (Packet09BuildingStageChange) p;
+			if (packet.getCityId() != city.getId())
+			{
+				CFG.e("Packet09BuildingStageChange for different city. Ignored.");
+				return;
+			}
+			
+			for (Component c : components)
+			{
+				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
+				{
+					((Building) c).setStage(packet.getNewStage());
+					((Building) c).setStageChangeSecondsLeft(0);
+					break;
+				}
+			}
 		}
 	}
 }

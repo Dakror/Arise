@@ -20,8 +20,8 @@ public class Packet09BuildingStageChange extends Packet
 		super(9);
 		String[] parts = readData(data).split(":");
 		buildingId = Integer.parseInt(parts[0]);
-		cityId = Integer.parseInt(parts[0]);
-		newStage = Integer.parseInt(parts[0]);
+		cityId = Integer.parseInt(parts[1]);
+		newStage = Integer.parseInt(parts[2]);
 	}
 	
 	@Override

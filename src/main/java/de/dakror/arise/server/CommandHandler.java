@@ -55,10 +55,10 @@ public class CommandHandler
 				{
 					try
 					{
-						int id = Integer.parseInt(parts[1]);
-						int speed = Integer.parseInt(parts[3]);
+						int id = Integer.parseInt(parts[2]);
+						int speed = Integer.parseInt(parts[4]);
 						
-						if (DBManager.createWorld(id, parts[2], speed)) CFG.p("Successfully created world " + parts[2] + " (#" + id + ")");
+						if (DBManager.createWorld(id, parts[3], speed)) CFG.p("Successfully created world " + parts[3] + " (#" + id + ")");
 						else CFG.e("There's a world with this id already!");
 					}
 					catch (Exception e)

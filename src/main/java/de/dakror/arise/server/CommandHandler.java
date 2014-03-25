@@ -43,28 +43,38 @@ public class CommandHandler
 			}
 			case "world":
 			{
-				if (parts.length != 4) CFG.e("Invalid parameters! Usage: WORLD <int:id> <String:name> <int:speed>");
-				
-				try
+				if (parts.length == 2 && parts[1].equals("-list"))
 				{
-					int id = Integer.parseInt(parts[1]);
-					int speed = Integer.parseInt(parts[3]);
+					WorldData[] worlds = DBManager.listWorlds();
+					for (WorldData w : worlds)
+						CFG.p("  " + w.name + " (#" + w.id + ") Speed " + w.speed);
 					
-					if (DBManager.createWorld(id, parts[2], speed)) CFG.p("Successfully created world " + parts[2] + " (#" + id + ")");
-					else CFG.e("There's a world with this id already!");
+					if (worlds.length == 0) CFG.p("There aren't any worlds yet. Create some with WORLD -add");
 				}
-				catch (Exception e)
+				else if (parts.length == 5 && parts[1].equals("-add"))
 				{
-					CFG.e("Invalid parameters! Usage: WORLD <int:id> <String:name> <int:speed>");
+					try
+					{
+						int id = Integer.parseInt(parts[1]);
+						int speed = Integer.parseInt(parts[3]);
+						
+						if (DBManager.createWorld(id, parts[2], speed)) CFG.p("Successfully created world " + parts[2] + " (#" + id + ")");
+						else CFG.e("There's a world with this id already!");
+					}
+					catch (Exception e)
+					{
+						CFG.e("Invalid parameters! Usage: WORLD [-add <int:id> <String:name> <int:speed>] [-list]");
+					}
 				}
+				else CFG.e("Invalid parameters! Usage: WORLD [-add <int:id> <String:name> <int:speed>] [-list]");
 			}
 			case "help":
 			{
 				CFG.p("Available commands:");
-				CFG.p("STOP                      - saves all data and closes the server.");
-				CFG.p("CLS / CLEAR               - clears the log area.");
-				CFG.p("DIR                       - prints the directory path, where the database is located.");
-				CFG.p("WORLD <int:id> <String:name> <int:speed> - creates a new world.");
+				CFG.p("STOP - saves all data and closes the server.");
+				CFG.p("CLS / CLEAR - clears the log area.");
+				CFG.p("DIR - prints the directory path, where the database is located.");
+				CFG.p("WORLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
 				break;
 			}
 			default:

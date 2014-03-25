@@ -55,6 +55,22 @@ public class DBManager
 		}
 	}
 	
+	public static WorldData[] listWorlds()
+	{
+		ArrayList<WorldData> worlds = new ArrayList<>();
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM WORLDS");
+			while (rs.next())
+				worlds.add(new WorldData(rs.getInt(1), rs.getString(2), rs.getInt(3)));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return worlds.toArray(new WorldData[] {});
+	}
+	
 	public static boolean createWorld(int id, String name, int speed)
 	{
 		try

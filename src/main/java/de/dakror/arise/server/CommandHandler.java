@@ -67,6 +67,8 @@ public class CommandHandler
 					}
 				}
 				else CFG.e("Invalid parameters! Usage: WORLD [-add <int:id> <String:name> <int:speed>] [-list]");
+				
+				break;
 			}
 			case "help":
 			{

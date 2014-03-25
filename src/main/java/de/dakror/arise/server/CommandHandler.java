@@ -30,6 +30,11 @@ public class CommandHandler
 				System.exit(0);
 				break;
 			}
+			case "dir":
+			{
+				CFG.p(CFG.DIR.getPath());
+				break;
+			}
 			case "cls":
 			case "clear":
 			{
@@ -39,8 +44,9 @@ public class CommandHandler
 			case "help":
 			{
 				CFG.p("Available commands:");
-				CFG.p("STOP - saves all data and closes the server.");
+				CFG.p("STOP        - saves all data and closes the server.");
 				CFG.p("CLS / CLEAR - clears the log area.");
+				CFG.p("DIR         - prints the directory path, where the database is located.");
 				break;
 			}
 			default:

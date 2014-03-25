@@ -250,7 +250,6 @@ public class CityHUDLayer extends MPLayer
 		
 		if (Game.currentGame.alpha == 1 && goBackToWorld)
 		{
-			// cl.saveData();
 			Game.currentGame.removeLayer(CityHUDLayer.this);
 			Game.currentGame.removeLayer(cl);
 			goBackToWorld = false;
@@ -284,7 +283,7 @@ public class CityHUDLayer extends MPLayer
 	{
 		Resources products = new Resources();
 		for (Component c : cl.components)
-			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Centre always active */)) products.add(((Building) c).getScalingProducts());
+			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Center always active */)) products.add(((Building) c).getScalingProducts());
 		
 		products = Resources.mul(products, Game.world.getSpeed());
 		

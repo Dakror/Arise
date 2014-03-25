@@ -55,6 +55,24 @@ public class DBManager
 		}
 	}
 	
+	public static boolean createWorld(int id, String name, int speed)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM WORLDS WHERE ID = " + id);
+			if (rs.next()) return false;
+			
+			connection.createStatement().executeUpdate("INSERT INTO WORLDS VALUES(" + id + ", " + name + ", " + speed + ")");
+			
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 	public static Packet03World getWorldForId(int worldId)
 	{
 		try

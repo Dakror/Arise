@@ -41,12 +41,30 @@ public class CommandHandler
 				AriseServer.log.setText(new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "Log cleared.");
 				break;
 			}
+			case "world":
+			{
+				if (parts.length != 4) CFG.e("Invalid parameters! Usage: WORLD <int:id> <String:name> <int:speed>");
+				
+				try
+				{
+					int id = Integer.parseInt(parts[1]);
+					int speed = Integer.parseInt(parts[3]);
+					
+					if (DBManager.createWorld(id, parts[2], speed)) CFG.p("Successfully created world " + parts[2] + " (#" + id + ")");
+					else CFG.e("There's a world with this id already!");
+				}
+				catch (Exception e)
+				{
+					CFG.e("Invalid parameters! Usage: WORLD <int:id> <String:name> <int:speed>");
+				}
+			}
 			case "help":
 			{
 				CFG.p("Available commands:");
-				CFG.p("STOP        - saves all data and closes the server.");
-				CFG.p("CLS / CLEAR - clears the log area.");
-				CFG.p("DIR         - prints the directory path, where the database is located.");
+				CFG.p("STOP                      - saves all data and closes the server.");
+				CFG.p("CLS / CLEAR               - clears the log area.");
+				CFG.p("DIR                       - prints the directory path, where the database is located.");
+				CFG.p("WORLD <int:id> <String:name> <int:speed> - creates a new world.");
 				break;
 			}
 			default:

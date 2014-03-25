@@ -98,7 +98,7 @@ public class Client extends Thread
 	{
 		if (!Game.inLan)
 		{
-			serverIP = InetAddress.getByName("arisesv.dakror.de");
+			serverIP = InetAddress.getByName("h2284175.stratoserver.net");
 			
 			socket.setSoTimeout(1000);
 			sendPacket(new Packet00Handshake());

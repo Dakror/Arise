@@ -78,7 +78,7 @@ public class DBManager
 			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM WORLDS WHERE ID = " + id);
 			if (rs.next()) return false;
 			
-			connection.createStatement().executeUpdate("INSERT INTO WORLDS VALUES(" + id + ", " + name + ", " + speed + ")");
+			connection.createStatement().executeUpdate("INSERT INTO WORLDS VALUES(" + id + ", '" + name + "', " + speed + ")");
 			
 			return true;
 		}

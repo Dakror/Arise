@@ -1,2 +1,4 @@
 language: java
-script: ant build
+script: 
+ - ant -file build.xml build
+ - ant -file build_server.xml build

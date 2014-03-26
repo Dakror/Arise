@@ -11,7 +11,7 @@ public class Packet01Login extends Packet
 	{
 		LOGIN_OK(""),
 		BAD_LOGIN("Login inkorrekt!"),
-		BAD_WORLD_ID("Ungültige Welt-ID");
+		BAD_WORLD_ID("Ungültige Welt-ID!");
 		
 		public String text;
 		

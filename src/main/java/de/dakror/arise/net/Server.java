@@ -144,7 +144,12 @@ public class Server extends Thread
 						sendPacket(new Packet01Login(parts[2], p.getWorldId(), u.getId(), Response.LOGIN_OK), u);
 						clients.add(u);
 					}
-					else sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), !loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID), new User(0, 0, address, port));
+					else
+					{
+						
+						out("Refused login of " + address.getHostAddress() + ":" + port + " (" + (!loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID).name() + ")");
+						sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), !loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID), new User(0, 0, address, port));
+					}
 				}
 				catch (Exception e)
 				{

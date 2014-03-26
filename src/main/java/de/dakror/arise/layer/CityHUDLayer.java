@@ -260,11 +260,6 @@ public class CityHUDLayer extends MPLayer
 			Game.currentGame.fadeTo(0, 0.05f);
 		}
 		
-		// if (cl.placedBuildings && tick % Game.currentGame.getUPS() == 0)
-		// {
-		// if (cl.updateBuildingStages()) updateBuildingbar();
-		// }
-		
 		updateComponents(tick);
 		
 		upgrade.setX(selectedBuilding == null ? -1000 : Game.getWidth() - 270);
@@ -295,7 +290,10 @@ public class CityHUDLayer extends MPLayer
 		{
 			if (c instanceof ResourceLabel)
 			{
-				if (((ResourceLabel) c).getResource().isUsable()) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
+				if (((ResourceLabel) c).getResource().isUsable())
+				{
+					((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
+				}
 				else ((ResourceLabel) c).off = products.get(((ResourceLabel) c).getResource()) / Game.world.getSpeed();
 			}
 		}
@@ -370,7 +368,7 @@ public class CityHUDLayer extends MPLayer
 			b.setMetadata(packet.getMeta());
 			b.setId(packet.getId());
 			
-			components.add(b);
+			cl.components.add(b);
 			
 			cl.sortComponents();
 			updateBuildingbar();
@@ -391,7 +389,7 @@ public class CityHUDLayer extends MPLayer
 				return;
 			}
 			
-			for (Component c : components)
+			for (Component c : cl.components)
 			{
 				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
 				{

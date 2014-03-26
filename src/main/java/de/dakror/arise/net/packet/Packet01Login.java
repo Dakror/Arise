@@ -11,6 +11,7 @@ public class Packet01Login extends Packet
 	{
 		LOGIN_OK(""),
 		BAD_LOGIN("Login inkorrekt!"),
+		ALREADY_LOGGED_IN("Dein Account ist schon von einem anderen Gerät aus angemeldet."),
 		BAD_WORLD_ID("Ungültige Welt-ID!");
 		
 		public String text;

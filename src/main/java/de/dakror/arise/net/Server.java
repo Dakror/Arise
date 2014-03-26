@@ -140,9 +140,19 @@ public class Server extends Thread
 					{
 						String[] parts = s.split(":");
 						User u = new User(Integer.parseInt(parts[1].trim()), p.getWorldId(), address, port);
-						out("User " + parts[2].trim() + " (#" + u.getId() + ")" + " logged in on world #" + p.getWorldId() + ".");
-						sendPacket(new Packet01Login(parts[2], u.getId(), p.getWorldId(), Response.LOGIN_OK), u);
-						clients.add(u);
+						boolean alreadyLoggedIn = getUserForId(u.getId()) != null;
+						
+						if (alreadyLoggedIn)
+						{
+							out("Refused login of " + address.getHostAddress() + ":" + port + " (" + Response.ALREADY_LOGGED_IN.name() + ")");
+							sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), Response.ALREADY_LOGGED_IN), u);
+						}
+						else
+						{
+							out("User " + parts[2].trim() + " (#" + u.getId() + ")" + " logged in on world #" + p.getWorldId() + ".");
+							sendPacket(new Packet01Login(parts[2], u.getId(), p.getWorldId(), Response.LOGIN_OK), u);
+							clients.add(u);
+						}
 					}
 					else
 					{

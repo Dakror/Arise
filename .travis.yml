@@ -1,3 +1,3 @@
 language: java
 script: ant -file build.xml
-after-script: ant -file build_server.xml
+after_script: ant -file build_server.xml

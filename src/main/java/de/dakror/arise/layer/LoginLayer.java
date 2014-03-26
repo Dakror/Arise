@@ -22,6 +22,7 @@ import de.dakror.arise.game.world.World;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet01Login;
+import de.dakror.arise.net.packet.Packet01Login.Response;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.gamesetup.layer.Alert;
@@ -169,7 +170,7 @@ public class LoginLayer extends MPLayer
 				try
 				{
 					final String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
-					Game.client.sendPacket(new Packet01Login(username.getText(), pw));
+					Game.client.sendPacket(new Packet01Login(username.getText(), pw, Game.worldID));
 					Game.currentGame.addLayer(new LoadingLayer());
 				}
 				catch (Exception e)
@@ -212,15 +213,16 @@ public class LoginLayer extends MPLayer
 		
 		if (p.getType() == PacketTypes.LOGIN)
 		{
-			if (!((Packet01Login) p).isLoggedIn())
+			if (((Packet01Login) p).getResponse() != Response.LOGIN_OK)
 			{
 				Game.currentGame.removeLoadingLayer();
-				Game.currentGame.addLayer(new Alert("Login inkorrekt!", new ClickEvent()
+				Game.currentGame.addLayer(new Alert(((Packet01Login) p).getResponse().text, new ClickEvent()
 				{
 					@Override
 					public void trigger()
 					{
 						password.setText("");
+						Game.worldID = 1;
 					}
 				}));
 			}

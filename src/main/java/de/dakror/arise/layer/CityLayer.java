@@ -18,13 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.City;
-import de.dakror.arise.net.packet.Packet;
-import de.dakror.arise.net.packet.Packet.PacketTypes;
-import de.dakror.arise.net.packet.Packet05Resources;
-import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
-import de.dakror.arise.net.packet.Packet09BuildingStageChange;
-import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.layer.Layer;
@@ -206,49 +200,4 @@ public class CityLayer extends MPLayer
 		components = new CopyOnWriteArrayList<>(c);
 	}
 	
-	@Override
-	public void onReceivePacket(Packet p)
-	{
-		super.onReceivePacket(p);
-		
-		if (p.getType() == PacketTypes.BUILDING)
-		{
-			activeBuilding = null;
-			
-			Packet06Building packet = (Packet06Building) p;
-			Building b = Building.getBuildingByTypeId(packet.getX(), packet.getY(), packet.getLevel(), packet.getBuildingType());
-			b.setStage(packet.getStage());
-			b.setStageChangeSecondsLeft(packet.getTimeleft());
-			b.setMetadata(packet.getMeta());
-			b.setId(packet.getId());
-			
-			components.add(b);
-			
-			sortComponents();
-		}
-		if (p.getType() == PacketTypes.RESOURCES)
-		{
-			Packet05Resources packet = (Packet05Resources) p;
-			resources = packet.getResources();
-		}
-		if (p.getType() == PacketTypes.BUILDINGSTAGECHANGE)
-		{
-			Packet09BuildingStageChange packet = (Packet09BuildingStageChange) p;
-			if (packet.getCityId() != city.getId())
-			{
-				CFG.e("Packet09BuildingStageChange for different city. Ignored.");
-				return;
-			}
-			
-			for (Component c : components)
-			{
-				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
-				{
-					((Building) c).setStage(packet.getNewStage());
-					((Building) c).setStageChangeSecondsLeft(0);
-					break;
-				}
-			}
-		}
-	}
 }

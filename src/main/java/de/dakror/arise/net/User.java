@@ -14,11 +14,13 @@ public class User
 	private InetAddress ip;
 	private int port;
 	private int id;
+	private int world;
 	
-	public User(int id, InetAddress ip, int port)
+	public User(int id, int world, InetAddress ip, int port)
 	{
 		this.ip = ip;
 		this.port = port;
+		this.world = world;
 		this.id = id;
 	}
 	
@@ -28,6 +30,7 @@ public class User
 		{
 			if (o.has("i")) ip = InetAddress.getByName(o.getString("i"));
 			if (o.has("p")) port = o.getInt("p");
+			world = o.getInt("w");
 			id = o.getInt("u");
 		}
 		catch (Exception e)
@@ -61,6 +64,11 @@ public class User
 		return id;
 	}
 	
+	public int getWorldId()
+	{
+		return world;
+	}
+	
 	public String serialize()
 	{
 		JSONObject o = new JSONObject();
@@ -70,6 +78,7 @@ public class User
 			o.put("u", id);
 			o.put("i", ip.getHostAddress());
 			o.put("p", port);
+			o.put("w", world);
 		}
 		catch (JSONException e)
 		{

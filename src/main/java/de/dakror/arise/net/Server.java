@@ -18,6 +18,7 @@ import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.net.packet.Packet01Login;
+import de.dakror.arise.net.packet.Packet01Login.Response;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.arise.net.packet.Packet03World;
@@ -118,7 +119,7 @@ public class Server extends Thread
 			{
 				try
 				{
-					sendPacket(new Packet00Handshake(), new User(0, address, port));
+					sendPacket(new Packet00Handshake(), new User(0, 0, address, port));
 					out("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
@@ -134,15 +135,16 @@ public class Server extends Thread
 					Packet01Login p = new Packet01Login(data);
 					String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + p.getUsername() + "&password=" + p.getPwdMd5()));
 					boolean loggedIn = s.contains("true");
-					if (loggedIn)
+					boolean worldExists = DBManager.getWorldForId(p.getWorldId()).getId() != -1;
+					if (loggedIn && worldExists)
 					{
 						String[] parts = s.split(":");
-						User u = new User(Integer.parseInt(parts[1].trim()), address, port);
+						User u = new User(Integer.parseInt(parts[1].trim()), p.getWorldId(), address, port);
 						out("User " + parts[2].trim() + " logged in. " + "(#" + u.getId() + ")");
-						sendPacket(new Packet01Login(parts[2], u.getId(), loggedIn), u);
+						sendPacket(new Packet01Login(parts[2], p.getWorldId(), u.getId(), Response.LOGIN_OK), u);
 						clients.add(u);
 					}
-					else sendPacket(new Packet01Login(p.getUsername(), 0, loggedIn), new User(0, address, port));
+					else sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), !loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID), new User(0, 0, address, port));
 				}
 				catch (Exception e)
 				{

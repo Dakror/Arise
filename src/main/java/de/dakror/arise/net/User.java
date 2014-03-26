@@ -18,10 +18,10 @@ public class User
 	
 	public User(int id, int world, InetAddress ip, int port)
 	{
-		this.ip = ip;
-		this.port = port;
-		this.world = world;
 		this.id = id;
+		this.ip = ip;
+		this.world = world;
+		this.port = port;
 	}
 	
 	public User(JSONObject o)

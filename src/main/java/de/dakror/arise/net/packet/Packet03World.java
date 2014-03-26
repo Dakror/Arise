@@ -35,7 +35,6 @@ public class Packet03World extends Packet
 			name = parts[1];
 			speed = Integer.parseInt(parts[2]);
 		}
-		else id = Integer.parseInt(s.trim());
 	}
 	
 	public int getId()
@@ -56,7 +55,6 @@ public class Packet03World extends Packet
 	@Override
 	protected byte[] getPacketData()
 	{
-		if (name == null) return (id + "").getBytes();
 		return (id + ":" + name + ":" + speed).getBytes();
 	}
 	

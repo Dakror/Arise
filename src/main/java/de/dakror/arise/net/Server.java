@@ -27,6 +27,7 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
+import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -222,12 +223,7 @@ public class Server extends Thread
 				try
 				{
 					Packet05Resources p = new Packet05Resources(data);
-					if (DBManager.isCityFromUser(p.getCityId(), user))
-					{
-						user.setCity(p.getCityId());
-						CFG.p(getUserForId(user.getId()).getCity());
-						sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
-					}
+					if (DBManager.isCityFromUser(p.getCityId(), user)) sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 					break;
 				}
 				catch (Exception e)
@@ -288,6 +284,16 @@ public class Server extends Thread
 						}
 					}
 				}
+				break;
+			}
+			case ATTRIBUTE:
+			{
+				Packet10Attribute p = new Packet10Attribute(data);
+				if (user != null)
+				{
+					if (p.getKey().equals("cityView")) user.setCityView(p.getValue());
+				}
+				
 				break;
 			}
 			default:

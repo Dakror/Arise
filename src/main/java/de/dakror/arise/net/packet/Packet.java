@@ -20,6 +20,7 @@ public abstract class Packet
 		RENAMECITY(Packet07RenameCity.class),
 		PLACEBUILDING(Packet08PlaceBuilding.class),
 		BUILDINGSTAGECHANGE(Packet09BuildingStageChange.class),
+		ATTRIBUTE(Packet10Attribute.class),
 		
 		;
 		

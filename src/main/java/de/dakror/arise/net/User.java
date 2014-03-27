@@ -15,7 +15,7 @@ public class User
 	private int port;
 	private int id;
 	private int world;
-	private int city;
+	private boolean cityView;
 	
 	public User(int id, int world, InetAddress ip, int port)
 	{
@@ -23,7 +23,6 @@ public class User
 		this.ip = ip;
 		this.world = world;
 		this.port = port;
-		city = 0;
 	}
 	
 	public User(JSONObject o)
@@ -33,7 +32,6 @@ public class User
 			if (o.has("i")) ip = InetAddress.getByName(o.getString("i"));
 			if (o.has("p")) port = o.getInt("p");
 			world = o.getInt("w");
-			city = o.getInt("c");
 			id = o.getInt("u");
 		}
 		catch (Exception e)
@@ -72,14 +70,14 @@ public class User
 		return world;
 	}
 	
-	public void setCity(int cityId)
+	public void setCityView(boolean cityView)
 	{
-		city = cityId;
+		this.cityView = cityView;
 	}
 	
-	public int getCity()
+	public boolean isCityView()
 	{
-		return city;
+		return cityView;
 	}
 	
 	public String serialize()
@@ -92,7 +90,7 @@ public class User
 			o.put("i", ip.getHostAddress());
 			o.put("p", port);
 			o.put("w", world);
-			o.put("c", city);
+			o.put("c", cityView);
 		}
 		catch (JSONException e)
 		{

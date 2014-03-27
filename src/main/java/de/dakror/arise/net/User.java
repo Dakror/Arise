@@ -15,6 +15,7 @@ public class User
 	private int port;
 	private int id;
 	private int world;
+	private int city;
 	
 	public User(int id, int world, InetAddress ip, int port)
 	{
@@ -22,6 +23,7 @@ public class User
 		this.ip = ip;
 		this.world = world;
 		this.port = port;
+		city = 0;
 	}
 	
 	public User(JSONObject o)
@@ -31,6 +33,7 @@ public class User
 			if (o.has("i")) ip = InetAddress.getByName(o.getString("i"));
 			if (o.has("p")) port = o.getInt("p");
 			world = o.getInt("w");
+			city = o.getInt("c");
 			id = o.getInt("u");
 		}
 		catch (Exception e)
@@ -69,6 +72,16 @@ public class User
 		return world;
 	}
 	
+	public void setCity(int cityId)
+	{
+		city = cityId;
+	}
+	
+	public int getCity()
+	{
+		return city;
+	}
+	
 	public String serialize()
 	{
 		JSONObject o = new JSONObject();
@@ -79,6 +92,7 @@ public class User
 			o.put("i", ip.getHostAddress());
 			o.put("p", port);
 			o.put("w", world);
+			o.put("c", city);
 		}
 		catch (JSONException e)
 		{

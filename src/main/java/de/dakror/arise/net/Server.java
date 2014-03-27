@@ -222,7 +222,12 @@ public class Server extends Thread
 				try
 				{
 					Packet05Resources p = new Packet05Resources(data);
-					if (DBManager.isCityFromUser(p.getCityId(), user)) sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+					if (DBManager.isCityFromUser(p.getCityId(), user))
+					{
+						user.setCity(p.getCityId());
+						CFG.p(getUserForId(user.getId()).getCity());
+						sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+					}
 					break;
 				}
 				catch (Exception e)

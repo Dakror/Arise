@@ -26,7 +26,6 @@ public class Arise extends JApplet
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static String lanserverIP; // because UDP-Broadcast doesn't work at school, where I'm working, too.
 	public static boolean wrapper = false;
 	
 	public static boolean running;
@@ -35,7 +34,6 @@ public class Arise extends JApplet
 	public void init()
 	{
 		if (!wrapper) DakrorBin.init(null, "Arise");
-		if (!wrapper && getParameter("-lan") != null) Game.inLan = true;
 		try
 		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -88,10 +86,8 @@ public class Arise extends JApplet
 	{
 		try
 		{
-			if (args.length > 0 && args[0].equals("-lan")) Game.inLan = true;
-			if (args.length > 1) // school fixes :D
+			if (args.length > 0) // school fixes :D
 			{
-				lanserverIP = args[1];
 				System.setProperty("http.proxyHost", "192.168.0.7");
 				System.setProperty("http.proxyPort", "800");
 			}

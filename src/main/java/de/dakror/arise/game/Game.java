@@ -43,7 +43,6 @@ public class Game extends GameApplet
 	
 	
 	public static boolean gotoMenu;
-	public static boolean inLan = false;
 	
 	long usedMem;
 	

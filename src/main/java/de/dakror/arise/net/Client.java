@@ -6,14 +6,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.arise.settings.CFG;
-import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.layer.Layer;
 
 /**
@@ -96,42 +94,10 @@ public class Client extends Thread
 	
 	public boolean connectToServer() throws Exception
 	{
-		if (!Game.inLan)
-		{
-			serverIP = InetAddress.getByName("h2284175.stratoserver.net");
-			
-			socket.setSoTimeout(1000);
-			sendPacket(new Packet00Handshake());
-			DatagramPacket packet = new DatagramPacket(new byte[Server.PACKETSIZE], Server.PACKETSIZE);
-			try
-			{
-				socket.receive(packet);
-				
-				PacketTypes type = Packet.lookupPacket(packet.getData()[0]);
-				
-				socket.setSoTimeout(0);
-				
-				return type == PacketTypes.HANDSHAKE;
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				socket.setSoTimeout(0);
-				return false;
-			}
-		}
-		else serverIP = getLanServerIP();
+		serverIP = InetAddress.getByName("h2284175.stratoserver.net");
 		
-		return serverIP != null;
-	}
-	
-	public InetAddress getLanServerIP() throws Exception
-	{
-		socket.setBroadcast(true);
 		socket.setSoTimeout(1000);
-		
-		byte[] data = new Packet00Handshake().getData();
-		socket.send(new DatagramPacket(data, data.length, Arise.lanserverIP == null ? Assistant.getBroadcastAddress() : InetAddress.getByName(Arise.lanserverIP), Server.PORT));
+		sendPacket(new Packet00Handshake());
 		DatagramPacket packet = new DatagramPacket(new byte[Server.PACKETSIZE], Server.PACKETSIZE);
 		try
 		{
@@ -139,17 +105,15 @@ public class Client extends Thread
 			
 			PacketTypes type = Packet.lookupPacket(packet.getData()[0]);
 			
-			socket.setBroadcast(false);
 			socket.setSoTimeout(0);
 			
-			if (type == PacketTypes.HANDSHAKE) return packet.getAddress();
-			else return null;
+			return type == PacketTypes.HANDSHAKE;
 		}
 		catch (Exception e)
 		{
-			socket.setBroadcast(false);
+			e.printStackTrace();
 			socket.setSoTimeout(0);
-			return null;
+			return false;
 		}
 	}
 }

@@ -291,7 +291,7 @@ public class Server extends Thread
 				Packet10Attribute p = new Packet10Attribute(data);
 				if (user != null)
 				{
-					if (p.getKey().equals("cityView")) user.setCityView(p.getValue());
+					if (p.getKey().equals("city")) user.setCity(Integer.parseInt(p.getValue()));
 				}
 				
 				break;

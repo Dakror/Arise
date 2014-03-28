@@ -15,7 +15,7 @@ public class User
 	private int port;
 	private int id;
 	private int world;
-	private boolean cityView;
+	private int city;
 	
 	public User(int id, int world, InetAddress ip, int port)
 	{
@@ -70,14 +70,14 @@ public class User
 		return world;
 	}
 	
-	public void setCityView(boolean cityView)
+	public void setCity(int city)
 	{
-		this.cityView = cityView;
+		this.city = city;
 	}
 	
-	public boolean isCityView()
+	public int getCity()
 	{
-		return cityView;
+		return city;
 	}
 	
 	public String serialize()
@@ -90,7 +90,7 @@ public class User
 			o.put("i", ip.getHostAddress());
 			o.put("p", port);
 			o.put("w", world);
-			o.put("c", cityView);
+			o.put("c", city);
 		}
 		catch (JSONException e)
 		{

@@ -17,8 +17,10 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
+import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -105,62 +107,19 @@ public class DBManager
 		}
 	}
 	
-	public static boolean spawnPlayer(int worldId, User user)
+	public static int getWorldSpeedForCity(int cityId)
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
-			if (rs.next()) return false;
+			ResultSet rs = connection.createStatement().executeQuery("SELECT SPEED FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
+			if (!rs.next()) return 0;
 			
-			ResultSet rs2 = connection.createStatement().executeQuery("SELECT COUNT() as COUNT FROM CITIES WHERE WORLD_ID = " + worldId);
-			rs2.next();
-			
-			int cities = rs2.getInt(1);
-			Point p = CitySpawner.spawnCity(cities, worldId);
-			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0', 300, 300, 300)");
-			
-			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
-			int cityId = rs3.getInt(1);
-			
-			connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", 1, 0, 18, 10, 1, 0)");
-			
-			return true;
+			return rs.getInt(1);
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	public static Packet04City getSpawnCity(int worldId, int userId)
-	{
-		try
-		{
-			JSONObject users = getUsersFromWebsite();
-			ResultSet rs = connection.createStatement().executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId + " AND USER_ID = " + userId);
-			rs.next();
-			
-			return new Packet04City(1, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), users.getString("" + rs.getInt(4)));
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	public static boolean cityExists(int x, int y, int worldId)
-	{
-		try
-		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE WORLD_ID = " + worldId + " AND X = " + x + " AND Y = " + y);
-			return rs.next();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			return false;
+			return 0;
 		}
 	}
 	
@@ -187,6 +146,52 @@ public class DBManager
 		}
 		
 		return packets;
+	}
+	
+	public static boolean cityExists(int x, int y, int worldId)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE WORLD_ID = " + worldId + " AND X = " + x + " AND Y = " + y);
+			return rs.next();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean isCityFromUser(int cityId, User user)
+	{
+		if (user == null) return false;
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId + " AND USER_ID = " + user.getId());
+			return rs.next();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static Packet04City getSpawnCity(int worldId, int userId)
+	{
+		try
+		{
+			JSONObject users = getUsersFromWebsite();
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId + " AND USER_ID = " + userId);
+			rs.next();
+			
+			return new Packet04City(1, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), users.getString("" + rs.getInt(4)));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public static JSONObject getUsersFromWebsite()
@@ -263,31 +268,23 @@ public class DBManager
 		return null;
 	}
 	
-	public static void updateBuildingTimers()
+	public static Resources getCityProductsPerHour(int cityId)
 	{
-		try
+		Resources r = new Resources();
+		ArrayList<Packet06Building> buildings = getCityBuildings(cityId);
+		for (Packet06Building p : buildings)
 		{
-			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
+			Building b = Building.getBuildingByTypeId(p.getX(), p.getY(), p.getLevel(), p.getId());
+			b.setMetadata(p.getMeta());
+			b.setStage(p.getStage());
+			if (b.getStage() == 1) r.add(b.getScalingProducts());
 		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public static boolean isCityFromUser(int cityId, User user)
-	{
-		if (user == null) return false;
-		try
-		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId + " AND USER_ID = " + user.getId());
-			return rs.next();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			return false;
-		}
+		
+		int worldSpeed = getWorldSpeedForCity(cityId);
+		
+		Resources.mul(r, worldSpeed);
+		
+		return r;
 	}
 	
 	public static boolean renameCity(int cityId, String newName, User user)
@@ -307,6 +304,39 @@ public class DBManager
 		}
 	}
 	
+	public static boolean spawnPlayer(int worldId, User user)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
+			if (rs.next()) return false;
+			
+			ResultSet rs2 = connection.createStatement().executeQuery("SELECT COUNT() as COUNT FROM CITIES WHERE WORLD_ID = " + worldId);
+			rs2.next();
+			
+			int cities = rs2.getInt(1);
+			Point p = CitySpawner.spawnCity(cities, worldId);
+			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0', 300, 300, 300)");
+			
+			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
+			int cityId = rs3.getInt(1);
+			
+			connection.createStatement().executeUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", 1, 0, 18, 10, 1, 0)");
+			
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public static boolean add(int cityId, Resources res)
+	{
+		return buy(cityId, Resources.mul(res, -1));
+	}
+	
 	public static boolean buy(int cityId, Resources res)
 	{
 		try
@@ -321,23 +351,6 @@ public class DBManager
 		{
 			e.printStackTrace();
 			return false;
-		}
-		
-	}
-	
-	public static int getWorldSpeedForCity(int cityId)
-	{
-		try
-		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT SPEED FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
-			if (!rs.next()) return 0;
-			
-			return rs.getInt(1);
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-			return 0;
 		}
 	}
 	
@@ -363,6 +376,18 @@ public class DBManager
 		}
 	}
 	
+	public static void updateBuildingTimers()
+	{
+		try
+		{
+			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public static void updateBuildingStage()
 	{
 		try
@@ -372,7 +397,7 @@ public class DBManager
 			{
 				int stage = rs.getInt(2);
 				if (stage != 1) stage = 1;
-				else ; // handle specificly
+				else ; // TODO: handle specificly
 				
 				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt(1));
 				
@@ -393,6 +418,35 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+		}
+	}
+	
+	public static void updateCityResources()
+	{
+		CFG.u();
+		
+		for (WorldData wd : listWorlds())
+			for (Packet04City p : getCities(wd.id))
+				add(p.getCityId(), Resources.mul(getCityProductsPerHour(p.getCityId()), 1 / 3600f));
+		
+		CFG.u();
+	}
+	
+	public static void dispatchCityResources()
+	{
+		for (User u : Server.currentServer.clients)
+		{
+			if (u.getCity() > -1 && isCityFromUser(u.getCity(), u))
+			{
+				try
+				{
+					Server.currentServer.sendPacket(new Packet05Resources(u.getCity()), u);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 }

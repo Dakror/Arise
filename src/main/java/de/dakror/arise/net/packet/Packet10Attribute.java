@@ -6,13 +6,13 @@ package de.dakror.arise.net.packet;
 public class Packet10Attribute extends Packet
 {
 	String key;
-	boolean value;
+	String value;
 	
-	public Packet10Attribute(String key, boolean value)
+	public Packet10Attribute(String key, Object value)
 	{
 		super(10);
 		this.key = key;
-		this.value = value;
+		this.value = value.toString();
 	}
 	
 	
@@ -21,7 +21,7 @@ public class Packet10Attribute extends Packet
 		super(10);
 		String[] parts = readData(data).split(":");
 		key = parts[0];
-		value = Boolean.parseBoolean(parts[1]);
+		value = parts[1];
 	}
 	
 	public String getKey()
@@ -29,7 +29,7 @@ public class Packet10Attribute extends Packet
 		return key;
 	}
 	
-	public boolean getValue()
+	public String getValue()
 	{
 		return value;
 	}
@@ -37,6 +37,6 @@ public class Packet10Attribute extends Packet
 	@Override
 	protected byte[] getPacketData()
 	{
-		return (key + ":" + Boolean.toString(value)).getBytes();
+		return (key + ":" + value).getBytes();
 	}
 }

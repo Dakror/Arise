@@ -22,6 +22,7 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -254,6 +255,14 @@ public class CityHUDLayer extends MPLayer
 		
 		if (Game.currentGame.alpha == 1 && goBackToWorld)
 		{
+			try
+			{
+				Game.client.sendPacket(new Packet10Attribute("city", -1));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 			Game.currentGame.removeLayer(CityHUDLayer.this);
 			Game.currentGame.removeLayer(cl);
 			goBackToWorld = false;

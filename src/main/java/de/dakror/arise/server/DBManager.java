@@ -274,7 +274,7 @@ public class DBManager
 		ArrayList<Packet06Building> buildings = getCityBuildings(cityId);
 		for (Packet06Building p : buildings)
 		{
-			Building b = Building.getBuildingByTypeId(p.getX(), p.getY(), p.getLevel(), p.getId());
+			Building b = Building.getBuildingByTypeId(p.getX(), p.getY(), p.getLevel(), p.getBuildingType());
 			b.setMetadata(p.getMeta());
 			b.setStage(p.getStage());
 			if (b.getStage() == 1) r.add(b.getScalingProducts());

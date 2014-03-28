@@ -107,9 +107,9 @@ public class Arise extends JApplet
 					{
 						if (Game.userID != 0)
 						{
-							Game.currentGame.addLayer(new PauseLayer());
+							if (!(Game.currentGame.getActiveLayer() instanceof PauseLayer) && !(Game.currentGame.getActiveLayer() instanceof LoadingLayer)) Game.currentGame.addLayer(new PauseLayer());
 							Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
-							Game.currentGame.addLayer(new LoadingLayer());
+							if (!(Game.currentGame.getActiveLayer() instanceof LoadingLayer)) Game.currentGame.addLayer(new LoadingLayer());
 						}
 						else Game.exit();
 					}

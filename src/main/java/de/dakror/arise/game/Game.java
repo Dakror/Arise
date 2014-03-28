@@ -143,40 +143,10 @@ public class Game extends GameApplet
 	
 	public void startGame()
 	{
-		try
-		{
-			// Helper.getURLContent(new URL("http://dakror.de/arise/world?spawn=true&userid=" + userID + "&id=" + worldID));
-			//
-			// Calendar calendar = new GregorianCalendar();
-			// calendar.set(Calendar.MILLISECOND, 0);
-			// secondInMinute = calendar.get(Calendar.SECOND);
-			// final Timer t = new Timer();
-			// t.scheduleAtFixedRate(new TimerTask()
-			// {
-			// @Override
-			// public void run()
-			// {
-			// secondInMinute = (secondInMinute + INTERVAL) % 60;
-			// for (Layer l : layers)
-			// {
-			// if (l instanceof CityHUDLayer)
-			// {
-			// ((CityHUDLayer) l).timerTick();
-			// break;
-			// }
-			// }
-			// }
-			// }, calendar.getTime(), INTERVAL * 1000);
-			
 			setLayer(world);
 			System.gc();
 			
 			fadeTo(0, 0.05f);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	@Override

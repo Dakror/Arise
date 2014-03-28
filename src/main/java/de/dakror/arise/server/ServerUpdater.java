@@ -26,11 +26,11 @@ public class ServerUpdater extends Thread
 				DBManager.updateBuildingTimers();
 				DBManager.updateBuildingStage();
 				
-				DBManager.updateCityResources();
-				DBManager.dispatchCityResources();
-				
 				if (System.currentTimeMillis() - lastCheck > 60000)
 				{
+					DBManager.updateCityResources();
+					DBManager.dispatchCityResources();
+					
 					DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();
 				}

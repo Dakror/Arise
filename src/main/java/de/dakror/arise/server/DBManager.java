@@ -20,7 +20,6 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet09BuildingStageChange;
-import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -423,13 +422,9 @@ public class DBManager
 	
 	public static void updateCityResources()
 	{
-		CFG.u();
-		
 		for (WorldData wd : listWorlds())
 			for (Packet04City p : getCities(wd.id))
 				add(p.getCityId(), Resources.mul(getCityProductsPerHour(p.getCityId()), 1 / 3600f));
-		
-		CFG.u();
 	}
 	
 	public static void dispatchCityResources()

@@ -45,7 +45,7 @@ public class AriseServer
 		
 		frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(DakrorBin.buildTimestamp));
 		
-		frame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo" + (System.getProperty("os.name").contains("win") ? "" : "HD") + ".png")));
+		frame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo.png")));
 		frame.setSize(800, 400);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

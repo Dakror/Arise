@@ -95,7 +95,7 @@ public class Arise extends JApplet
 			wrapper = true;
 			
 			final JFrame frame = new JFrame("Arise Standalone v");
-			frame.setIconImage(ImageIO.read(Arise.class.getResource("/img/system/logo" + (System.getProperty("os.name").contains("win") ? "" : "HD") + ".png")));
+			frame.setIconImage(ImageIO.read(Arise.class.getResource("/img/system/logo.png")));
 			frame.setSize(1280, 720);
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 			frame.addWindowListener(new WindowAdapter()

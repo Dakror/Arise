@@ -1,5 +1,8 @@
 package de.dakror.arise.game;
 
+import java.io.IOException;
+
+import de.dakror.arise.net.packet.Packet00Handshake;
 import de.dakror.gamesetup.Updater;
 
 /**
@@ -7,6 +10,8 @@ import de.dakror.gamesetup.Updater;
  */
 public class UpdateThread extends Updater
 {
+	long lastPing = 0;
+	
 	@Override
 	public void update()
 	{
@@ -14,6 +19,18 @@ public class UpdateThread extends Updater
 		{
 			Game.currentGame.usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 			System.gc();
+		}
+		
+		if (System.currentTimeMillis() - lastPing > 1000 * 60 * 30 && Game.userID > 0) // ping server every half an hour
+		{
+			try
+			{
+				Game.client.sendPacket(new Packet00Handshake());
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }

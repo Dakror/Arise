@@ -7,10 +7,10 @@ public class Packet02Disconnect extends Packet
 {
 	public enum Cause
 	{
-		SERVER_CLOSED("Der Server wurde geschlossen."),
+		SERVER_CLOSED("Der Server wurde geschlossen. Wir untersuchen dieses Problem bereits und versuchen, den Server schnellstmöglichst wieder zu starten."),
 		SERVER_CONFIRMED("Der Server bestätigt die Anfrage des Clients auf Abmeldung."),
 		USER_DISCONNECT("Spiel beendet."),
-		INACTIVE("Du wurdest aus Inaktivät von über einer Stunde gekickt."),
+		INACTIVE("Du wurdest aus Inaktivität von über einer Stunde vom Server getrennt."),
 		
 		;
 		private String description;

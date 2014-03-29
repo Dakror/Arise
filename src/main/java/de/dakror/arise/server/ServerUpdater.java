@@ -56,7 +56,7 @@ public class ServerUpdater extends Thread
 		{
 			if (System.currentTimeMillis() - u.getLastInteraction() > hourInMs)
 			{
-				Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.SERVER_CONFIRMED), u);
+				Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.INACTIVE), u);
 				Server.out("Kicked user: #" + u.getId() + " (" + Cause.INACTIVE + ")");
 				Server.currentServer.clients.remove(u);
 			}

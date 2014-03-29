@@ -6,11 +6,13 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -22,6 +24,7 @@ import javax.swing.UIManager;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.server.CommandHandler;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.ui.LimitLinesDocumentListener;
 import de.dakror.arise.ui.MessageConsole;
 import de.dakror.dakrorbin.DakrorBin;
 
@@ -32,13 +35,15 @@ public class AriseServer
 {
 	public static Server server;
 	
-	public static JTextPane log;
+	public static MessageConsole mc;
+	public static JTextPane log, trafficLog;
 	
 	public static void main(String[] args) throws Exception
 	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		JFrame frame = new JFrame("Arise Server Console v");
+		createTrafficFrame(frame);
 		
 		DakrorBin.init(frame, "Arise-Server");
 		DakrorBin.showDialog = false;
@@ -93,6 +98,27 @@ public class AriseServer
 				else System.exit(0);
 			}
 		});
+		
+		frame.setVisible(true);
+	}
+	
+	public static void createTrafficFrame(JFrame mainFrame) throws IOException
+	{
+		JDialog frame = new JDialog(mainFrame, "Arise Server Traffic Console");
+		
+		frame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo.png")));
+		frame.setSize(400, 400);
+		
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		
+		trafficLog = new JTextPane();
+		trafficLog.setText("");
+		trafficLog.getDocument().addDocumentListener(new LimitLinesDocumentListener(100, true));
+		trafficLog.setEditable(false);
+		
+		trafficLog.setBorder(BorderFactory.createEmptyBorder());
+		trafficLog.setBackground(new JLabel().getBackground());
+		frame.setContentPane(new JScrollPane(trafficLog));
 		
 		frame.setVisible(true);
 	}

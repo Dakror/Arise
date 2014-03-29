@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import de.dakror.arise.AriseServer;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -109,6 +110,8 @@ public class Server extends Thread
 		PacketTypes type = Packet.lookupPacket(data[0]);
 		User user = getUserForIP(address, port);
 		if (user != null) user.interact();
+		
+		AriseServer.trafficLog.setText(AriseServer.trafficLog.getText() + new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "< " + address.getHostAddress() + ":" + port + " " + type.name() + "\n");
 		
 		switch (type)
 		{
@@ -329,6 +332,7 @@ public class Server extends Thread
 		DatagramPacket packet = new DatagramPacket(data, data.length, u.getIP(), u.getPort());
 		
 		socket.send(packet);
+		AriseServer.trafficLog.setText(AriseServer.trafficLog.getText() + new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "> " + u.getIP().getHostAddress() + ":" + u.getPort() + " " + p.getType().name() + "\n");
 	}
 	
 	public User getUserForIP(InetAddress address, int port)

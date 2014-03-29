@@ -299,10 +299,7 @@ public class CityHUDLayer extends MPLayer
 		{
 			if (c instanceof ResourceLabel)
 			{
-				if (((ResourceLabel) c).getResource().isUsable())
-				{
-					((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
-				}
+				if (((ResourceLabel) c).getResource().isUsable()) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
 				else ((ResourceLabel) c).off = products.get(((ResourceLabel) c).getResource()) / Game.world.getSpeed();
 			}
 		}

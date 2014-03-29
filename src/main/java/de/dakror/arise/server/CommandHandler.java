@@ -85,12 +85,16 @@ public class CommandHandler
 			}
 			case "help":
 			{
+				CFG.p();
+				CFG.p("#==========================================================================================#");
 				CFG.p("Available commands:");
 				CFG.p("STOP - saves all data and closes the server.");
 				CFG.p("CLS / CLEAR - clears the log area.");
 				CFG.p("DIR - prints the directory path, where the database is located.");
 				CFG.p("WORLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
 				CFG.p("TRAFFIC - opens the traffic monitoring console.");
+				CFG.p("#==========================================================================================#");
+				CFG.p();
 				break;
 			}
 			default:

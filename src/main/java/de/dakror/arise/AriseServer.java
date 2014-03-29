@@ -35,26 +35,27 @@ public class AriseServer
 {
 	public static Server server;
 	
-	public static MessageConsole mc;
 	public static JTextPane log, trafficLog;
+	
+	static JFrame mainFrame;
 	
 	public static void main(String[] args) throws Exception
 	{
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
-		JFrame frame = new JFrame("Arise Server Console v");
-		createTrafficFrame(frame);
+		mainFrame = new JFrame("Arise Server Console v");
+		createTrafficFrame();
 		
-		DakrorBin.init(frame, "Arise-Server");
+		DakrorBin.init(mainFrame, "Arise-Server");
 		DakrorBin.showDialog = false;
 		
-		frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(DakrorBin.buildTimestamp));
+		mainFrame.setTitle(mainFrame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(DakrorBin.buildTimestamp));
 		
-		frame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo.png")));
-		frame.setSize(800, 400);
+		mainFrame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo.png")));
+		mainFrame.setSize(800, 400);
 		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocationRelativeTo(null);
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setLocationRelativeTo(null);
 		
 		JPanel panel = new JPanel(new BorderLayout());
 		log = new JTextPane();
@@ -81,11 +82,11 @@ public class AriseServer
 			}
 		});
 		panel.add(cmd, BorderLayout.PAGE_END);
-		frame.setContentPane(panel);
+		mainFrame.setContentPane(panel);
 		
 		server = new Server(args.length > 1 ? InetAddress.getByName(args[1]) : InetAddress.getLocalHost());
 		
-		frame.addWindowListener(new WindowAdapter()
+		mainFrame.addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent e)
@@ -99,17 +100,17 @@ public class AriseServer
 			}
 		});
 		
-		frame.setVisible(true);
+		mainFrame.setVisible(true);
 	}
 	
-	public static void createTrafficFrame(JFrame mainFrame) throws IOException
+	public static void createTrafficFrame() throws IOException
 	{
 		JDialog frame = new JDialog(mainFrame, "Arise Server Traffic Console");
 		
 		frame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo.png")));
 		frame.setSize(400, 400);
 		
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		trafficLog = new JTextPane();
 		trafficLog.setText("");

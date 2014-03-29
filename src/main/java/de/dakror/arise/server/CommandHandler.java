@@ -1,5 +1,6 @@
 package de.dakror.arise.server;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -70,6 +71,18 @@ public class CommandHandler
 				
 				break;
 			}
+			case "traffic":
+			{
+				try
+				{
+					AriseServer.createTrafficFrame();
+					break;
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
 			case "help":
 			{
 				CFG.p("Available commands:");
@@ -77,6 +90,7 @@ public class CommandHandler
 				CFG.p("CLS / CLEAR - clears the log area.");
 				CFG.p("DIR - prints the directory path, where the database is located.");
 				CFG.p("WORLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
+				CFG.p("TRAFFIC - opens the traffic monitoring console.");
 				break;
 			}
 			default:

@@ -281,9 +281,7 @@ public class DBManager
 		
 		int worldSpeed = getWorldSpeedForCity(cityId);
 		
-		Resources.mul(r, worldSpeed);
-		
-		return r;
+		return Resources.mul(r, worldSpeed);
 	}
 	
 	public static boolean renameCity(int cityId, String newName, User user)
@@ -340,10 +338,10 @@ public class DBManager
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT ((WOOD - " + res.get(Resource.WOOD) + " >= 0) + (STONE - " + res.get(Resource.STONE) + " >= 0) + (GOLD - " + res.get(Resource.GOLD) + " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1");
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ((WOOD - " + res.getF(Resource.WOOD) + " >= 0) + (STONE - " + res.getF(Resource.STONE) + " >= 0) + (GOLD - " + res.getF(Resource.GOLD) + " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1");
 			if (!rs.next()) return false;
 			
-			connection.createStatement().executeUpdate("UPDATE CITIES SET WOOD = WOOD - " + res.get(Resource.WOOD) + ", STONE = STONE - " + res.get(Resource.STONE) + ", GOLD = GOLD - " + res.get(Resource.GOLD) + " WHERE ID = " + cityId);
+			connection.createStatement().executeUpdate("UPDATE CITIES SET WOOD = WOOD - " + res.getF(Resource.WOOD) + ", STONE = STONE - " + res.getF(Resource.STONE) + ", GOLD = GOLD - " + res.getF(Resource.GOLD) + " WHERE ID = " + cityId);
 			return true;
 		}
 		catch (SQLException e)

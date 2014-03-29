@@ -51,7 +51,7 @@ public class ServerUpdater extends Thread
 	
 	public void kickInactiveUsers() throws Exception
 	{
-		long hourInMs = 1000 * 60 /* * 60 */;
+		long hourInMs = 1000 * 60 * 60;
 		for (User u : Server.currentServer.clients)
 		{
 			if (System.currentTimeMillis() - u.getLastInteraction() > hourInMs)

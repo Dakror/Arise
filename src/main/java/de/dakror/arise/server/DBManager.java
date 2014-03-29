@@ -433,7 +433,7 @@ public class DBManager
 			{
 				try
 				{
-					Server.currentServer.sendPacket(new Packet05Resources(u.getCity()), u);
+					Server.currentServer.sendPacket(new Packet05Resources(u.getCity(), getCityResources(u.getCity())), u);
 				}
 				catch (Exception e)
 				{

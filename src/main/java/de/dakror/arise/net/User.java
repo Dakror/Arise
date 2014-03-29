@@ -16,6 +16,7 @@ public class User
 	private int id;
 	private int world;
 	private int city;
+	private long lastInteraction;
 	
 	public User(int id, int world, InetAddress ip, int port)
 	{
@@ -23,6 +24,8 @@ public class User
 		this.ip = ip;
 		this.world = world;
 		this.port = port;
+		
+		interact();
 	}
 	
 	public User(JSONObject o)
@@ -33,6 +36,7 @@ public class User
 			if (o.has("p")) port = o.getInt("p");
 			world = o.getInt("w");
 			id = o.getInt("u");
+			interact();
 		}
 		catch (Exception e)
 		{
@@ -78,6 +82,16 @@ public class User
 	public int getCity()
 	{
 		return city;
+	}
+	
+	public void interact()
+	{
+		lastInteraction = System.currentTimeMillis();
+	}
+	
+	public long getLastInteraction()
+	{
+		return lastInteraction;
 	}
 	
 	public String serialize()

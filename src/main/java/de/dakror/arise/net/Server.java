@@ -108,6 +108,7 @@ public class Server extends Thread
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
 		User user = getUserForIP(address, port);
+		if (user != null) user.interact();
 		
 		switch (type)
 		{

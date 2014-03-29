@@ -10,6 +10,7 @@ public class Packet02Disconnect extends Packet
 		SERVER_CLOSED("Der Server wurde geschlossen."),
 		SERVER_CONFIRMED("Der Server bestätigt die Anfrage des Clients auf Abmeldung."),
 		USER_DISCONNECT("Spiel beendet."),
+		INACTIVE("Du wurdest aus Inaktivät von über einer Stunde gekickt."),
 		
 		;
 		private String description;

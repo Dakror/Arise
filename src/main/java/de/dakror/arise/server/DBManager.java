@@ -422,7 +422,7 @@ public class DBManager
 	{
 		for (WorldData wd : listWorlds())
 			for (Packet04City p : getCities(wd.id))
-				add(p.getCityId(), Resources.mul(getCityProductsPerHour(p.getCityId()), 1 / 3600f));
+				add(p.getCityId(), Resources.mul(getCityProductsPerHour(p.getCityId()), 1 / 60f));
 	}
 	
 	public static void dispatchCityResources()

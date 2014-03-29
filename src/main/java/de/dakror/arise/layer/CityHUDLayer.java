@@ -23,6 +23,7 @@ import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet09BuildingStageChange;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -203,12 +204,23 @@ public class CityHUDLayer extends MPLayer
 						@Override
 						public void trigger()
 						{
-							// selectedBuilding.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-							// selectedBuilding.setStage(2);
-							//
-							// cl.saveData();
+							try
+							{
+								Game.client.sendPacket(new Packet11DeconstructBuilding(selectedBuilding.getId(), cl.city.getId()));
+							}
+							catch (IOException e)
+							{
+								e.printStackTrace();
+							}
 						}
-					}, null));
+					}, new ClickEvent()
+					{
+						@Override
+						public void trigger()
+						{
+							deconstruct.state = 0;
+						}
+					}));
 				}
 			});
 			deconstruct.mode1 = true;

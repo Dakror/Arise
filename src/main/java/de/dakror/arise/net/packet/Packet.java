@@ -21,6 +21,7 @@ public abstract class Packet
 		PLACEBUILDING(Packet08PlaceBuilding.class),
 		BUILDINGSTAGECHANGE(Packet09BuildingStageChange.class),
 		ATTRIBUTE(Packet10Attribute.class),
+		DECONSTRUCTBUILDING(Packet11DeconstructBuilding.class),
 		
 		;
 		

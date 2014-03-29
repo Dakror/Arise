@@ -29,6 +29,7 @@ import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -238,7 +239,7 @@ public class Server extends Thread
 			case BUILDING:
 			{
 				Packet06Building p = new Packet06Building(data);
-				if (p.getBuildingType() == 0 && DBManager.isCityFromUser(p.getCityId(), user)) // validity check
+				if (p.getBuildingType() == 0 && DBManager.isCityFromUser(p.getCityId(), user))
 				{
 					try
 					{
@@ -297,6 +298,14 @@ public class Server extends Thread
 				{
 					if (p.getKey().equals("city")) user.setCity(Integer.parseInt(p.getValue()));
 				}
+				
+				break;
+			}
+			case DECONSTRUCTBUILDING:
+			{
+				Packet11DeconstructBuilding p = new Packet11DeconstructBuilding(data);
+				if (DBManager.isCityFromUser(p.getCityId(), user))
+				{}
 				
 				break;
 			}

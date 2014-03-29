@@ -4,7 +4,6 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
-import de.dakror.dakrorbin.DakrorBin;
 
 /**
  * @author Dakror
@@ -36,7 +35,7 @@ public class ServerUpdater extends Thread
 					DBManager.dispatchCityResources();
 					kickInactiveUsers();
 					
-					DakrorBin.checkForUpdates();
+					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();
 				}
 				System.gc();

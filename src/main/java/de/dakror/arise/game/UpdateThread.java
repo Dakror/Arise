@@ -26,6 +26,7 @@ public class UpdateThread extends Updater
 			try
 			{
 				Game.client.sendPacket(new Packet00Handshake());
+				lastPing = System.currentTimeMillis();
 			}
 			catch (IOException e)
 			{

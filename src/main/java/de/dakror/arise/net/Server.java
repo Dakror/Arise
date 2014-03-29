@@ -121,8 +121,8 @@ public class Server extends Thread
 			{
 				try
 				{
-					sendPacket(new Packet00Handshake(), new User(0, 0, address, port));
-					out("Shook hands with: " + address.getHostAddress() + ":" + port);
+					sendPacket(new Packet00Handshake(), user == null ? new User(0, 0, address, port) : user);
+					if (user == null) out("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
 				catch (Exception e)

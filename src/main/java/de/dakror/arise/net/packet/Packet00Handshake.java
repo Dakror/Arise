@@ -10,6 +10,11 @@ public class Packet00Handshake extends Packet
 		super(0);
 	}
 	
+	public Packet00Handshake(byte[] data)
+	{
+		super(0);
+	}
+	
 	@Override
 	protected byte[] getPacketData()
 	{

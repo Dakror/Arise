@@ -314,6 +314,7 @@ public class Server extends Thread
 						try
 						{
 							sendPacket(new Packet09BuildingStageChange(p.getBuildingId(), p.getCityId(), 2, timeleft), user);
+							sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 						}
 						catch (Exception e)
 						{

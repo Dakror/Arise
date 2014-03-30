@@ -373,6 +373,24 @@ public class DBManager
 		}
 	}
 	
+	public static int deconstructBuilding(int cityId, int id)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE FROM BUILDINGS WHERE ID = " + id);
+			if (!rs.next()) return -1;
+			
+			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt(2));
+			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
 	public static void updateBuildingTimers()
 	{
 		try
@@ -389,11 +407,11 @@ public class DBManager
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID == CITIES.ID AND BUILDINGS.STAGE = 0 AND BUILDINGS.TIMELEFT = 0");
+			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.STAGE = 0 AND BUILDINGS.TIMELEFT = 0");
 			while (rs.next())
 			{
 				int stage = rs.getInt(2);
-				if (stage != 1) stage = 1;
+				if (stage == 0) stage = 1;
 				else ; // TODO: handle specificly
 				
 				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt(1));
@@ -403,7 +421,7 @@ public class DBManager
 				{
 					try
 					{
-						Server.currentServer.sendPacket(new Packet09BuildingStageChange(rs.getInt(1), rs.getInt(4), stage), owner);
+						Server.currentServer.sendPacket(new Packet09BuildingStageChange(rs.getInt(1), rs.getInt(4), stage, 0), owner);
 					}
 					catch (Exception e)
 					{

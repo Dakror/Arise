@@ -28,6 +28,7 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
+import de.dakror.arise.net.packet.Packet09BuildingStageChange;
 import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.server.DBManager;
@@ -305,7 +306,20 @@ public class Server extends Thread
 			{
 				Packet11DeconstructBuilding p = new Packet11DeconstructBuilding(data);
 				if (DBManager.isCityFromUser(p.getCityId(), user))
-				{}
+				{
+					int timeleft = 0;
+					if ((timeleft = DBManager.deconstructBuilding(p.getCityId(), p.getBuildingId())) > -1)
+					{
+						try
+						{
+							sendPacket(new Packet09BuildingStageChange(p.getBuildingId(), p.getCityId(), 2, timeleft), user);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
 				
 				break;
 			}

@@ -29,7 +29,7 @@ public class Packet09BuildingStageChange extends Packet
 	@Override
 	protected byte[] getPacketData()
 	{
-		return (buildingId + ":" + cityId + ":" + newStage).getBytes();
+		return (buildingId + ":" + cityId + ":" + newStage + ":" + timeLeft).getBytes();
 	}
 	
 	public int getBuildingId()

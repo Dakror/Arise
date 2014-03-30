@@ -436,7 +436,7 @@ public class DBManager
 				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt(1));
 				
 				User owner = Server.currentServer.getUserForId(rs.getInt(5));
-				if (owner != null)
+				if (owner != null && owner.getCity() == rs.getInt(4))
 				{
 					try
 					{

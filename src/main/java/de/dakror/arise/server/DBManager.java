@@ -20,7 +20,6 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet09BuildingStageChange;
-import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -415,7 +414,6 @@ public class DBManager
 				if (stage == 0) stage = 1;
 				else if (stage == 2)
 				{
-					CFG.p("hi");
 					connection.createStatement().executeUpdate("DELETE FROM BUILDINGS WHERE ID = " + rs.getInt(1));
 					User owner = Server.currentServer.getUserForId(rs.getInt(5));
 					if (owner != null)

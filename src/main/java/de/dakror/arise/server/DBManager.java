@@ -412,6 +412,23 @@ public class DBManager
 			{
 				int stage = rs.getInt(2);
 				if (stage == 0) stage = 1;
+				else if (stage == 2)
+				{
+					connection.createStatement().executeUpdate("DELETE FROM BUILDINGS WHERE ID = " + rs.getInt(1));
+					User owner = Server.currentServer.getUserForId(rs.getInt(5));
+					if (owner != null)
+					{
+						try
+						{
+							Server.currentServer.sendPacket(new Packet09BuildingStageChange(rs.getInt(1), rs.getInt(4), -1, 0), owner);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
+					continue;
+				}
 				else ; // TODO: handle specificly
 				
 				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt(1));

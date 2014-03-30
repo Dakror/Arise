@@ -35,6 +35,7 @@ public abstract class Building extends ClickableComponent
 	protected int tx, ty, tw, th, id, typeId, level, maxLevel, levelFac, minCityLevel;
 	public int bx, by, bw, bh;
 	/**
+	 * -1 = marked for deletion<br>
 	 * 0 = construction<br>
 	 * 1 = built<br>
 	 * 2 = deconstruction<br>

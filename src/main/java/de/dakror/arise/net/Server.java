@@ -114,6 +114,7 @@ public class Server extends Thread
 		if (user != null) user.interact();
 		
 		AriseServer.trafficLog.setText(AriseServer.trafficLog.getText() + new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "< " + address.getHostAddress() + ":" + port + " " + type.name() + "\n");
+		AriseServer.trafficLog.setCaretPosition(AriseServer.trafficLog.getDocument().getLength());
 		
 		switch (type)
 		{
@@ -356,6 +357,7 @@ public class Server extends Thread
 		
 		socket.send(packet);
 		AriseServer.trafficLog.setText(AriseServer.trafficLog.getText() + new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "> " + u.getIP().getHostAddress() + ":" + u.getPort() + " " + p.getType().name() + "\n");
+		AriseServer.trafficLog.setCaretPosition(AriseServer.trafficLog.getDocument().getLength());
 	}
 	
 	public User getUserForIP(InetAddress address, int port)

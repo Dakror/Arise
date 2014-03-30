@@ -119,6 +119,7 @@ public class AriseServer
 		
 		trafficLog.setBorder(BorderFactory.createEmptyBorder());
 		trafficLog.setBackground(new JLabel().getBackground());
+		
 		frame.setContentPane(new JScrollPane(trafficLog));
 		
 		frame.setVisible(true);

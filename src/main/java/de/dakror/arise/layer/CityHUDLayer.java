@@ -407,17 +407,35 @@ public class CityHUDLayer extends MPLayer
 				return;
 			}
 			
+			boolean wantRes = false;
+			
 			for (Component c : cl.components)
 			{
 				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
 				{
-					if (packet.getNewStage() == -1) cl.components.remove(c);
+					if (packet.getNewStage() == -1)
+					{
+						cl.components.remove(c);
+						wantRes = true;
+					}
 					else
 					{
 						((Building) c).setStage(packet.getNewStage());
 						((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
 					}
 					break;
+				}
+			}
+			
+			if (wantRes)
+			{
+				try
+				{
+					Game.client.sendPacket(new Packet05Resources(cl.city.getId()));
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
 				}
 			}
 			

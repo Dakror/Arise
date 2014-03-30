@@ -463,6 +463,7 @@ public class DBManager
 						try
 						{
 							Server.currentServer.sendPacket(new Packet13BuildingLevel(rs.getInt(1), rs.getInt(3)), owner);
+							stage = 1;
 						}
 						catch (Exception e)
 						{

@@ -19,7 +19,8 @@ import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
-import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.net.packet.Packet09BuildingStage;
+import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -377,11 +378,35 @@ public class DBManager
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE FROM BUILDINGS WHERE ID = " + id);
+			ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id);
 			if (!rs.next()) return -1;
+			if (rs.getInt(3) != 1) return -1;
 			
 			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt(2));
 			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	public static int upgradeBuilding(int cityId, int id)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id);
+			if (!rs.next()) return -1;
+			if (rs.getInt(3) != 1) return -1;
+			
+			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt(2));
+			
+			if (rs.getInt(1) >= b.getMaxLevel()) return -1;
+			if (!buy(cityId, b.getUpgradeCosts())) return -1;
+			
+			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
 			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
 		}
 		catch (SQLException e)
@@ -407,7 +432,7 @@ public class DBManager
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META IS NOT NULL)");
+			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.LEVEL, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META IS NOT NULL)");
 			while (rs.next())
 			{
 				int stage = rs.getInt(2);
@@ -415,12 +440,12 @@ public class DBManager
 				else if (stage == 2)
 				{
 					connection.createStatement().executeUpdate("DELETE FROM BUILDINGS WHERE ID = " + rs.getInt(1));
-					User owner = Server.currentServer.getUserForId(rs.getInt(5));
+					User owner = Server.currentServer.getUserForId(rs.getInt(6));
 					if (owner != null)
 					{
 						try
 						{
-							Server.currentServer.sendPacket(new Packet09BuildingStageChange(rs.getInt(1), rs.getInt(4), -1, 0), owner);
+							Server.currentServer.sendPacket(new Packet09BuildingStage(rs.getInt(1), -1, 0), owner);
 						}
 						catch (Exception e)
 						{
@@ -429,16 +454,32 @@ public class DBManager
 					}
 					continue;
 				}
+				else if (stage == 3)
+				{
+					connection.createStatement().executeUpdate("UPDATE BUILDINGS SET LEVEL = LEVEL + 1 WHERE ID = " + rs.getInt(1));
+					User owner = Server.currentServer.getUserForId(rs.getInt(6));
+					if (owner != null && owner.getCity() == rs.getInt(5))
+					{
+						try
+						{
+							Server.currentServer.sendPacket(new Packet13BuildingLevel(rs.getInt(1), rs.getInt(3)), owner);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
 				else ; // TODO: handle specificly
 				
 				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt(1));
 				
-				User owner = Server.currentServer.getUserForId(rs.getInt(5));
-				if (owner != null && owner.getCity() == rs.getInt(4))
+				User owner = Server.currentServer.getUserForId(rs.getInt(6));
+				if (owner != null && owner.getCity() == rs.getInt(5))
 				{
 					try
 					{
-						Server.currentServer.sendPacket(new Packet09BuildingStageChange(rs.getInt(1), rs.getInt(4), stage, 0), owner);
+						Server.currentServer.sendPacket(new Packet09BuildingStage(rs.getInt(1), stage, 0), owner);
 					}
 					catch (Exception e)
 					{

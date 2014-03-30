@@ -21,10 +21,11 @@ import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
-import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
-import de.dakror.arise.settings.CFG;
+import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
+import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -181,11 +182,14 @@ public class CityHUDLayer extends MPLayer
 				@Override
 				public void trigger()
 				{
-					// CityLayer.resources.add(Resources.mul(upgrade.getBuildingCosts(), -1));
-					// selectedBuilding.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-					// selectedBuilding.setStage(3);
-					//
-					// cl.saveData();
+					try
+					{
+						Game.client.sendPacket(new Packet12UpgradeBuilding(selectedBuilding.getId(), cl.city.getId()));
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			});
 			upgrade.mode1 = true;
@@ -398,45 +402,53 @@ public class CityHUDLayer extends MPLayer
 			CityLayer.resources = packet.getResources();
 		}
 		
-		if (p.getType() == PacketTypes.BUILDINGSTAGECHANGE)
+		if (p.getType() == PacketTypes.BUILDINGSTAGE)
 		{
-			Packet09BuildingStageChange packet = (Packet09BuildingStageChange) p;
-			if (packet.getCityId() != cl.city.getId())
-			{
-				CFG.e("Packet09BuildingStageChange for different city. Ignored.");
-				return;
-			}
-			
-			boolean wantRes = false;
+			Packet09BuildingStage packet = (Packet09BuildingStage) p;
 			
 			for (Component c : cl.components)
 			{
 				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
 				{
-					if (packet.getNewStage() == -1)
-					{
-						cl.components.remove(c);
-						wantRes = true;
-					}
-					else
-					{
-						((Building) c).setStage(packet.getNewStage());
-						((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
-					}
+					((Building) c).setStage(packet.getNewStage());
+					((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
 					break;
 				}
 			}
 			
-			if (wantRes)
+			try
 			{
-				try
+				Game.client.sendPacket(new Packet05Resources(cl.city.getId()));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			
+			updateBuildingbar();
+		}
+		
+		if (p.getType() == PacketTypes.BUILDINGLEVEL)
+		{
+			Packet13BuildingLevel packet = (Packet13BuildingLevel) p;
+			
+			for (Component c : cl.components)
+			{
+				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
 				{
-					Game.client.sendPacket(new Packet05Resources(cl.city.getId()));
+					((Building) c).setStage(packet.getNewStage());
+					((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
+					break;
 				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+			}
+			
+			try
+			{
+				Game.client.sendPacket(new Packet05Resources(cl.city.getId()));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
 			}
 			
 			updateBuildingbar();

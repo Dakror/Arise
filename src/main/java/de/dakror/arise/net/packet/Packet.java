@@ -19,9 +19,11 @@ public abstract class Packet
 		BUILDING(Packet06Building.class),
 		RENAMECITY(Packet07RenameCity.class),
 		PLACEBUILDING(Packet08PlaceBuilding.class),
-		BUILDINGSTAGECHANGE(Packet09BuildingStageChange.class),
+		BUILDINGSTAGE(Packet09BuildingStage.class),
 		ATTRIBUTE(Packet10Attribute.class),
 		DECONSTRUCTBUILDING(Packet11DeconstructBuilding.class),
+		UPGRADEBUILDING(Packet12UpgradeBuilding.class),
+		BUILDINGLEVEL(Packet13BuildingLevel.class),
 		
 		;
 		

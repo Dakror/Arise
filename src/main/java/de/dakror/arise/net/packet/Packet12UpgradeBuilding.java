@@ -3,20 +3,20 @@ package de.dakror.arise.net.packet;
 /**
  * @author Dakror
  */
-public class Packet11DeconstructBuilding extends Packet
+public class Packet12UpgradeBuilding extends Packet
 {
 	int buildingId, cityId;
 	
-	public Packet11DeconstructBuilding(int buildingId, int cityId)
+	public Packet12UpgradeBuilding(int buildingId, int cityId)
 	{
-		super(11);
+		super(12);
 		this.buildingId = buildingId;
 		this.cityId = cityId;
 	}
 	
-	public Packet11DeconstructBuilding(byte[] data)
+	public Packet12UpgradeBuilding(byte[] data)
 	{
-		super(11);
+		super(12);
 		String[] parts = readData(data).split(":");
 		buildingId = Integer.parseInt(parts[0]);
 		cityId = Integer.parseInt(parts[1]);

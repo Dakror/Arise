@@ -28,9 +28,10 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
-import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
+import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -314,7 +315,28 @@ public class Server extends Thread
 					{
 						try
 						{
-							sendPacket(new Packet09BuildingStageChange(p.getBuildingId(), p.getCityId(), 2, timeleft), user);
+							sendPacket(new Packet09BuildingStage(p.getBuildingId(), 2, timeleft), user);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
+				
+				break;
+			}
+			case UPGRADEBUILDING:
+			{
+				Packet12UpgradeBuilding p = new Packet12UpgradeBuilding(data);
+				if (DBManager.isCityFromUser(p.getCityId(), user))
+				{
+					int timeleft = 0;
+					if ((timeleft = DBManager.upgradeBuilding(p.getCityId(), p.getBuildingId())) > -1)
+					{
+						try
+						{
+							sendPacket(new Packet09BuildingStage(p.getBuildingId(), 3, timeleft), user);
 						}
 						catch (Exception e)
 						{

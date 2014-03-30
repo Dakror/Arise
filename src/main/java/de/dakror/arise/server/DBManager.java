@@ -20,6 +20,7 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet09BuildingStageChange;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -407,13 +408,14 @@ public class DBManager
 	{
 		try
 		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.STAGE = 0 AND BUILDINGS.TIMELEFT = 0");
+			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META IS NULL)");
 			while (rs.next())
 			{
 				int stage = rs.getInt(2);
 				if (stage == 0) stage = 1;
 				else if (stage == 2)
 				{
+					CFG.p("hi");
 					connection.createStatement().executeUpdate("DELETE FROM BUILDINGS WHERE ID = " + rs.getInt(1));
 					User owner = Server.currentServer.getUserForId(rs.getInt(5));
 					if (owner != null)

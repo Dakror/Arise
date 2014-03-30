@@ -231,6 +231,7 @@ public class Server extends Thread
 				{
 					Packet05Resources p = new Packet05Resources(data);
 					if (DBManager.isCityFromUser(p.getCityId(), user)) sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+					
 					break;
 				}
 				catch (Exception e)

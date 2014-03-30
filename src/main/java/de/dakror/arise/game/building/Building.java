@@ -322,10 +322,9 @@ public abstract class Building extends ClickableComponent
 		return new Rectangle(this.x + bx * GRID, this.y + by * GRID, bw * GRID, bh * GRID).contains(x, y);
 	}
 	
-	public void levelUp()
+	public void setLevel(int newLevel)
 	{
-		level++;
-		stage = 1;
+		level = newLevel;
 	}
 	
 	public void updateGuiButtons()
@@ -351,4 +350,6 @@ public abstract class Building extends ClickableComponent
 				return null;
 		}
 	}
+	
+	
 }

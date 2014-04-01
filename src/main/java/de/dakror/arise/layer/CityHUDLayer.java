@@ -410,8 +410,16 @@ public class CityHUDLayer extends MPLayer
 			{
 				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
 				{
-					((Building) c).setStage(packet.getNewStage());
-					((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
+					if (packet.getNewStage() == -1)
+					{
+						if (selectedBuilding.equals(c)) selectedBuilding = null;
+						cl.components.remove(c);
+					}
+					else
+					{
+						((Building) c).setStage(packet.getNewStage());
+						((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
+					}
 					break;
 				}
 			}

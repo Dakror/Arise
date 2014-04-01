@@ -6,6 +6,9 @@ import java.util.Date;
 
 import de.dakror.arise.AriseServer;
 import de.dakror.arise.net.Server;
+import de.dakror.arise.net.User;
+import de.dakror.arise.net.packet.Packet02Disconnect;
+import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.arise.settings.CFG;
 
 /**
@@ -71,6 +74,30 @@ public class CommandHandler
 				
 				break;
 			}
+			case "kick":
+			{
+				if (parts.length == 2)
+				{
+					try
+					{
+						int id = Integer.parseInt(parts[1]);
+						User user = Server.currentServer.getUserForId(id);
+						if (user == null) CFG.e("There currently is no player connected with id=" + id);
+						else
+						{
+							Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.INACTIVE), user);
+							Server.out("Kicked user: #" + user.getId() + " (" + Cause.INACTIVE + ")");
+							Server.currentServer.clients.remove(user);
+						}
+					}
+					catch (Exception e)
+					{
+						CFG.e("Invalid parameters! Usage: KICK <int:id>");
+					}
+				}
+				else CFG.e("Invalid parameters! Usage: KICK <int:id>");
+				break;
+			}
 			case "traffic":
 			{
 				try
@@ -85,16 +112,17 @@ public class CommandHandler
 			}
 			case "help":
 			{
-				CFG.p();
+				CFG.p("");
 				CFG.p("#==========================================================================================#");
 				CFG.p("Available commands:");
 				CFG.p("STOP - saves all data and closes the server.");
 				CFG.p("CLS / CLEAR - clears the log area.");
 				CFG.p("DIR - prints the directory path, where the database is located.");
 				CFG.p("WORLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
+				CFG.p("KICK <int:id> - Kicks the player with the given id.");
 				CFG.p("TRAFFIC - opens the traffic monitoring console.");
 				CFG.p("#==========================================================================================#");
-				CFG.p();
+				CFG.p("");
 				break;
 			}
 			default:

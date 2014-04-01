@@ -193,7 +193,6 @@ public class CityHUDLayer extends MPLayer
 				}
 			});
 			upgrade.mode1 = true;
-			upgrade.enabled = false;
 			components.add(upgrade);
 			
 			deconstruct = new BuildButton(-1000, -1000, 32, 32, Game.getImage("system/bomb.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
@@ -293,11 +292,12 @@ public class CityHUDLayer extends MPLayer
 		deconstruct.setY(selectedBuilding == null ? -1000 : Game.getHeight() - 170);
 		if (selectedBuilding != null)
 		{
-			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
-			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1;
-			
 			if (selectedBuilding.getStage() == 1) selectedBuilding.getGuiContainer().update(tick);
 			selectedBuilding.updateGuiButtons();
+			
+			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
+			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort;
+			
 			
 			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
 		}

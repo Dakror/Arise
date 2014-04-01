@@ -14,11 +14,11 @@ public abstract class MPLayer extends Layer
 	{
 		if (p.getType() == PacketTypes.DISCONNECT)
 		{
-			if (((Packet02Disconnect) p).getCause() == Cause.INACTIVE)
+			if (((Packet02Disconnect) p).getCause() == Cause.INACTIVE || ((Packet02Disconnect) p).getCause() == Cause.KICK)
 			{
 				Game.world = null;
 				Game.currentGame.setLayer(new LoginLayer());
-				Game.currentGame.addLayer(new Alert(Cause.INACTIVE.getDescription(), null));
+				Game.currentGame.addLayer(new Alert(((Packet02Disconnect) p).getCause().getDescription(), null));
 				Game.userID = 0;
 			}
 			if (((Packet02Disconnect) p).getCause() == Cause.SERVER_CLOSED)

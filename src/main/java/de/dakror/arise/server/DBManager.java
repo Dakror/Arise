@@ -407,6 +407,7 @@ public class DBManager
 			if (!buy(cityId, b.getUpgradeCosts())) return -1;
 			
 			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			
 			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
 		}
 		catch (SQLException e)
@@ -462,7 +463,7 @@ public class DBManager
 					{
 						try
 						{
-							Server.currentServer.sendPacket(new Packet13BuildingLevel(rs.getInt(1), rs.getInt(3)), owner);
+							Server.currentServer.sendPacket(new Packet13BuildingLevel(rs.getInt(1), rs.getInt(3) + 1), owner);
 							stage = 1;
 						}
 						catch (Exception e)

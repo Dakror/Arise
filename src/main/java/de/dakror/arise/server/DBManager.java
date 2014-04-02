@@ -436,7 +436,7 @@ public class DBManager
 		{
 			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.LEVEL, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META IS NOT NULL)");
 			
-			for (int i = 0; i < rs.getMetaData().getColumnCount(); i++)
+			for (int i = 1; i < rs.getMetaData().getColumnCount() - 1; i++)
 				CFG.p("column #" + i + ": " + rs.getMetaData().getColumnName(i));
 			
 			while (rs.next())

@@ -21,6 +21,7 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -434,6 +435,10 @@ public class DBManager
 		try
 		{
 			ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.STAGE, BUILDINGS.LEVEL, BUILDINGS.META, CITIES.ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META IS NOT NULL)");
+			
+			for (int i = 0; i < rs.getMetaData().getColumnCount(); i++)
+				CFG.p("column #" + i + ": " + rs.getMetaData().getColumnName(i));
+			
 			while (rs.next())
 			{
 				int stage = rs.getInt(2);

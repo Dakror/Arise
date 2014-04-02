@@ -33,7 +33,7 @@ public class BattleSimulator
 			
 			Army def = new Army(false);
 			def.initTroop(Resource.SWORDFIGHTER, 40);
-			BattleSimulator bs = new BattleSimulator(att, def);
+			new BattleSimulator(att, def);
 		}
 		catch (Exception e)
 		{

@@ -31,30 +31,33 @@ public class Barracks extends Building
 		by = 4;
 		bh -= 4;
 		
-		final Resources r = new Resources();
-		r.add(Resource.GOLD, 20);
-		r.add(Resource.WOOD, 10);
-		r.add(Resource.STONE, 2);
-		addGuiButton(0, 1, new Point(4, 0), "10 Schwertkämpfer", "Eine Einheit aus 10 starken und gut gepanzerten, jedoch langsamen Nahkämpfern.", r, 0, new ClickEvent()
+		if (Game.client != null)
 		{
-			@Override
-			public void trigger()
+			final Resources r = new Resources();
+			r.add(Resource.GOLD, 20);
+			r.add(Resource.WOOD, 10);
+			r.add(Resource.STONE, 2);
+			addGuiButton(0, 1, new Point(4, 0), "10 Schwertkämpfer", "Eine Einheit aus 10 starken und gut gepanzerten, jedoch langsamen Nahkämpfern.", r, 0, new ClickEvent()
 			{
-				queue(r, "S");
-			}
-		});
-		
-		final Resources r2 = new Resources();
-		r2.add(Resource.GOLD, 40);
-		r2.add(Resource.WOOD, 20);
-		addGuiButton(1, 1, new Point(4, 1), "10 Lanzenträger", "Eine Einheit aus 10 mäßig starken und gepanzerten, jedoch schnellen Nahkämpfern.", r2, 0, new ClickEvent()
-		{
-			@Override
-			public void trigger()
+				@Override
+				public void trigger()
+				{
+					queue(r, "S");
+				}
+			});
+			
+			final Resources r2 = new Resources();
+			r2.add(Resource.GOLD, 40);
+			r2.add(Resource.WOOD, 20);
+			addGuiButton(1, 1, new Point(4, 1), "10 Lanzenträger", "Eine Einheit aus 10 mäßig starken und gepanzerten, jedoch schnellen Nahkämpfern.", r2, 0, new ClickEvent()
 			{
-				queue(r2, "L");
-			}
-		});
+				@Override
+				public void trigger()
+				{
+					queue(r2, "L");
+				}
+			});
+		}
 		
 		init();
 	}

@@ -127,7 +127,7 @@ public class Barracks extends Building
 	public void setMetadata(String s)
 	{
 		super.setMetadata(s);
-		updateQueueDisplay();
+		if (Game.client != null) updateQueueDisplay();
 	}
 	
 	protected void updateQueueDisplay()

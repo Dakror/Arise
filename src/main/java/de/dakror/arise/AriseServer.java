@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.UIManager;
 
+import de.dakror.arise.game.Game;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.server.CommandHandler;
 import de.dakror.arise.settings.CFG;
@@ -41,6 +42,7 @@ public class AriseServer
 	
 	public static void main(String[] args) throws Exception
 	{
+		new Game();
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		mainFrame = new JFrame("Arise Server Console v");

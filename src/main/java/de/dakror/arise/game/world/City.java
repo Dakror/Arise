@@ -125,11 +125,6 @@ public class City extends ClickableComponent
 		return userId;
 	}
 	
-	public void levelUp()
-	{
-		level++;
-	}
-	
 	@Override
 	public void mousePressed(MouseEvent e)
 	{

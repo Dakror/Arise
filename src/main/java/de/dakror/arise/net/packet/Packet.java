@@ -24,6 +24,7 @@ public abstract class Packet
 		DECONSTRUCTBUILDING(Packet11DeconstructBuilding.class),
 		UPGRADEBUILDING(Packet12UpgradeBuilding.class),
 		BUILDINGLEVEL(Packet13BuildingLevel.class),
+		CITYLEVEL(Packet14CityLevel.class),
 		
 		;
 		

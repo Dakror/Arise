@@ -26,6 +26,7 @@ import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
+import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -459,6 +460,12 @@ public class CityHUDLayer extends MPLayer
 			}
 			
 			updateBuildingbar();
+		}
+		
+		if (p.getType() == PacketTypes.CITYLEVEL)
+		{
+			Packet14CityLevel packet = (Packet14CityLevel) p;
+			if (packet.getCityId() == cl.city.getId()) cl.city.setLevel(packet.getNewLevel());
 		}
 	}
 }

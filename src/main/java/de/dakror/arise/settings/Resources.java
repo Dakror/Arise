@@ -87,6 +87,7 @@ public class Resources
 	}
 	
 	public static final Resource[] serializableResources = { Resource.GOLD, Resource.WOOD, Resource.STONE, Resource.BUILDINGS, Resource.SWORDFIGHTER, Resource.LANCEBEARER };
+	public static final Resource[] armyResources = { Resource.SWORDFIGHTER, Resource.LANCEBEARER };
 	
 	HashMap<Resource, Float> res = new HashMap<>();
 	

@@ -99,13 +99,15 @@ public abstract class Building extends ClickableComponent
 		{
 			if (Game.config.getJSONObject("buildings").has("" + typeId))
 			{
-				buildingCosts = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("costs"));
-				products = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("products"));
-				scale = new Resources(Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getJSONObject("scale"));
-				stageChangeDuration = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("stage");
-				minCityLevel = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("mincitylevel") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("mincitylevel") : 0;
-				maxLevel = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("maxlevel") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("maxlevel") : MAX_LEVEL;
-				levelFac = Game.config.getJSONObject("buildings").getJSONObject(typeId + "").has("levelfac") ? Game.config.getJSONObject("buildings").getJSONObject(typeId + "").getInt("levelfac") : MAX_LEVEL;
+				JSONObject o = Game.config.getJSONObject("buildings").getJSONObject(typeId + "");
+				
+				buildingCosts = new Resources(o.getJSONObject("costs"));
+				products = new Resources(o.getJSONObject("products"));
+				scale = new Resources(o.getJSONObject("scale"));
+				stageChangeDuration = o.getInt("stage");
+				minCityLevel = o.has("mincitylevel") ? o.getInt("mincitylevel") : 0;
+				maxLevel = o.has("maxlevel") ? o.getInt("maxlevel") : MAX_LEVEL;
+				levelFac = o.has("levelfac") ? o.getInt("levelfac") : MAX_LEVEL;
 			}
 		}
 		catch (JSONException e)

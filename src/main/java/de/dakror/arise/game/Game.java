@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.Arise;
@@ -57,16 +58,22 @@ public class Game extends GameApplet
 	{
 		try
 		{
-			config = new JSONObject(Helper.getURLContent(new URL("http://dakror.de/arise/config.json")));
-			Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
-			Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
-			Building.MAX_LEVEL = config.getInt("maxlevel");
-			Building.TROOPS = config.getJSONObject("troops");
+			loadConfig(new URL("http://dakror.de/arise/config.json"));
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public static void loadConfig(URL url) throws JSONException
+	{
+		config = new JSONObject(Helper.getURLContent(url));
+		
+		Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
+		Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
+		Building.MAX_LEVEL = config.getInt("maxlevel");
+		Building.TROOPS = config.getJSONObject("troops");
 	}
 	
 	@Override
@@ -143,10 +150,10 @@ public class Game extends GameApplet
 	
 	public void startGame()
 	{
-			setLayer(world);
-			System.gc();
-			
-			fadeTo(0, 0.05f);
+		setLayer(world);
+		System.gc();
+		
+		fadeTo(0, 0.05f);
 	}
 	
 	@Override

@@ -6,6 +6,7 @@ package de.dakror.arise.battlesim;
 
 
 
+
 /**
  * @author Dakror
  */
@@ -95,6 +96,9 @@ public class Troop
 	{
 		life -= dmg;
 		if (life < 0) life = 0;
+		
+		size -= Math.round(dmg / (float) type.getLife());
+		if (size < 0) size = 0;
 	}
 	
 	public long getLife()

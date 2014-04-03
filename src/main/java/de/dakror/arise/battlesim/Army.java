@@ -1,7 +1,6 @@
 package de.dakror.arise.battlesim;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.settings.Resources;
 
@@ -13,41 +12,30 @@ public class Army
 {
 	private boolean attacking;
 	
-	private HashMap<TroopType, Troop> troops;
+	private CopyOnWriteArrayList<Troop> troops;
 	
 	public Army(boolean att)
 	{
 		attacking = att;
-		troops = new HashMap<>();
+		troops = new CopyOnWriteArrayList<>();
 	}
 	
-	public void setTroop(TroopType r, Troop troop)
+	public void setTroop(Troop troop)
 	{
-		troops.put(r, troop);
+		troops.add(troop);
 	}
 	
 	public void initTroop(TroopType r, int amount)
 	{
-		if (troops.get(r) == null) setTroop(r, new Troop(r, amount, troops.size()));
-		else troops.get(r).setFighters(amount);
+		if (getTroop(r) == null) setTroop(new Troop(r, amount, troops.size()));
+		else getTroop(r).setFighters(amount);
 	}
 	
 	public Troop getTroop(TroopType r)
 	{
-		return troops.get(r);
-	}
-	
-	public Troop getTroop(int y)
-	{
-		for (Troop t : troops.values())
-			if (t.getY() == y) return t;
+		for (Troop t : troops)
+			if (t.getType() == r) return t;
 		return null;
-	}
-	
-	public Troop getTroopByIndex(int i)
-	{
-		ArrayList<Troop> al = new ArrayList<>(troops.values());
-		return al.get(i);
 	}
 	
 	public int size()
@@ -62,15 +50,15 @@ public class Army
 	
 	public Troop[] getTroops()
 	{
-		return troops.values().toArray(new Troop[] {});
+		return troops.toArray(new Troop[] {});
 	}
 	
 	public Resources getResources()
 	{
 		Resources res = new Resources();
 		
-		for (TroopType r : TroopType.values())
-			res.set(r.getType(), troops.get(r).size());
+		for (Troop t : troops)
+			res.set(t.getType().getType(), t.size());
 		
 		return res;
 	}
@@ -90,21 +78,11 @@ public class Army
 		return troops.size() == 0;
 	}
 	
-	@Override
-	public String toString()
-	{
-		String s = "";
-		for (Troop t : troops.values())
-			s += t.toString() + "\r\n";
-		
-		return s;
-	}
-	
 	public long getArmyLife()
 	{
 		int life = 0;
 		
-		for (Troop t : troops.values())
+		for (Troop t : troops)
 			life += t.getLife();
 		
 		return life;
@@ -114,7 +92,7 @@ public class Army
 	{
 		int life = 0;
 		
-		for (Troop t : troops.values())
+		for (Troop t : troops)
 			life += t.getTroopMaxLife();
 		
 		return life;
@@ -124,9 +102,9 @@ public class Army
 	{
 		if (enemy.isDead()) return;
 		
-		for (Troop t : troops.values())
+		for (Troop t : troops)
 		{
-			if (t.isDead()) troops.remove(t.getType());
+			if (t.isDead()) troops.remove(t);
 			else t.tick(enemy);
 		}
 	}

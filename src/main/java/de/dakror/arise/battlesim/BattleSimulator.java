@@ -10,12 +10,12 @@ import de.dakror.arise.settings.CFG;
  */
 public class BattleSimulator
 {
-	public BattleSimulator(Army att, Army def)
+	public static BattleResult simulateBattle(Army att, Army def)
 	{
 		if (!att.isAttacking() || def.isAttacking())
 		{
 			CFG.e("invalid armies");
-			return;
+			return null;
 		}
 		
 		boolean attAttack = true;
@@ -30,10 +30,10 @@ public class BattleSimulator
 			attAttack = !attAttack;
 		}
 		
-		CFG.p("Fight took " + ((System.currentTimeMillis() - t) / 1000f) + "s");
-		CFG.p("The " + (att.isDead() ? "Defenders (" + Math.round(def.getArmyLife() / (float) def.getArmyMaxLife() * 100) : "Attackers (" + Math.round(att.getArmyLife() / (float) att.getArmyMaxLife() * 100)) + "%) are victorious!");
+		BattleResult br = new BattleResult(def.isDead(), def.isDead() ? att.size() : def.size());
+		br.seconds = ((System.currentTimeMillis() - t) / 1000f);
 		
-		while (true);
+		return br;
 	}
 	
 	public static void main(String[] args)
@@ -47,7 +47,8 @@ public class BattleSimulator
 			
 			Army def = new Army(false);
 			def.initTroop(TroopType.SWORDFIGHTER, 1000000);
-			new BattleSimulator(att, def);
+			BattleResult br = simulateBattle(att, def);
+			CFG.p(br.toString());
 		}
 		catch (Exception e)
 		{

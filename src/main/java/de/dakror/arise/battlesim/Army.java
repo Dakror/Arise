@@ -62,12 +62,7 @@ public class Army
 	
 	public Troop[] getTroops()
 	{
-		ArrayList<Troop> tr = new ArrayList<>();
-		
-		for (Troop t : troops.values())
-			if (!t.isDead()) tr.add(t);
-		
-		return tr.toArray(new Troop[] {});
+		return troops.values().toArray(new Troop[] {});
 	}
 	
 	public Resources getResources()
@@ -92,9 +87,7 @@ public class Army
 	
 	public boolean isDead()
 	{
-		for (Troop t : troops.values())
-			if (!t.isDead()) return false;
-		return true;
+		return troops.size() == 0;
 	}
 	
 	@Override
@@ -107,12 +100,12 @@ public class Army
 		return s;
 	}
 	
-	public int getArmyLife()
+	public long getArmyLife()
 	{
 		int life = 0;
 		
 		for (Troop t : troops.values())
-			life += t.getTroopLife();
+			life += t.getLife();
 		
 		return life;
 	}
@@ -132,6 +125,9 @@ public class Army
 		if (enemy.isDead()) return;
 		
 		for (Troop t : troops.values())
-			t.tick(enemy);
+		{
+			if (t.isDead()) troops.remove(t.getType());
+			else t.tick(enemy);
+		}
 	}
 }

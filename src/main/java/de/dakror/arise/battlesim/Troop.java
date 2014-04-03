@@ -1,26 +1,32 @@
 package de.dakror.arise.battlesim;
 
 
+
+
+
+
+
 /**
  * @author Dakror
  */
 public class Troop
 {
 	private TroopType type;
-	private int[] fighters;
-	private int y, cooldown;
+	private long life;
+	private int y, cooldown, size, initialSize;
 	
 	protected Troop(TroopType r, int y)
 	{
 		type = r;
 		this.y = y;
-		
 		cooldown = 0;
 	}
 	
 	public Troop(TroopType r, int initialSize, int y)
 	{
 		this(r, y);
+		size = initialSize;
+		this.initialSize = initialSize;
 		setFighters(initialSize);
 	}
 	
@@ -41,23 +47,14 @@ public class Troop
 	
 	public void setFighters(int f)
 	{
-		fighters = new int[f];
-		
+		life = 0;
 		for (int i = 0; i < f; i++)
-			fighters[i] = type.getLife();
-	}
-	
-	public int length()
-	{
-		return fighters.length;
+			life += type.getLife();
 	}
 	
 	public int size()
 	{
-		int s = 0;
-		for (int i : fighters)
-			if (i > 0) s++;
-		return s;
+		return size;
 	}
 	
 	public void translateY(int y)
@@ -67,39 +64,12 @@ public class Troop
 	
 	public boolean isDead()
 	{
-		for (int f : fighters)
-			if (f > 0) return false;
-		
-		return true;
-	}
-	
-	@Override
-	public String toString()
-	{
-		String s = "[";
-		
-		if (!isDead())
-		{
-			for (int f : fighters)
-				s += type.name().substring(0, 1) + "(" + Math.round(f / (float) type.getLife() * 100) + "%) ";
-		}
-		
-		return s + "]";
-	}
-	
-	public int getTroopLife()
-	{
-		int life = 0;
-		
-		for (int f : fighters)
-			life += f;
-		
-		return life;
+		return life <= 0;
 	}
 	
 	public int getTroopMaxLife()
 	{
-		return type.getLife() * fighters.length;
+		return type.getLife() * initialSize;
 	}
 	
 	public void tick(Army enemy)
@@ -107,31 +77,28 @@ public class Troop
 		if (cooldown > 0) cooldown--;
 		else
 		{
-			for (int f : fighters)
+			long dmg = 0;
+			for (int i = 0; i < size; i++)
 			{
-				if (enemy.isDead()) return;
-				
-				if (f <= 0) continue;
-				
-				Troop[] tr = enemy.getTroops();
-				
-				Troop troop = tr[(int) (Math.random() * tr.length)];
-				int fighter = (int) (Math.random() * troop.size());
-				
-				troop.attackFighter(fighter, type.getAttack().roll());
+				int att = type.getAttack().roll();
+				int def = enemy.getTroops()[0].getType().getDefense().roll();
+				if (def < att) dmg += att - def;
 			}
+			
+			enemy.getTroops()[0].attack(dmg);
 			
 			cooldown = type.getSpeed();
 		}
 	}
 	
-	public void attackFighter(int fighter, int attack)
+	public void attack(long dmg)
 	{
-		int defense = type.getDefense().roll();
-		
-		if (defense >= attack) return; // blocked
-		
-		fighters[fighter] -= (attack - defense);
-		fighters[fighter] = fighters[fighter] < 0 ? 0 : fighters[fighter];
+		life -= dmg;
+		if (life < 0) life = 0;
+	}
+	
+	public long getLife()
+	{
+		return life;
 	}
 }

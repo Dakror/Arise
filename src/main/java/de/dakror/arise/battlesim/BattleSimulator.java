@@ -4,7 +4,6 @@ import java.io.File;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.settings.CFG;
-import de.dakror.arise.settings.Resources.Resource;
 
 /**
  * @author Dakror
@@ -19,7 +18,22 @@ public class BattleSimulator
 			return;
 		}
 		
+		boolean attAttack = true;
 		
+		long t = System.currentTimeMillis();
+		
+		while (!def.isDead() && !att.isDead())
+		{
+			if (attAttack) att.tick(def);
+			else def.tick(att);
+			
+			attAttack = !attAttack;
+		}
+		
+		CFG.p("Fight took " + ((System.currentTimeMillis() - t) / 1000f) + "s");
+		CFG.p("The " + (att.isDead() ? "Defenders (" + Math.round(def.getArmyLife() / (float) def.getArmyMaxLife() * 100) : "Attackers (" + Math.round(att.getArmyLife() / (float) att.getArmyMaxLife() * 100)) + "%) are victorious!");
+		
+		while (true);
 	}
 	
 	public static void main(String[] args)
@@ -29,10 +43,10 @@ public class BattleSimulator
 		{
 			Game.loadConfig(new File("C:\\Users\\Dakror\\Desktop\\config.json").toURI().toURL());
 			Army att = new Army(true);
-			att.initTroop(Resource.SWORDFIGHTER, 40);
+			att.initTroop(TroopType.SWORDFIGHTER, 100000);
 			
 			Army def = new Army(false);
-			def.initTroop(Resource.SWORDFIGHTER, 40);
+			def.initTroop(TroopType.SWORDFIGHTER, 1);
 			new BattleSimulator(att, def);
 		}
 		catch (Exception e)

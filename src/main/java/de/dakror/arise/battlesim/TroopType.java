@@ -1,12 +1,9 @@
 package de.dakror.arise.battlesim;
 
-import java.awt.Color;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.Resources.Resource;
 
 /**
@@ -23,7 +20,6 @@ public enum TroopType
 	private Dice attack, defense, evadeChance, hitChance;
 	private boolean ranged;
 	private int speed, life;
-	private Color visColor;
 	
 	private TroopType(Resource r)
 	{
@@ -40,9 +36,7 @@ public enum TroopType
 				life = o.getInt("life");
 				attack = new Dice(o.getString("attack"));
 				defense = new Dice(o.getString("defense"));
-				visColor = Color.decode(o.getString("vis"));
 			}
-			else CFG.e("invalid troopType!");
 		}
 		catch (JSONException e)
 		{
@@ -93,10 +87,5 @@ public enum TroopType
 	public int getLife()
 	{
 		return life;
-	}
-	
-	public Color getVisColor()
-	{
-		return visColor;
 	}
 }

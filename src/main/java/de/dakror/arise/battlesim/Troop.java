@@ -1,6 +1,5 @@
 package de.dakror.arise.battlesim;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Dakror
@@ -8,14 +7,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Troop
 {
 	private TroopType type;
-	private CopyOnWriteArrayList<Fighter> fighters;
-	private int y, cooldown, initialSize;
+	private int[] fighters;
+	private int y, cooldown;
 	
-	public Troop(TroopType r, int y)
+	protected Troop(TroopType r, int y)
 	{
 		type = r;
 		this.y = y;
-		fighters = new CopyOnWriteArrayList<>();
 		
 		cooldown = 0;
 	}
@@ -23,7 +21,6 @@ public class Troop
 	public Troop(TroopType r, int initialSize, int y)
 	{
 		this(r, y);
-		this.initialSize = initialSize;
 		setFighters(initialSize);
 	}
 	
@@ -42,36 +39,25 @@ public class Troop
 		y = -y;
 	}
 	
-	public Fighter getFighter(int i)
-	{
-		return fighters.get(i);
-	}
-	
-	public Fighter getFighterByCoord(int x)
-	{
-		for (Fighter f : fighters)
-			if (f.getX() == x) return f;
-		return null;
-	}
-	
 	public void setFighters(int f)
 	{
-		fighters.clear();
+		fighters = new int[f];
 		
 		for (int i = 0; i < f; i++)
-			fighters.add(new Fighter(i, this));
+			fighters[i] = type.getLife();
 	}
 	
-	public void removeTheDead()
+	public int length()
 	{
-		for (Fighter f : fighters)
-			if (f.isDead()) fighters.remove(f);
+		return fighters.length;
 	}
 	
 	public int size()
 	{
-		removeTheDead();
-		return fighters.size();
+		int s = 0;
+		for (int i : fighters)
+			if (i > 0) s++;
+		return s;
 	}
 	
 	public void translateY(int y)
@@ -81,8 +67,8 @@ public class Troop
 	
 	public boolean isDead()
 	{
-		for (Fighter f : fighters)
-			if (!f.isDead()) return false;
+		for (int f : fighters)
+			if (f > 0) return false;
 		
 		return true;
 	}
@@ -94,8 +80,8 @@ public class Troop
 		
 		if (!isDead())
 		{
-			for (Fighter f : fighters)
-				s += type.name().substring(0, 1) + "(" + Math.round(f.getLife() / (float) type.getLife() * 100) + "%) ";
+			for (int f : fighters)
+				s += type.name().substring(0, 1) + "(" + Math.round(f / (float) type.getLife() * 100) + "%) ";
 		}
 		
 		return s + "]";
@@ -105,15 +91,15 @@ public class Troop
 	{
 		int life = 0;
 		
-		for (Fighter f : fighters)
-			life += f.getLife();
+		for (int f : fighters)
+			life += f;
 		
 		return life;
 	}
 	
 	public int getTroopMaxLife()
 	{
-		return type.getLife() * initialSize;
+		return type.getLife() * fighters.length;
 	}
 	
 	public void tick(Army enemy)
@@ -121,13 +107,31 @@ public class Troop
 		if (cooldown > 0) cooldown--;
 		else
 		{
-			for (Fighter f : fighters)
+			for (int f : fighters)
 			{
 				if (enemy.isDead()) return;
-				f.tick(enemy);
+				
+				if (f <= 0) continue;
+				
+				Troop[] tr = enemy.getTroops();
+				
+				Troop troop = tr[(int) (Math.random() * tr.length)];
+				int fighter = (int) (Math.random() * troop.size());
+				
+				troop.attackFighter(fighter, type.getAttack().roll());
 			}
 			
 			cooldown = type.getSpeed();
 		}
+	}
+	
+	public void attackFighter(int fighter, int attack)
+	{
+		int defense = type.getDefense().roll();
+		
+		if (defense >= attack) return; // blocked
+		
+		fighters[fighter] -= (attack - defense);
+		fighters[fighter] = fighters[fighter] < 0 ? 0 : fighters[fighter];
 	}
 }

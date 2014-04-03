@@ -43,10 +43,10 @@ public class BattleSimulator
 		{
 			Game.loadConfig(new File("C:\\Users\\Dakror\\Desktop\\config.json").toURI().toURL());
 			Army att = new Army(true);
-			att.initTroop(TroopType.SWORDFIGHTER, 100000);
+			att.initTroop(TroopType.SWORDFIGHTER, 1000000);
 			
 			Army def = new Army(false);
-			def.initTroop(TroopType.SWORDFIGHTER, 1);
+			def.initTroop(TroopType.SWORDFIGHTER, 1000000);
 			new BattleSimulator(att, def);
 		}
 		catch (Exception e)

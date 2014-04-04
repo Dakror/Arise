@@ -39,7 +39,7 @@ public class BattleSimulator
 		new Game();
 		try
 		{
-			Game.loadConfig(BattleSimulator.class.getResource("/config.json"));
+			Game.loadConfig();
 			Army att = new Army(true);
 			att.initTroop(TroopType.SWORDFIGHTER, 2000);
 			

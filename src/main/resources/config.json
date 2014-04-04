@@ -1,0 +1,134 @@
+
+{
+  deconstruct : 0.35,
+  upgrade : 1.3,
+  maxlevel : 20,
+  maxqueue : 20,
+  troops :
+  {
+    SWORDFIGHTER : 300,
+    LANCEBEARER : 450
+  },
+  buildings :
+  {
+    1 :
+    {
+      costs :
+      {
+        WOOD : 100,
+        STONE : 50,
+        GOLD : 75
+      },
+      products :
+      {
+        BUILDINGS : 4
+      },
+      scale :
+      {
+        BUILDINGS : 4
+      },
+      stage : 7200,
+      maxlevel : 7,
+      levelfac : 18
+    },
+    2 :
+    {
+      costs :
+      {
+        WOOD : 50,
+        STONE : 10,
+        GOLD : 75
+      },
+      products :
+      {
+        WOOD : 12
+      },
+      scale :
+      {
+        WOOD : 2
+      },
+      stage : 2700
+    },
+    3 :
+    {
+      costs :
+      {
+        WOOD : 150,
+        STONE : 75,
+        GOLD : 150
+      },
+      products :
+      {
+        GOLD : 4
+      },
+      scale :
+      {
+        GOLD : 2
+      },
+      stage : 4500
+    },
+    4 :
+    {
+      costs :
+      {
+        WOOD : 25,
+        STONE : 100,
+        GOLD : 100
+      },
+      products :
+      {
+        STONE : 8
+      },
+      scale :
+      {
+        STONE : 2
+      },
+      stage : 3600
+    },
+    5 :
+    {
+      costs :
+      {
+        WOOD : 75,
+        STONE : 25,
+        GOLD : 200
+      },
+      products : {},
+      scale : {},
+      stage : 3000,
+      mincitylevel : 1
+    },
+    6 :
+    {
+      costs :
+      {
+        WOOD : 200,
+        STONE : 50,
+        GOLD : 175
+      },
+      products : {},
+      scale : {},
+      stage : 3600,
+      mincitylevel : 2
+    }
+  },
+  fighters :
+  {
+    SWORDFIGHTER :
+    {
+      ranged : false,
+      speed : 3,
+      life : 35,
+      attack : "3W15",
+      defense : "2W9"
+    },
+    LANCEBEARER :
+    {
+      ranged : false,
+      speed : 1,
+      life : 22,
+      attack : "2W12",
+      defense : "1W12"
+    }
+  }
+}

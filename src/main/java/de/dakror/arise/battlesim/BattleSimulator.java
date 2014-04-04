@@ -1,7 +1,5 @@
 package de.dakror.arise.battlesim;
 
-import java.io.File;
-
 import de.dakror.arise.game.Game;
 import de.dakror.arise.settings.CFG;
 
@@ -41,12 +39,12 @@ public class BattleSimulator
 		new Game();
 		try
 		{
-			Game.loadConfig(new File("C:\\Users\\Dakror\\Desktop\\config.json").toURI().toURL());
+			Game.loadConfig(BattleSimulator.class.getResource("/config.json"));
 			Army att = new Army(true);
-			att.initTroop(TroopType.SWORDFIGHTER, 1000000);
+			att.initTroop(TroopType.SWORDFIGHTER, 2000);
 			
 			Army def = new Army(false);
-			def.initTroop(TroopType.SWORDFIGHTER, 1000000);
+			def.initTroop(TroopType.SWORDFIGHTER, 2000);
 			BattleResult br = simulateBattle(att, def);
 			CFG.p(br.toString());
 		}

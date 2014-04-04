@@ -1,19 +1,12 @@
 package de.dakror.arise.battlesim;
 
-
-
-
-
-
-
-
 /**
  * @author Dakror
  */
 public class Troop
 {
 	private TroopType type;
-	private long life;
+	private int life;
 	private int y, cooldown, size, initialSize;
 	
 	protected Troop(TroopType r, int y)
@@ -97,11 +90,11 @@ public class Troop
 		life -= dmg;
 		if (life < 0) life = 0;
 		
-		size -= Math.round(dmg / (float) type.getLife());
+		size -= Math.floor(dmg / (float) type.getLife());
 		if (size < 0) size = 0;
 	}
 	
-	public long getLife()
+	public int getLife()
 	{
 		return life;
 	}

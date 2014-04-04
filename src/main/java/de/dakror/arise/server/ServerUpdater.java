@@ -29,7 +29,7 @@ public class ServerUpdater extends Thread
 				DBManager.updateBuildingTimers();
 				DBManager.updateBuildingStage();
 				
-				if (System.currentTimeMillis() - lastCheck > 60000)
+				if (System.currentTimeMillis() - lastCheck >= 60000)
 				{
 					DBManager.updateCityResources();
 					DBManager.dispatchCityResources();

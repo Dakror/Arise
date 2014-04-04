@@ -219,6 +219,7 @@ public class BuildButton extends IconButton
 		ArrayList<Resource> resources = buildingCosts.getFilled();
 		
 		canEffort = true;
+		
 		for (int i = 0; i < resources.size(); i++)
 		{
 			Resource r = resources.get(i);
@@ -237,5 +238,7 @@ public class BuildButton extends IconButton
 		if (CityHUDLayer.cl.city.getLevel() < minCityLevel) canEffort = false;
 		
 		if (CityLayer.resources.get(Resource.BUILDINGS) >= new Center(0, 0, CityHUDLayer.cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS) && !upgradeMode) canEffort = false;
+		
+		if (!upgradeMode) enabled = canEffort;
 	}
 }

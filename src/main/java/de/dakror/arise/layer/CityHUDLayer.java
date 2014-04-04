@@ -299,8 +299,7 @@ public class CityHUDLayer extends MPLayer
 			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
 			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort;
 			
-			
-			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1;
+			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort;
 		}
 	}
 	
@@ -320,6 +319,8 @@ public class CityHUDLayer extends MPLayer
 				else ((ResourceLabel) c).off = products.get(((ResourceLabel) c).getResource()) / Game.world.getSpeed();
 			}
 		}
+		
+		if (selectedBuilding != null) selectedBuilding.triggerEvents();
 	}
 	
 	@Override

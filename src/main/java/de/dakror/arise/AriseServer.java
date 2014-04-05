@@ -84,7 +84,7 @@ public class AriseServer
 		}
 		
 		mc.redirectErr(Color.red, ps);
-		mc.redirectOut(Color.black, ps);
+		mc.redirectOut();
 		mc.setMessageLines(100);
 		log.setBorder(BorderFactory.createEmptyBorder());
 		log.setBackground(new JLabel().getBackground());

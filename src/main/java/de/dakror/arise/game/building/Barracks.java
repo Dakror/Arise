@@ -4,7 +4,9 @@ import java.awt.Point;
 
 import org.json.JSONException;
 
+import de.dakror.arise.battlesim.TroopType;
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.BuildTroopsLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildButton;
@@ -33,21 +35,23 @@ public class Barracks extends Building
 		
 		if (Game.client != null)
 		{
-			addGuiButton(0, 1, new Point(4, 0), "Schwertkämpfer", "Starke und gut gepanzerte, jedoch langsame Nahkämpfer.", new Resources(), 0, new ClickEvent()
+			addGuiButton(0, 1, new Point(4, 0), TroopType.SWORDFIGHTER.getType().getName(), "Starke und gut gepanzerte, jedoch langsame Nahkämpfer.", new Resources(), 0, new ClickEvent()
 			{
 				@Override
 				public void trigger()
 				{
 					// queue(r, "S");
+					Game.currentGame.addLayer(new BuildTroopsLayer(Barracks.this, TroopType.SWORDFIGHTER));
 				}
 			});
 			
-			addGuiButton(1, 1, new Point(4, 1), "Lanzenträger", "Mäßig starke und gepanzerte, jedoch schnelle Nahkämpfer.", new Resources(), 0, new ClickEvent()
+			addGuiButton(1, 1, new Point(4, 1), TroopType.LANCEBEARER.getType().getName(), "Mäßig starke und gepanzerte, jedoch schnelle Nahkämpfer.", new Resources(), 0, new ClickEvent()
 			{
 				@Override
 				public void trigger()
 				{
 					// queue(r2, "L");
+					Game.currentGame.addLayer(new BuildTroopsLayer(Barracks.this, TroopType.LANCEBEARER));
 				}
 			});
 		}

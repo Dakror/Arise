@@ -22,6 +22,7 @@ import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.net.packet.Packet14CityLevel;
+import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -415,6 +416,28 @@ public class DBManager
 		{
 			e.printStackTrace();
 			return -1;
+		}
+	}
+	
+	public static String barracksBuildTroops(Packet15BarracksBuildTroop p)
+	{
+		try
+		{
+			int speed = getWorldSpeedForCity(p.getCityId());
+			if (speed == 0) return null;
+			
+			ResultSet rs = connection.createStatement().executeQuery("SELECT META, GOLD, WOOD, STONE FROM BUILDINGS WHERE META IS NULL AND ID = " + p.getBuildingId());
+			if (!rs.next()) return null;
+			
+			Resources res = Resources.mul(p.getTroopType().getCosts(), p.getAmount());
+			
+			
+			return "";
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+			return null;
 		}
 	}
 	

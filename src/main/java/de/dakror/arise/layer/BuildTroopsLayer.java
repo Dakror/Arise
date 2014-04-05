@@ -2,10 +2,12 @@ package de.dakror.arise.layer;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Barracks;
+import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TroopType;
@@ -57,6 +59,21 @@ public class BuildTroopsLayer extends MPLayer
 		});
 		components.add(abort);
 		TextButton build = new TextButton(Game.getWidth() / 2, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Bauen");
+		build.addClickEvent(new ClickEvent()
+		{
+			@Override
+			public void trigger()
+			{
+				try
+				{
+					Game.client.sendPacket(new Packet15BarracksBuildTroop(CityHUDLayer.cl.city.getId(), barracks.getId(), type, (int) slider.getValue()));
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
 		components.add(build);
 	}
 	

@@ -350,6 +350,10 @@ public class Server extends Thread
 				
 				break;
 			}
+			case BARRACKSBUILDTROOP:
+			{
+				break;
+			}
 			default:
 				err("Received unhandled packet (" + address.getHostAddress() + ":" + port + ") " + type + " [" + Packet.readData(data) + "]");
 		}

@@ -7,12 +7,13 @@ import de.dakror.arise.settings.TroopType;
  */
 public class Packet15BarracksBuildTroop extends Packet
 {
-	int buildingId, amount;
+	int cityId, buildingId, amount;
 	TroopType type;
 	
-	public Packet15BarracksBuildTroop(int buildingId, TroopType type, int amount)
+	public Packet15BarracksBuildTroop(int cityId, int buildingId, TroopType type, int amount)
 	{
 		super(15);
+		this.cityId = cityId;
 		this.buildingId = buildingId;
 		this.type = type;
 		this.amount = amount;
@@ -23,15 +24,21 @@ public class Packet15BarracksBuildTroop extends Packet
 		super(15);
 		
 		String[] parts = readData(data).split(":");
-		buildingId = Integer.parseInt(parts[0]);
-		type = TroopType.values()[Integer.parseInt(parts[1])];
-		amount = Integer.parseInt(parts[2]);
+		cityId = Integer.parseInt(parts[0]);
+		buildingId = Integer.parseInt(parts[1]);
+		type = TroopType.values()[Integer.parseInt(parts[2])];
+		amount = Integer.parseInt(parts[3]);
 	}
 	
 	@Override
 	protected byte[] getPacketData()
 	{
-		return (buildingId + ":" + type.ordinal() + ":" + amount).getBytes();
+		return (cityId + ":" + buildingId + ":" + type.ordinal() + ":" + amount).getBytes();
+	}
+	
+	public int getCityId()
+	{
+		return cityId;
 	}
 	
 	public int getBuildingId()

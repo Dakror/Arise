@@ -50,7 +50,7 @@ public class DBManager
 			Statement s = connection.createStatement();
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS WORLDS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, SPEED INTEGER NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL,STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text)");
 			s.executeUpdate("VACUUM");
 		}
 		catch (Exception e)
@@ -419,26 +419,29 @@ public class DBManager
 		}
 	}
 	
-	public static String barracksBuildTroops(Packet15BarracksBuildTroop p)
+	public static boolean barracksBuildTroops(Packet15BarracksBuildTroop p)
 	{
 		try
 		{
 			int speed = getWorldSpeedForCity(p.getCityId());
-			if (speed == 0) return null;
+			if (speed == 0) return false;
 			
-			ResultSet rs = connection.createStatement().executeQuery("SELECT META, GOLD, WOOD, STONE FROM BUILDINGS WHERE META IS NULL AND ID = " + p.getBuildingId());
-			if (!rs.next()) return null;
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM BUILDINGS WHERE META IS NULL AND TIMELEFT = 0 AND STAGE = 1 AND ID = " + p.getBuildingId());
+			if (!rs.next()) return false;
 			
 			Resources res = Resources.mul(p.getTroopType().getCosts(), p.getAmount());
 			
-			
-			return "";
+			if (buy(p.getCityId(), res))
+			{
+				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET TIMELEFT = " + ((int) ((p.getTroopType().getBuildTime() / (float) speed) * p.getAmount())) + ", META = \"" + p.getTroopType().ordinal() + ":" + p.getAmount() + "\" WHERE ID = " + p.getBuildingId());
+				return true;
+			}
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return null;
 		}
+		return false;
 	}
 	
 	public static void updateBuildingTimers()

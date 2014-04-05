@@ -32,6 +32,8 @@ import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
+import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
+import de.dakror.arise.net.packet.Packet16BuildingMeta;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -352,6 +354,19 @@ public class Server extends Thread
 			}
 			case BARRACKSBUILDTROOP:
 			{
+				Packet15BarracksBuildTroop p = new Packet15BarracksBuildTroop(data);
+				if (DBManager.isCityFromUser(p.getCityId(), user) && DBManager.barracksBuildTroops(p))
+				{
+					try
+					{
+						sendPacket(new Packet16BuildingMeta(p.getBuildingId(), p.getTroopType().ordinal() + ":" + p.getAmount()), user);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+				}
+				
 				break;
 			}
 			default:

@@ -26,6 +26,7 @@ public abstract class Packet
 		BUILDINGLEVEL(Packet13BuildingLevel.class),
 		CITYLEVEL(Packet14CityLevel.class),
 		BARRACKSBUILDTROOP(Packet15BarracksBuildTroop.class),
+		BUILDINGMETA(Packet16BuildingMeta.class),
 		
 		;
 		

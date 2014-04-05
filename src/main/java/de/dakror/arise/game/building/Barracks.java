@@ -2,13 +2,11 @@ package de.dakror.arise.game.building;
 
 import java.awt.Point;
 
-import org.json.JSONException;
-
-import de.dakror.arise.battlesim.TroopType;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.BuildTroopsLayer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.settings.TroopType;
 import de.dakror.arise.ui.BuildButton;
 import de.dakror.gamesetup.ui.ClickEvent;
 
@@ -40,7 +38,6 @@ public class Barracks extends Building
 				@Override
 				public void trigger()
 				{
-					// queue(r, "S");
 					Game.currentGame.addLayer(new BuildTroopsLayer(Barracks.this, TroopType.SWORDFIGHTER));
 				}
 			});
@@ -50,27 +47,12 @@ public class Barracks extends Building
 				@Override
 				public void trigger()
 				{
-					// queue(r2, "L");
 					Game.currentGame.addLayer(new BuildTroopsLayer(Barracks.this, TroopType.LANCEBEARER));
 				}
 			});
 		}
 		
 		init();
-	}
-	
-	@Override
-	protected float getStageChangeDuration()
-	{
-		try
-		{
-			return (stage != 1) ? super.getStageChangeDuration() : Math.round(Building.TROOPS.getInt(getResourceNameForTroop(getFirstPlaceInQueue()).name()) / Game.world.getSpeed());
-		}
-		catch (JSONException e)
-		{
-			e.printStackTrace();
-			return 0;
-		}
 	}
 	
 	@Override
@@ -124,12 +106,5 @@ public class Barracks extends Building
 		}
 		((BuildButton) guiContainer.components.get(0)).number = S;
 		((BuildButton) guiContainer.components.get(1)).number = L;
-	}
-	
-	@Override
-	public void updateGuiButtons()
-	{
-		for (int i = 0; i < guiContainer.components.size(); i++)
-			guiContainer.components.get(i).enabled = metadata.length() < Building.MAX_QUEUE;
 	}
 }

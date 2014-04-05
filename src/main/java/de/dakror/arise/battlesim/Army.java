@@ -3,6 +3,7 @@ package de.dakror.arise.battlesim;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.TroopType;
 
 
 /**

@@ -25,6 +25,7 @@ public abstract class Packet
 		UPGRADEBUILDING(Packet12UpgradeBuilding.class),
 		BUILDINGLEVEL(Packet13BuildingLevel.class),
 		CITYLEVEL(Packet14CityLevel.class),
+		BARRACKSBUILDTROOP(Packet15BarracksBuildTroop.class),
 		
 		;
 		

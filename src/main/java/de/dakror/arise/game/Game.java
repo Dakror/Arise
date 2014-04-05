@@ -73,7 +73,6 @@ public class Game extends GameApplet
 		Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
 		Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
 		Building.MAX_LEVEL = config.getInt("maxlevel");
-		Building.TROOPS = config.getJSONObject("troops");
 	}
 	
 	@Override

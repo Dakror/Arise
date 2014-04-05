@@ -78,10 +78,12 @@ public class Assistant
 		seconds = seconds.length() == 1 ? "0" + seconds : seconds;
 		String minutes = (s / 60) % 60 + "";
 		minutes = minutes.length() == 1 ? "0" + minutes : minutes;
-		String hours = s / 3600 + "";
+		String hours = (s / 3600) % 60 + "";
 		hours = hours.length() == 1 ? "0" + hours : hours;
+		String days = s / (3600 * 24) + "";
+		days = days.length() == 1 ? "0" + days : days;
 		
-		return (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
+		return (days.equals("00") ? "" : days + "d ") + (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
 	}
 	
 	public static InetAddress getBroadcastAddress()

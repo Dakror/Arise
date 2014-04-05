@@ -29,8 +29,6 @@ public abstract class Building extends ClickableComponent
 	public static float DECONSTRUCT_FACTOR;
 	public static float UPGRADE_FACTOR;
 	public static int MAX_LEVEL;
-	public static JSONObject TROOPS;
-	public static int MAX_QUEUE;
 	
 	protected int tx, ty, tw, th, id, typeId, level, maxLevel, levelFac, minCityLevel;
 	public int bx, by, bw, bh;

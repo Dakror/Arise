@@ -17,7 +17,6 @@ import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 
 import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
-import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -246,7 +245,6 @@ public class LoginLayer extends MPLayer
 			try
 			{
 				Game.world = new World((Packet03World) p);
-				Building.MAX_QUEUE = Game.config.getInt("maxqueue") * Game.world.getSpeed();
 				Game.client.sendPacket(new Packet04City(Game.worldID));
 			}
 			catch (Exception e)

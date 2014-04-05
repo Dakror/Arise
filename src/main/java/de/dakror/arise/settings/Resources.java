@@ -230,4 +230,16 @@ public class Resources
 		
 		return result;
 	}
+	
+	public static float div(Resources res, Resources div)
+	{
+		float smallestDivision = 0;
+		for (Resource r : div.getFilled())
+		{
+			float d = res.getF(r) / div.getF(r);
+			if (d < smallestDivision || smallestDivision == 0) smallestDivision = d;
+		}
+		
+		return smallestDivision;
+	}
 }

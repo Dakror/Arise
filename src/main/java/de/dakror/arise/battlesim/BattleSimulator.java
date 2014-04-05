@@ -2,6 +2,7 @@ package de.dakror.arise.battlesim;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.settings.TroopType;
 
 /**
  * @author Dakror

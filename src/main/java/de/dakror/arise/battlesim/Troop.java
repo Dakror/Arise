@@ -1,5 +1,7 @@
 package de.dakror.arise.battlesim;
 
+import de.dakror.arise.settings.TroopType;
+
 /**
  * @author Dakror
  */

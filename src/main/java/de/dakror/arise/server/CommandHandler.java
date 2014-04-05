@@ -1,5 +1,6 @@
 package de.dakror.arise.server;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -110,6 +111,20 @@ public class CommandHandler
 					e.printStackTrace();
 				}
 			}
+			case "log":
+			{
+				if (parts.length == 2)
+				{
+					if (new File(parts[1]).isDirectory())
+					{
+						AriseServer.properties.setProperty("logfile", new File(parts[1]).getPath().replace("\\", "/"));
+						AriseServer.saveProperties();
+						CFG.p("Log directory set. Restart the server to make it take effect.");
+					}
+				}
+				else CFG.e("Invalid parameters! Usage: LOG <String:directory>");
+				break;
+			}
 			case "help":
 			{
 				CFG.p("");
@@ -121,6 +136,7 @@ public class CommandHandler
 				CFG.p("WORLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
 				CFG.p("KICK <int:id> - Kicks the player with the given id.");
 				CFG.p("TRAFFIC - opens the traffic monitoring console.");
+				CFG.p("LOG <String:directory> - writes from now on the server log to generated files in the given directory. Takes effect after restart.");
 				CFG.p("#==========================================================================================#");
 				CFG.p("");
 				break;

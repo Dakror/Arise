@@ -6,9 +6,15 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -35,7 +41,7 @@ import de.dakror.dakrorbin.DakrorBin;
 public class AriseServer
 {
 	public static Server server;
-	
+	public static Properties properties;
 	public static JTextPane log, trafficLog;
 	
 	static JFrame mainFrame;
@@ -43,10 +49,15 @@ public class AriseServer
 	public static void main(String[] args) throws Exception
 	{
 		new Game();
+		
+		new File(CFG.DIR, "/Server/config.properties").createNewFile();
+		
+		properties = new Properties();
+		properties.load(new FileReader(new File(CFG.DIR, "/Server/config.properties")));
+		
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		
 		mainFrame = new JFrame("Arise Server Console v");
-		createTrafficFrame();
 		
 		DakrorBin.init(mainFrame, "Arise-Server");
 		DakrorBin.showDialog = false;
@@ -63,8 +74,17 @@ public class AriseServer
 		log = new JTextPane();
 		log.setEditable(false);
 		MessageConsole mc = new MessageConsole(log);
-		mc.redirectOut();
-		mc.redirectErr(Color.RED, null);
+		
+		PrintStream ps = System.out;
+		
+		if (isLogging())
+		{
+			File logFile = new File(new File(properties.getProperty("logfile")), "AriseServer " + new SimpleDateFormat("dd.MM.yy, HH-mm-ss").format(new Date()) + ".log");
+			ps = new PrintStream(logFile);
+		}
+		
+		mc.redirectErr(Color.red, ps);
+		mc.redirectOut(Color.black, ps);
 		mc.setMessageLines(100);
 		log.setBorder(BorderFactory.createEmptyBorder());
 		log.setBackground(new JLabel().getBackground());
@@ -103,6 +123,23 @@ public class AriseServer
 		});
 		
 		mainFrame.setVisible(true);
+	}
+	
+	public static void saveProperties()
+	{
+		try
+		{
+			properties.store(new FileOutputStream(new File(CFG.DIR, "/Server/config.properties")), "");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static boolean isLogging()
+	{
+		return properties.containsKey("logfile") && properties.getProperty("logfile").trim().length() > 0;
 	}
 	
 	public static void createTrafficFrame() throws IOException

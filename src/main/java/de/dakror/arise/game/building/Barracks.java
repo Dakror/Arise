@@ -105,17 +105,7 @@ public class Barracks extends Building
 	
 	protected void updateQueueDisplay()
 	{
-		if (metadata.length() == 0)
-		{
-			for (int i = 0; i < guiContainer.components.size(); i++)
-				if (i != id) guiContainer.components.get(i).enabled = true;
-		}
-		else
-		{
-			int id = Integer.parseInt(metadata.substring(0, metadata.indexOf(":")));
-			
-			for (int i = 0; i < guiContainer.components.size(); i++)
-				if (i != id) guiContainer.components.get(i).enabled = false;
-		}
+		for (int i = 0; i < guiContainer.components.size(); i++)
+			guiContainer.components.get(i).enabled = metadata.length() == 0;
 	}
 }

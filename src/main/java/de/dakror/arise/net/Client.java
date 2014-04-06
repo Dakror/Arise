@@ -94,7 +94,7 @@ public class Client extends Thread
 	
 	public boolean connectToServer() throws Exception
 	{
-		serverIP = InetAddress.getByName("h2284175.stratoserver.net" /* "192.168.0.238" */);
+		serverIP = InetAddress.getByName("h2284175.stratoserver.net" /* "192.168.2.108" */);
 		
 		socket.setSoTimeout(1000);
 		sendPacket(new Packet00Handshake());

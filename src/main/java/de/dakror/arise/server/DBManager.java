@@ -448,29 +448,30 @@ public class DBManager
 		return false;
 	}
 	
-	public static boolean barracksBuildTroops(Packet15BarracksBuildTroop p)
+	public static int barracksBuildTroops(Packet15BarracksBuildTroop p)
 	{
 		try
 		{
 			int speed = getWorldSpeedForCity(p.getCityId());
-			if (speed == 0) return false;
+			if (speed == 0) return -1;
 			
 			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM BUILDINGS WHERE META IS NULL AND TIMELEFT = 0 AND STAGE = 1 AND ID = " + p.getBuildingId());
-			if (!rs.next()) return false;
+			if (!rs.next()) return -1;
 			
 			Resources res = Resources.mul(p.getTroopType().getCosts(), p.getAmount());
 			
 			if (buy(p.getCityId(), res))
 			{
-				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET TIMELEFT = " + ((int) ((p.getTroopType().getBuildTime() / (float) speed) * p.getAmount())) + ", META = \"" + p.getTroopType().ordinal() + ":" + p.getAmount() + "\" WHERE ID = " + p.getBuildingId());
-				return true;
+				int timeleft = ((int) ((p.getTroopType().getBuildTime() / (float) speed) * p.getAmount()));
+				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET TIMELEFT = " + timeleft + ", META = \"" + p.getTroopType().ordinal() + ":" + p.getAmount() + "\" WHERE ID = " + p.getBuildingId());
+				return timeleft;
 			}
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
-		return false;
+		return -1;
 	}
 	
 	public static void updateBuildingTimers()

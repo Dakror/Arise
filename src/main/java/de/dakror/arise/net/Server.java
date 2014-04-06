@@ -355,12 +355,18 @@ public class Server extends Thread
 			case BARRACKSBUILDTROOP:
 			{
 				Packet15BarracksBuildTroop p = new Packet15BarracksBuildTroop(data);
-				if (DBManager.isCityFromUser(p.getCityId(), user) && DBManager.barracksBuildTroops(p))
+				
+				if (DBManager.isCityFromUser(p.getCityId(), user))
 				{
 					try
 					{
-						sendPacket(new Packet16BuildingMeta(p.getBuildingId(), p.getTroopType().ordinal() + ":" + p.getAmount()), user);
-						sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+						int timeleft = DBManager.barracksBuildTroops(p);
+						if (timeleft > -1)
+						{
+							sendPacket(new Packet09BuildingStage(p.getBuildingId(), 1, timeleft), user);
+							sendPacket(new Packet16BuildingMeta(p.getBuildingId(), p.getTroopType().ordinal() + ":" + p.getAmount()), user);
+							sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
+						}
 					}
 					catch (Exception e)
 					{

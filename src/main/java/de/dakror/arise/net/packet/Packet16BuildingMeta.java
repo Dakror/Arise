@@ -21,7 +21,8 @@ public class Packet16BuildingMeta extends Packet
 		super(16);
 		String[] parts = readData(data).split("\\[#\\]");
 		buildingId = Integer.parseInt(parts[0]);
-		meta = parts[1];
+		if (parts.length > 1) meta = parts[1];
+		else meta = "";
 	}
 	
 	public int getBuildingId()

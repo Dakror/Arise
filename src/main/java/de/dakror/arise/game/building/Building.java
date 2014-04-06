@@ -137,13 +137,10 @@ public abstract class Building extends ClickableComponent
 			
 			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this, g);
 			
-			float duration = stageChangeDuration / Game.world.getSpeed();
-			
-			Helper.drawProgressBar(tx + (bw * GRID - width) / 2, ty + (bh * GRID - 22) / 2, width, 1 - stageChangeSecondsLeft / duration, "ffc744", g);
 			
 			Color c = g.getColor();
-			g.setColor(Color.black);
-			Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(stageChangeSecondsLeft), tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 20);
+			g.setColor(Color.white);
+			Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(stageChangeSecondsLeft), tx + (bw * GRID - width) / 2, width, ty + (bh * GRID) / 2 + 6, g, 30);
 			g.setColor(c);
 		}
 	}

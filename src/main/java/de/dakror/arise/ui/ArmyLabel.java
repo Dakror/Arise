@@ -5,6 +5,7 @@ import java.awt.Point;
 
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.settings.TroopType;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -15,8 +16,6 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class ArmyLabel extends Component
 {
-	public static Resource[] ARMY = { Resource.SWORDFIGHTER, Resource.LANCEBEARER };
-	
 	public ArmyLabel(int x, int y)
 	{
 		super(x, y, 0, 25);
@@ -26,8 +25,8 @@ public class ArmyLabel extends Component
 	public void draw(Graphics2D g)
 	{
 		int army = 0;
-		for (Resource r : ARMY)
-			army += CityLayer.resources.get(r);
+		for (TroopType r : TroopType.values())
+			army += CityLayer.resources.get(r.getType());
 		
 		String string = army + "";
 		if (string.length() > 3) string = string.substring(0, string.length() - 3) + "k";
@@ -45,7 +44,7 @@ public class ArmyLabel extends Component
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
 		int width = 150;
-		int height = ARMY.length * 30 + 70;
+		int height = TroopType.values().length * 30 + 70;
 		int x1 = x;
 		int y1 = y;
 		
@@ -54,9 +53,9 @@ public class ArmyLabel extends Component
 		
 		Helper.drawShadow(x1, y1, width, height, g);
 		Helper.drawString("Truppen", x1 + 20, y1 + 40, g, 35);
-		for (int i = 0; i < ARMY.length; i++)
+		for (int i = 0; i < TroopType.values().length; i++)
 		{
-			Resource r = ARMY[i];
+			Resource r = TroopType.values()[i].getType();
 			Assistant.drawResource(CityLayer.resources, r, x1 + 20, y1 + i * 30 + 50, 30, 30, g);
 		}
 	}

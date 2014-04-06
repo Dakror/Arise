@@ -5,12 +5,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.sql.Connection;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.net.User;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildButton;
@@ -313,7 +315,8 @@ public abstract class Building extends ClickableComponent
 		addGuiButton(x, y, Game.getImage("system/icons.png").getSubimage(icon.x * 24, icon.y * 24, 24, 24), tooltip, desc, buildingCosts, minCityLevel, action);
 	}
 	
-	public void onSpecificChange()
+	/** Server-side only */
+	public void onSpecificChange(int cityId, User owner, Connection connection)
 	{}
 	
 	@Override

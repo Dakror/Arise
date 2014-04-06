@@ -1,13 +1,17 @@
 package de.dakror.arise.game.building;
 
 import java.awt.Point;
+import java.sql.Connection;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.BuildTroopsLayer;
+import de.dakror.arise.net.Server;
+import de.dakror.arise.net.User;
+import de.dakror.arise.net.packet.Packet16BuildingMeta;
+import de.dakror.arise.server.DBManager;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TroopType;
-import de.dakror.arise.ui.BuildButton;
 import de.dakror.gamesetup.ui.ClickEvent;
 
 /**
@@ -56,23 +60,26 @@ public class Barracks extends Building
 	}
 	
 	@Override
-	public void onSpecificChange()
+	public void onSpecificChange(int cityId, User owner, Connection connection)
 	{
-		// if (stage == 1)
-		// {
-		// Resource r = getResourceNameForTroop(getFirstPlaceInQueue());
-		// if (r != null)
-		// {
-		// metadata = (metadata.length() > 1 ? metadata.substring(1) : "");
-		// CityLayer.resources.add(r, 10);
-		//
-		// if (metadata.length() > 0) setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-		//
-		// CityHUDLayer.cl.saveData();
-		//
-		// updateQueueDisplay();
-		// }
-		// }
+		if (metadata.length() > 0)
+		{
+			String[] parts = metadata.split(":");
+			if (parts.length != 2) return;
+			
+			if (DBManager.addCityTroops(cityId, TroopType.values()[Integer.parseInt(parts[0])], Integer.parseInt(parts[1])))
+			{
+				try
+				{
+					connection.createStatement().executeUpdate("UPDATE BUILDINGS SET META = NULL WHERE ID = " + id);
+					if (owner != null) Server.currentServer.sendPacket(new Packet16BuildingMeta(id, ""), owner);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	protected String getFirstPlaceInQueue()
@@ -98,13 +105,17 @@ public class Barracks extends Building
 	
 	protected void updateQueueDisplay()
 	{
-		int S = 0, L = 0;
-		for (int i = 0; i < metadata.length(); i++)
+		if (metadata.length() == 0)
 		{
-			if (metadata.charAt(i) == 'S') S++;
-			if (metadata.charAt(i) == 'L') L++;
+			for (int i = 0; i < guiContainer.components.size(); i++)
+				if (i != id) guiContainer.components.get(i).enabled = true;
 		}
-		((BuildButton) guiContainer.components.get(0)).number = S;
-		((BuildButton) guiContainer.components.get(1)).number = L;
+		else
+		{
+			int id = Integer.parseInt(metadata.substring(0, metadata.indexOf(":")));
+			
+			for (int i = 0; i < guiContainer.components.size(); i++)
+				if (i != id) guiContainer.components.get(i).enabled = false;
+		}
 	}
 }

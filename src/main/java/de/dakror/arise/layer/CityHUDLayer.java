@@ -27,6 +27,7 @@ import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.net.packet.Packet14CityLevel;
+import de.dakror.arise.net.packet.Packet16BuildingMeta;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -467,6 +468,20 @@ public class CityHUDLayer extends MPLayer
 		{
 			Packet14CityLevel packet = (Packet14CityLevel) p;
 			if (packet.getCityId() == cl.city.getId()) cl.city.setLevel(packet.getNewLevel());
+		}
+		
+		if (p.getType() == PacketTypes.BUILDINGMETA)
+		{
+			Packet16BuildingMeta packet = (Packet16BuildingMeta) p;
+			
+			for (Component c : cl.components)
+			{
+				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
+				{
+					((Building) c).setMetadata(packet.getMeta());
+					break;
+				}
+			}
 		}
 	}
 }

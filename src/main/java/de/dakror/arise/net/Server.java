@@ -360,6 +360,7 @@ public class Server extends Thread
 					try
 					{
 						sendPacket(new Packet16BuildingMeta(p.getBuildingId(), p.getTroopType().ordinal() + ":" + p.getAmount()), user);
+						sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 					}
 					catch (Exception e)
 					{

@@ -25,6 +25,7 @@ import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.settings.TroopType;
 import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.gamesetup.util.Helper;
 
@@ -316,7 +317,7 @@ public class DBManager
 			
 			int cities = rs2.getInt(1);
 			Point p = CitySpawner.spawnCity(cities, worldId);
-			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0', 300, 300, 300)");
+			connection.createStatement().executeUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0:0:0:0:0:0', 300, 300, 300)");
 			
 			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
 			int cityId = rs3.getInt(1);
@@ -419,6 +420,32 @@ public class DBManager
 		}
 	}
 	
+	public static boolean addCityTroops(int cityId, TroopType type, int amount)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return false;
+			
+			String[] armyParts = rs.getString("ARMY").split(":");
+			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount);
+			
+			String army = "";
+			for (String a : armyParts)
+				army += a + ":";
+			
+			army = army.substring(0, army.length() - 1);
+			
+			connection.createStatement().executeUpdate("UPDATE CITIES SET ARMY = '" + army + "' WHERE ID = " + cityId);
+			return true;
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public static boolean barracksBuildTroops(Packet15BarracksBuildTroop p)
 	{
 		try
@@ -504,7 +531,15 @@ public class DBManager
 						}
 					}
 				}
-				else ; // TODO: handle specificly
+				else
+				{
+					Building b = Building.getBuildingByTypeId(0, 0, rs.getInt("LEVEL"), rs.getInt("TYPE"));
+					b.setMetadata(rs.getString("META"));
+					b.setStage(rs.getInt("STAGE"));
+					b.setId(rs.getInt("ID"));
+					
+					b.onSpecificChange(rs.getInt("CITY_ID"), owner, connection);
+				}
 				
 				connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = " + stage + " WHERE ID = " + rs.getInt("ID"));
 				

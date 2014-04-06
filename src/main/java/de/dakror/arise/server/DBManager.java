@@ -26,7 +26,6 @@ import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TroopType;
-import de.dakror.arise.ui.ArmyLabel;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -227,7 +226,10 @@ public class DBManager
 			{
 				String[] army = a.split(":");
 				for (int i = 0; i < army.length; i++)
-					res.set(ArmyLabel.ARMY[i], Integer.parseInt(army[i]));
+				{
+					if (i >= TroopType.values().length) break;
+					res.set(TroopType.values()[i].getType(), Integer.parseInt(army[i]));
+				}
 			}
 			res.set(Resource.WOOD, rs.getFloat(2));
 			res.set(Resource.STONE, rs.getFloat(3));

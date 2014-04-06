@@ -67,6 +67,7 @@ public class BuildTroopsLayer extends MPLayer
 				try
 				{
 					Game.client.sendPacket(new Packet15BarracksBuildTroop(CityHUDLayer.cl.city.getId(), barracks.getId(), type, (int) slider.getValue()));
+					Game.currentGame.removeLayer(BuildTroopsLayer.this);
 				}
 				catch (IOException e)
 				{

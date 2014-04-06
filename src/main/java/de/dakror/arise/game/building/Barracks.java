@@ -71,7 +71,7 @@ public class Barracks extends Building
 			{
 				try
 				{
-					connection.createStatement().executeUpdate("UPDATE BUILDINGS SET META = NULL WHERE ID = " + id);
+					connection.createStatement().executeUpdate("UPDATE BUILDINGS SET META = '' WHERE ID = " + id);
 					if (owner != null) Server.currentServer.sendPacket(new Packet16BuildingMeta(id, ""), owner);
 				}
 				catch (Exception e)

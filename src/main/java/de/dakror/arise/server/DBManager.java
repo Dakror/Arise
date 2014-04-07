@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
@@ -385,9 +386,9 @@ public class DBManager
 		{
 			ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id);
 			if (!rs.next()) return -1;
-			if (rs.getInt(3) != 1) return -1;
+			if (rs.getInt("STAGE") != 1) return -1;
 			
-			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt(2));
+			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt("TYPE"));
 			connection.createStatement().executeUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
 			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
 		}
@@ -430,7 +431,7 @@ public class DBManager
 			if (!rs.next()) return false;
 			
 			String[] armyParts = rs.getString("ARMY").split(":");
-			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount);
+			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount * Game.config.getInt("troops"));
 			
 			String army = "";
 			for (String a : armyParts)
@@ -441,7 +442,7 @@ public class DBManager
 			connection.createStatement().executeUpdate("UPDATE CITIES SET ARMY = '" + army + "' WHERE ID = " + cityId);
 			return true;
 		}
-		catch (SQLException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

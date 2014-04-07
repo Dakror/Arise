@@ -297,10 +297,10 @@ public class CityHUDLayer extends MPLayer
 			if (selectedBuilding.getStage() == 1) selectedBuilding.getGuiContainer().update(tick);
 			selectedBuilding.updateGuiButtons();
 			
-			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1;
-			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort;
+			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1 && selectedBuilding.getStageChangeSecondsLeft() == 0;
+			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort && selectedBuilding.getStageChangeSecondsLeft() == 0;
 			
-			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort;
+			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort && selectedBuilding.getStageChangeSecondsLeft() == 0;
 		}
 	}
 	

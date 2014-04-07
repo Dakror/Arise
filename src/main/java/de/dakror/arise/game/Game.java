@@ -16,6 +16,7 @@ import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
+import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.Client;
 import de.dakror.dakrorbin.DakrorBin;
 import de.dakror.gamesetup.applet.GameApplet;
@@ -150,6 +151,8 @@ public class Game extends GameApplet
 	public void startGame()
 	{
 		setLayer(world);
+		addLayer(new WorldHUDLayer());
+		
 		System.gc();
 		
 		fadeTo(0, 0.05f);

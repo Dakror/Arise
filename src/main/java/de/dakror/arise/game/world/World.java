@@ -33,6 +33,7 @@ public class World extends MPLayer
 	
 	int speed, id, width, height, tick, minX, minY;
 	public int x, y, cities, citiesDrawn;
+	public boolean anyCityActive;
 	
 	long lastCheck;
 	
@@ -42,6 +43,7 @@ public class World extends MPLayer
 	City gotoCity;
 	
 	Point dragStart, worldDragStart;
+	
 	
 	public World(Packet03World packet)
 	{
@@ -167,6 +169,17 @@ public class World extends MPLayer
 	{
 		e.translatePoint(-x, -y);
 		super.mousePressed(e);
+		
+		anyCityActive = false;
+		for (Component c : components)
+		{
+			if (c instanceof City && c.state == 1)
+			{
+				anyCityActive = true;
+				break;
+			}
+		}
+		
 	}
 	
 	@Override

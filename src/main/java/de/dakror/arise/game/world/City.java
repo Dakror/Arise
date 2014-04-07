@@ -8,10 +8,12 @@ import java.io.IOException;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
 
@@ -41,12 +43,21 @@ public class City extends ClickableComponent
 		userId = data.getUserId();
 		id = data.getCityId();
 		level = data.getLevel();
+		
+		addClickEvent(new ClickEvent()
+		{
+			@Override
+			public void trigger()
+			{
+				WorldHUDLayer.selectedCity = City.this;
+			}
+		});
 	}
 	
 	@Override
 	public void draw(Graphics2D g)
 	{
-		if (state != 0)
+		if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this)))
 		{
 			Color c = g.getColor();
 			g.setColor(Color.black);

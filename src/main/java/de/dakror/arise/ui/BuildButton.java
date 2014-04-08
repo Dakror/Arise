@@ -143,8 +143,8 @@ public class BuildButton extends IconButton
 				for (int i = 0; i < products.size(); i++)
 				{
 					Resource r = products.get(i);
-					int f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) * (level + 1);
 					int sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
+					int f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
 					
 					String pr = f + "";
 					if (pr.length() > 3) pr = pr.substring(0, pr.length() - 3) + "k";

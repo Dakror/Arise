@@ -21,6 +21,13 @@ public class Army
 		troops = new CopyOnWriteArrayList<>();
 	}
 	
+	public Army(boolean att, Resources army)
+	{
+		this(att);
+		for (TroopType t : TroopType.values())
+			if (army.get(t.getType()) > 0) initTroop(t, army.get(t.getType()));
+	}
+	
 	public void setTroop(Troop troop)
 	{
 		troops.add(troop);

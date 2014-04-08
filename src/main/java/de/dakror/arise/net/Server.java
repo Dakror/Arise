@@ -14,6 +14,9 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.AriseServer;
+import de.dakror.arise.battlesim.Army;
+import de.dakror.arise.battlesim.BattleResult;
+import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -34,9 +37,12 @@ import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet16BuildingMeta;
+import de.dakror.arise.net.packet.Packet17CityAttack;
+import de.dakror.arise.net.packet.Packet18BattleResult;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.settings.TroopType;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -113,7 +119,7 @@ public class Server extends Thread
 	public void parsePacket(byte[] data, InetAddress address, int port)
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
-		User user = getUserForIP(address, port);
+		final User user = getUserForIP(address, port);
 		if (user != null) user.interact();
 		
 		if (AriseServer.trafficLog != null)
@@ -133,7 +139,7 @@ public class Server extends Thread
 			{
 				try
 				{
-					sendPacket(new Packet00Handshake(), user == null ? new User(0, 0, address, port) : user);
+					sendPacket(new Packet00Handshake(), user == null ? new User(0, 0, "", address, port) : user);
 					if (user == null) out("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
 				}
@@ -153,7 +159,7 @@ public class Server extends Thread
 					if (loggedIn && worldExists)
 					{
 						String[] parts = s.split(":");
-						User u = new User(Integer.parseInt(parts[1].trim()), p.getWorldId(), address, port);
+						User u = new User(Integer.parseInt(parts[1].trim()), p.getWorldId(), parts[2], address, port);
 						boolean alreadyLoggedIn = getUserForId(u.getId()) != null;
 						
 						if (alreadyLoggedIn)
@@ -171,7 +177,7 @@ public class Server extends Thread
 					else
 					{
 						out("Refused login of " + address.getHostAddress() + ":" + port + " (" + (!loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID).name() + ")");
-						sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), !loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID), new User(0, 0, address, port));
+						sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), !loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID), new User(0, 0, "", address, port));
 					}
 				}
 				catch (Exception e)
@@ -372,6 +378,48 @@ public class Server extends Thread
 					{
 						e.printStackTrace();
 					}
+				}
+				
+				break;
+			}
+			case CITYATTACK:
+			{
+				final Packet17CityAttack p = new Packet17CityAttack(data);
+				
+				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user))
+				{
+					new Thread()
+					{
+						@Override
+						public void run()
+						{
+							Army att = new Army(true, p.getAttArmy());
+							Army def = new Army(false, DBManager.getCityResources(p.getDefCityId()));
+							BattleResult br = BattleSimulator.simulateBattle(att, def);
+							
+							out(br.toString(p.getAttCityId(), p.getDefCityId()));
+							
+							DBManager.resetCityArmy(br.isAttackers() ? p.getDefCityId() : p.getAttCityId()); // loser city
+							
+							for (TroopType t : TroopType.values())
+								DBManager.setCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, br.getSurvived().get(t.getType())); // winner city
+							
+							try
+							{
+								String ac = DBManager.getCityNameForId(p.getAttCityId()), dc = DBManager.getCityNameForId(p.getDefCityId()), aco = user.getUsername(), dco = DBManager.getUsernameForCityId(p.getDefCityId());
+								sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getSurvived().getLength() : 0, ac, dc, aco, dco), user); // to attacker
+								CFG.p("send results");
+								User defOwner = getUserForId(DBManager.getUserIdForCityId(p.getDefCityId()));
+								if (defOwner != null) sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getSurvived().getLength() : 0, ac, dc, aco, dco), defOwner); // to defender
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+							
+							// TODO send result back
+						}
+					}.start();
 				}
 				
 				break;

@@ -29,5 +29,10 @@ public abstract class MPLayer extends Layer
 				Game.userID = 0;
 			}
 		}
+		
+		if (p.getType() == PacketTypes.BATTLERESULT && Game.userID != 0 && !(Game.currentGame.getActiveLayer() instanceof Alert))
+		{
+			Game.currentGame.addLayer(new Alert(p.toString(), null));
+		}
 	}
 }

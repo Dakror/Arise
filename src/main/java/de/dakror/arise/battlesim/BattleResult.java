@@ -1,21 +1,23 @@
 package de.dakror.arise.battlesim;
 
+import de.dakror.arise.settings.Resources;
+
 /**
  * @author Dakror
  */
 public class BattleResult
 {
-	int survived;
+	Resources survived;
 	boolean attackers;
 	public float seconds;
 	
-	public BattleResult(boolean attackers, int survived)
+	public BattleResult(boolean attackers, Resources survived)
 	{
 		this.attackers = attackers;
 		this.survived = survived;
 	}
 	
-	public int getSurvived()
+	public Resources getSurvived()
 	{
 		return survived;
 	}
@@ -28,6 +30,11 @@ public class BattleResult
 	@Override
 	public String toString()
 	{
-		return "The " + (attackers ? "Attackers" : "Defenders") + " are victorious. " + survived + " fighters survived. Simulation took " + seconds + "s.";
+		return "The " + (attackers ? "Attackers" : "Defenders") + " are victorious. " + (int) survived.getLength() + " fighters survived. Simulation took " + seconds + "s.";
+	}
+	
+	public String toString(int attCityId, int defCityId)
+	{
+		return "The " + (attackers ? "Attackers (City #" + attCityId : "Defenders (City #" + defCityId) + ") are victorious. " + (int) survived.getLength() + " fighters survived. Simulation took " + seconds + "s.";
 	}
 }

@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.net.packet.Packet;
@@ -94,7 +95,7 @@ public class Client extends Thread
 	
 	public boolean connectToServer() throws Exception
 	{
-		serverIP = InetAddress.getByName("h2284175.stratoserver.net" /* "192.168.2.108" */);
+		serverIP = Arise.localServer ? InetAddress.getLocalHost() : InetAddress.getByName("h2284175.stratoserver.net");
 		
 		socket.setSoTimeout(1000);
 		sendPacket(new Packet00Handshake());

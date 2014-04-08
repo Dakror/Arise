@@ -28,6 +28,8 @@ public class Arise extends JApplet
 	
 	public static boolean wrapper = false;
 	
+	public static boolean localServer = false;
+	
 	public static boolean running;
 	
 	@Override
@@ -86,11 +88,13 @@ public class Arise extends JApplet
 	{
 		try
 		{
-			if (args.length > 0) // school fixes :D
+			if (args.length > 0 && args[0].equals("-school")) // school fixes :D
 			{
 				System.setProperty("http.proxyHost", "192.168.0.7");
 				System.setProperty("http.proxyPort", "800");
 			}
+			
+			if (args.length > 0 && args[0].equals("-local")) localServer = true;
 			
 			wrapper = true;
 			

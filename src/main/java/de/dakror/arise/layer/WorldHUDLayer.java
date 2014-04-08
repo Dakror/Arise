@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
+import java.awt.geom.AffineTransform;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.world.City;
@@ -40,11 +41,29 @@ public class WorldHUDLayer extends MPLayer
 		{
 			Stroke s = g.getStroke();
 			Color c = g.getColor();
+			g.setStroke(new BasicStroke(12, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
+			g.setColor(Color.black);
+			
+			int x1 = hoveredCity.getX() + Game.world.x + City.SIZE / 2, y1 = hoveredCity.getY() + Game.world.y + City.SIZE / 2;
+			
+			g.drawLine(x1, y1, drag.x, drag.y);
+			boolean aid = draggedOnto == null ? false : draggedOnto.getUserId() == Game.userID;
+			
 			g.setStroke(new BasicStroke(10, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
-			g.setColor(draggedOnto == null ? Color.decode("#a80000") : (draggedOnto.getUserId() == Game.userID ? Color.decode("#25c5ed") : Color.decode("#a80000")));
-			g.drawLine(hoveredCity.getX() + Game.world.x + City.SIZE / 2, hoveredCity.getY() + Game.world.y + City.SIZE / 2, drag.x, drag.y);
+			g.setColor(aid ? Color.decode("#0096ba") : Color.decode("#a80000"));
+			g.drawLine(x1, y1, drag.x, drag.y);
 			g.setColor(c);
 			g.setStroke(s);
+			
+			double angle = Math.atan2(drag.y - y1, drag.x - x1);
+			AffineTransform old = g.getTransform();
+			AffineTransform at = g.getTransform();
+			at.rotate(angle, drag.x, drag.y);
+			g.setTransform(at);
+			
+			g.drawImage(Game.getImage("system/arrow" + (aid ? "Blu" : "Red") + ".png"), drag.x - 10, drag.y - 23, 24, 48, null);
+			
+			g.setTransform(old);
 		}
 	}
 	

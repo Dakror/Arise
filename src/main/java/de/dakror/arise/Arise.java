@@ -23,7 +23,7 @@ import de.dakror.dakrorbin.DakrorBin;
  * @author Dakror
  */
 public class Arise extends JApplet
-{
+{// h
 	private static final long serialVersionUID = 1L;
 	
 	public static boolean wrapper = false;

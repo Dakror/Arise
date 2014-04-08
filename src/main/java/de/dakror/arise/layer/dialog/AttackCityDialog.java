@@ -89,6 +89,7 @@ public class AttackCityDialog extends MPLayer
 				{
 					e.printStackTrace();
 				}
+				Game.currentGame.removeLayer(AttackCityDialog.this);
 			}
 		});
 		components.add(attack);

@@ -12,16 +12,18 @@ import org.json.JSONObject;
 public class User
 {
 	private InetAddress ip;
+	private String username;
 	private int port;
 	private int id;
 	private int world;
 	private int city;
 	private long lastInteraction;
 	
-	public User(int id, int world, InetAddress ip, int port)
+	public User(int id, int world, String username, InetAddress ip, int port)
 	{
 		this.id = id;
 		this.ip = ip;
+		this.username = username;
 		this.world = world;
 		this.port = port;
 		
@@ -92,6 +94,11 @@ public class User
 	public long getLastInteraction()
 	{
 		return lastInteraction;
+	}
+	
+	public String getUsername()
+	{
+		return username;
 	}
 	
 	public String serialize()

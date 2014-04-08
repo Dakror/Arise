@@ -151,6 +151,51 @@ public class DBManager
 		return packets;
 	}
 	
+	public static String getCityNameForId(int cityId)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT NAME FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return null;
+			return rs.getString(1);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static String getUsernameForCityId(int cityId)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT USER_ID FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return null;
+			return getUsersFromWebsite().getString("" + rs.getInt(1));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static int getUserIdForCityId(int cityId)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT USER_ID FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return 0;
+			return rs.getInt(1);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
 	public static boolean cityExists(int x, int y, int worldId)
 	{
 		try

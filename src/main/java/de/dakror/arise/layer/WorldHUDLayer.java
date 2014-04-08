@@ -93,6 +93,7 @@ public class WorldHUDLayer extends MPLayer
 		showArrow = hoveredCity != null && hoveredCity.getUserId() == Game.userID && e.getModifiers() == 16; // LMB
 		drag = e.getPoint();
 		
+		boolean ontoAny = false;
 		for (Component c : Game.world.components)
 		{
 			if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
@@ -101,8 +102,11 @@ public class WorldHUDLayer extends MPLayer
 				drag = new Point(c.getX() + Game.world.x + City.SIZE / 2, c.getY() + Game.world.y + City.SIZE / 2);
 				draggedOnto = (City) c;
 				draggedOnto.state = 2;
+				ontoAny = true;
 			}
 		}
+		
+		if (!ontoAny) draggedOnto = null;
 	}
 	
 	@Override

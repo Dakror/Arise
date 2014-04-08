@@ -468,7 +468,7 @@ public class DBManager
 		}
 	}
 	
-	public static boolean addCityTroops(int cityId, TroopType type, int amount)
+	public static boolean addCityTroops(int cityId, TroopType type, int amount, boolean timesTroops)
 	{
 		try
 		{
@@ -476,33 +476,7 @@ public class DBManager
 			if (!rs.next()) return false;
 			
 			String[] armyParts = rs.getString("ARMY").split(":");
-			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount * Game.config.getInt("troops"));
-			
-			String army = "";
-			for (String a : armyParts)
-				army += a + ":";
-			
-			army = army.substring(0, army.length() - 1);
-			
-			connection.createStatement().executeUpdate("UPDATE CITIES SET ARMY = '" + army + "' WHERE ID = " + cityId);
-			return true;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	public static boolean setCityTroops(int cityId, TroopType type, int amount)
-	{
-		try
-		{
-			ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId);
-			if (!rs.next()) return false;
-			
-			String[] armyParts = rs.getString("ARMY").split(":");
-			armyParts[type.ordinal()] = "" + amount;
+			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount * (timesTroops ? Game.config.getInt("troops") : 1));
 			
 			String army = "";
 			for (String a : armyParts)

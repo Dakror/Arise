@@ -215,7 +215,13 @@ public class Server extends Thread
 					boolean spawn = DBManager.spawnPlayer(p.getId(), user);
 					out("Player's first visit on world? " + spawn);
 					sendPacket(DBManager.getWorldForId(p.getId()), user);
-					sendPacketToAllClientsExceptOne(DBManager.getSpawnCity(p.getId(), user.getId()), user);
+					for (User u : clients)
+					{
+						if (u.getWorldId() == user.getWorldId() && !(user.getIP().equals(u.getIP()) && user.getPort() == u.getPort()))
+						{
+							sendPacket(DBManager.getSpawnCity(p.getId(), user.getId()), u);
+						}
+					}
 					break;
 				}
 				catch (Exception e)
@@ -276,7 +282,7 @@ public class Server extends Thread
 					boolean worked = DBManager.renameCity(p.getCityId(), p.getNewName(), user);
 					try
 					{
-						sendPacket(new Packet07RenameCity(p.getCityId(), worked ? p.getNewName() : "#false#"), getUserForIP(address, port));
+						sendPacketToAllClients(new Packet07RenameCity(p.getCityId(), worked ? p.getNewName() : "#false#"));
 					}
 					catch (Exception e)
 					{
@@ -386,7 +392,7 @@ public class Server extends Thread
 			{
 				final Packet17CityAttack p = new Packet17CityAttack(data);
 				
-				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user))
+				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user) && p.getAttArmy().getLength() > 0)
 				{
 					new Thread()
 					{
@@ -399,25 +405,27 @@ public class Server extends Thread
 							
 							out(br.toString(p.getAttCityId(), p.getDefCityId()));
 							
-							DBManager.resetCityArmy(br.isAttackers() ? p.getDefCityId() : p.getAttCityId()); // loser city
+							if (br.isAttackers()) DBManager.resetCityArmy(p.getDefCityId());
+							else
+							{
+								for (TroopType t : TroopType.values())
+									DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
+							}
 							
 							for (TroopType t : TroopType.values())
-								DBManager.setCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, br.getSurvived().get(t.getType())); // winner city
+								DBManager.addCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, -br.getDead().get(t.getType()), false); // winner city
 							
 							try
 							{
 								String ac = DBManager.getCityNameForId(p.getAttCityId()), dc = DBManager.getCityNameForId(p.getDefCityId()), aco = user.getUsername(), dco = DBManager.getUsernameForCityId(p.getDefCityId());
-								sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getSurvived().getLength() : 0, ac, dc, aco, dco), user); // to attacker
-								CFG.p("send results");
+								sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), user); // to attacker
 								User defOwner = getUserForId(DBManager.getUserIdForCityId(p.getDefCityId()));
-								if (defOwner != null) sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getSurvived().getLength() : 0, ac, dc, aco, dco), defOwner); // to defender
+								if (defOwner != null) sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), defOwner); // to defender
 							}
 							catch (Exception e)
 							{
 								e.printStackTrace();
 							}
-							
-							// TODO send result back
 						}
 					}.start();
 				}

@@ -143,23 +143,11 @@ public class BuildButton extends IconButton
 				for (int i = 0; i < products.size(); i++)
 				{
 					Resource r = products.get(i);
-					int sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
-					int f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
+					float sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
+					float f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
 					
-					String pr = f + "";
-					if (pr.length() > 3) pr = pr.substring(0, pr.length() - 3) + "k";
-					if (pr.length() > 5) pr = pr.substring(0, pr.length() - 5) + "m";
-					
-					String scs = sc + "";
-					if (scs.length() > 3) scs = scs.substring(0, scs.length() - 3) + "k";
-					if (scs.length() > 5) scs = scs.substring(0, scs.length() - 5) + "m";
-					
-					String scp = (sc + f) + "";
-					if (scp.length() > 3) scp = scp.substring(0, scp.length() - 3) + "k";
-					if (scp.length() > 5) scp = scp.substring(0, scp.length() - 5) + "m";
-					
-					String scStr = sc > 0 ? (upgradeMode ? " -> " + (sc + f > 0 && r.isUsable() ? "+" : "") + scp + (r.isUsable() ? "/h" : "") : " (+" + scs + "/lvl)") : "";
-					String str = (f > 0 && r.isUsable() ? "+" : "") + pr + (r.isUsable() ? "/h" : "") + scStr;
+					String scStr = sc > 0 ? (upgradeMode ? " -> " + (sc + f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(sc + f, 0) + (r.isUsable() ? "/h" : "") : " (+" + Assistant.formatNumber(sc, 0) + "/lvl)") : "";
+					String str = (f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(f, 0) + (r.isUsable() ? "/h" : "") + scStr;
 					
 					Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30 + (minCityLevel > 0 ? 60 : 0), 25, new Point(r.getIconX(), r.getIconY()), str, 30, g2);
 				}

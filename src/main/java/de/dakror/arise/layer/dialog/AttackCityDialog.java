@@ -24,6 +24,8 @@ public class AttackCityDialog extends MPLayer
 	int attCityId, defCityId;
 	Resources resources;
 	
+	TextButton attack;
+	
 	public AttackCityDialog(int attCityId, int defCityId, Resources resources)
 	{
 		this.attCityId = attCityId;
@@ -59,7 +61,7 @@ public class AttackCityDialog extends MPLayer
 			}
 		});
 		components.add(abort);
-		TextButton attack = new TextButton(Game.getWidth() / 2, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Angreifen");
+		attack = new TextButton(Game.getWidth() / 2, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Angreifen");
 		attack.addClickEvent(new ClickEvent()
 		{
 			@Override
@@ -108,5 +110,21 @@ public class AttackCityDialog extends MPLayer
 	public void update(int tick)
 	{
 		updateComponents(tick);
+		
+		attack.enabled = false;
+		for (Component c : components)
+		{
+			if (c instanceof Slider)
+			{
+				for (TroopType t : TroopType.values())
+				{
+					if (((Slider) c).getTitle().equals(t.getType().getName()))
+					{
+						if (((Slider) c).getValue() > 0) attack.enabled = true;
+						break;
+					}
+				}
+			}
+		}
 	}
 }

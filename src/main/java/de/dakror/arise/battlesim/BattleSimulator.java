@@ -29,7 +29,7 @@ public class BattleSimulator
 			attAttack = !attAttack;
 		}
 		
-		BattleResult br = new BattleResult(def.isDead(), def.isDead() ? att.size() : def.size());
+		BattleResult br = new BattleResult(def.isDead(), def.isDead() ? att.getResources() : def.getResources());
 		br.seconds = ((System.currentTimeMillis() - t) / 1000f);
 		
 		return br;

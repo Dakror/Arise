@@ -14,6 +14,9 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.AriseServer;
+import de.dakror.arise.battlesim.Army;
+import de.dakror.arise.battlesim.BattleResult;
+import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -34,9 +37,11 @@ import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet16BuildingMeta;
+import de.dakror.arise.net.packet.Packet17CityAttack;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.settings.TroopType;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -113,7 +118,7 @@ public class Server extends Thread
 	public void parsePacket(byte[] data, InetAddress address, int port)
 	{
 		PacketTypes type = Packet.lookupPacket(data[0]);
-		User user = getUserForIP(address, port);
+		final User user = getUserForIP(address, port);
 		if (user != null) user.interact();
 		
 		if (AriseServer.trafficLog != null)
@@ -372,6 +377,44 @@ public class Server extends Thread
 					{
 						e.printStackTrace();
 					}
+				}
+				
+				break;
+			}
+			case CITYATTACK:
+			{
+				final Packet17CityAttack p = new Packet17CityAttack(data);
+				
+				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user))
+				{
+					new Thread()
+					{
+						@Override
+						public void run()
+						{
+							Army att = new Army(true, p.getAttArmy());
+							Army def = new Army(false, DBManager.getCityResources(p.getDefCityId()));
+							BattleResult br = BattleSimulator.simulateBattle(att, def);
+							
+							out(br.toString());
+							
+							DBManager.resetCityArmy(br.isAttackers() ? p.getDefCityId() : p.getAttCityId()); // loser city
+							
+							for (TroopType t : TroopType.values())
+								DBManager.setCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, br.getSurvived().get(t.getType())); // winner city
+							
+							try
+							{
+								sendPacket(new Packet05Resources(p.getAttCityId(), DBManager.getCityResources(p.getAttCityId())), user);
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+							
+							// TODO send result back
+						}
+					}.start();
 				}
 				
 				break;

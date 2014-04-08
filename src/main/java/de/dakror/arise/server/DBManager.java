@@ -449,6 +449,32 @@ public class DBManager
 		return false;
 	}
 	
+	public static boolean setCityTroops(int cityId, TroopType type, int amount)
+	{
+		try
+		{
+			ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return false;
+			
+			String[] armyParts = rs.getString("ARMY").split(":");
+			armyParts[type.ordinal()] = "" + amount;
+			
+			String army = "";
+			for (String a : armyParts)
+				army += a + ":";
+			
+			army = army.substring(0, army.length() - 1);
+			
+			connection.createStatement().executeUpdate("UPDATE CITIES SET ARMY = '" + army + "' WHERE ID = " + cityId);
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	public static int barracksBuildTroops(Packet15BarracksBuildTroop p)
 	{
 		try
@@ -474,6 +500,20 @@ public class DBManager
 		}
 		return -1;
 	}
+	
+	public static void resetCityArmy(int cityId)
+	{
+		try
+		{
+			connection.createStatement().executeUpdate("UPDATE CITIES SET ARMY = '0:0:0:0:0:0:0' WHERE ID = " + cityId);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	// -- tick methods -- //
 	
 	public static void updateBuildingTimers()
 	{

@@ -18,6 +18,7 @@ import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
+import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -262,6 +263,18 @@ public class World extends MPLayer
 				City c = new City(x, y, packet);
 				components.add(c);
 				updateSize();
+			}
+		}
+		if (p.getType() == PacketTypes.RENAMECITY)
+		{
+			Packet07RenameCity packet = (Packet07RenameCity) p;
+			for (Component c : components)
+			{
+				if (((City) c).getId() == packet.getCityId())
+				{
+					((City) c).setName(packet.getNewName());
+					break;
+				}
 			}
 		}
 		if (p.getType() == PacketTypes.RESOURCES && gotoCity != null)

@@ -2,6 +2,7 @@ package de.dakror.arise.battlesim;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.TroopType;
 
 /**
@@ -17,6 +18,9 @@ public class BattleSimulator
 			return null;
 		}
 		
+		Resources attBefore = new Resources(att.getResources().getBinaryData());
+		Resources defBefore = new Resources(def.getResources().getBinaryData());
+		
 		boolean attAttack = true;
 		
 		long t = System.currentTimeMillis();
@@ -29,7 +33,10 @@ public class BattleSimulator
 			attAttack = !attAttack;
 		}
 		
-		BattleResult br = new BattleResult(def.isDead(), def.isDead() ? att.getResources() : def.getResources());
+		attBefore.add(Resources.mul(att.getResources(), -1));
+		defBefore.add(Resources.mul(def.getResources(), -1));
+		
+		BattleResult br = new BattleResult(def.isDead(), def.isDead() ? attBefore : defBefore);
 		br.seconds = ((System.currentTimeMillis() - t) / 1000f);
 		
 		return br;

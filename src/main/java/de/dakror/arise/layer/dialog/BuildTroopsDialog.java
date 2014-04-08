@@ -1,4 +1,4 @@
-package de.dakror.arise.layer;
+package de.dakror.arise.layer.dialog;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Barracks;
+import de.dakror.arise.layer.CityHUDLayer;
+import de.dakror.arise.layer.CityLayer;
+import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -21,7 +24,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class BuildTroopsLayer extends MPLayer
+public class BuildTroopsDialog extends MPLayer
 {
 	Barracks barracks;
 	TroopType type;
@@ -30,7 +33,7 @@ public class BuildTroopsLayer extends MPLayer
 	
 	int width, height;
 	
-	public BuildTroopsLayer(Barracks barracks, TroopType troopType)
+	public BuildTroopsDialog(Barracks barracks, TroopType troopType)
 	{
 		this.barracks = barracks;
 		type = troopType;
@@ -44,7 +47,8 @@ public class BuildTroopsLayer extends MPLayer
 	public void init()
 	{
 		int div = (int) Math.floor(Resources.div(CityLayer.resources, type.getCosts()));
-		slider = new Slider((Game.getWidth() - width) / 2 + 20, (Game.getHeight() + height) / 2 - 40 - TextButton.HEIGHT, width - 40, 1, div, 1, true);
+		slider = new Slider((Game.getWidth() - width) / 2 + 20, (Game.getHeight() + height) / 2 - 40 - TextButton.HEIGHT, width - 40, 0, div, 0, true);
+		
 		slider.setTitle("10er Einheiten");
 		components.add(slider);
 		
@@ -54,7 +58,7 @@ public class BuildTroopsLayer extends MPLayer
 			@Override
 			public void trigger()
 			{
-				Game.currentGame.removeLayer(BuildTroopsLayer.this);
+				Game.currentGame.removeLayer(BuildTroopsDialog.this);
 			}
 		});
 		components.add(abort);
@@ -67,7 +71,7 @@ public class BuildTroopsLayer extends MPLayer
 				try
 				{
 					Game.client.sendPacket(new Packet15BarracksBuildTroop(CityHUDLayer.cl.city.getId(), barracks.getId(), type, (int) slider.getValue()));
-					Game.currentGame.removeLayer(BuildTroopsLayer.this);
+					Game.currentGame.removeLayer(BuildTroopsDialog.this);
 				}
 				catch (IOException e)
 				{
@@ -97,6 +101,7 @@ public class BuildTroopsLayer extends MPLayer
 	@Override
 	public void update(int tick)
 	{
+		components.get(2).enabled = slider.getValue() > 0;
 		for (Component c : barracks.getGuiContainer().components)
 			c.state = 0; // to remove tooltips
 		

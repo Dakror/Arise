@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.layer.MPLayer;
+import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet03World;
@@ -43,7 +44,6 @@ public class World extends MPLayer
 	City gotoCity;
 	
 	Point dragStart, worldDragStart;
-	
 	
 	public World(Packet03World packet)
 	{
@@ -147,20 +147,23 @@ public class World extends MPLayer
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		if (dragStart == null)
+		if (e.getModifiers() == 4) // RMB
 		{
-			dragStart = e.getPoint();
-			worldDragStart = new Point(x, y);
+			if (dragStart == null)
+			{
+				dragStart = e.getPoint();
+				worldDragStart = new Point(x, y);
+			}
+			
+			int x = worldDragStart.x + e.getX() - dragStart.x;
+			int y = worldDragStart.y + e.getY() - dragStart.y;
+			x = x < -(width - Game.getWidth() + minX) ? -(width - Game.getWidth() + minX) : x;
+			y = y < -(height - Game.getHeight() + minY) ? -(height - Game.getHeight() + minY) : y;
+			this.x = x > -minX ? -minX : x;
+			this.y = y > -minY ? -minY : y;
+			
+			e.translatePoint(-x, -y);
 		}
-		
-		int x = worldDragStart.x + e.getX() - dragStart.x;
-		int y = worldDragStart.y + e.getY() - dragStart.y;
-		x = x < -(width - Game.getWidth() + minX) ? -(width - Game.getWidth() + minX) : x;
-		y = y < -(height - Game.getHeight() + minY) ? -(height - Game.getHeight() + minY) : y;
-		this.x = x > -minX ? -minX : x;
-		this.y = y > -minY ? -minY : y;
-		
-		e.translatePoint(-x, -y);
 		super.mouseDragged(e);
 	}
 	
@@ -187,6 +190,15 @@ public class World extends MPLayer
 	{
 		e.translatePoint(-x, -y);
 		super.mouseMoved(e);
+		for (Component c : components)
+		{
+			if (c instanceof City && c.state == 2)
+			{
+				WorldHUDLayer.hoveredCity = (City) c;
+				return;
+			}
+		}
+		WorldHUDLayer.hoveredCity = null;
 	}
 	
 	@Override

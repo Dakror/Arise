@@ -5,6 +5,9 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
@@ -118,5 +121,20 @@ public class Assistant
 		boolean isRound = (d * 10) % 10 == 0;
 		return (d < 1000 ? ((d > 99.9 || isRound || (!isRound && d > 9.99) ? (int) d * 10 / 10 : d + "") + "" + c[iteration]) : formatNumber(d, iteration + 1));
 		
+	}
+	
+	public static String readConsoleInput()
+	{
+		try
+		{
+			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+			System.out.print("> ");
+			return br.readLine();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

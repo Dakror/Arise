@@ -128,7 +128,6 @@ public class Assistant
 		try
 		{
 			BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-			System.out.print("> ");
 			return br.readLine();
 		}
 		catch (IOException e)

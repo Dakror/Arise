@@ -91,22 +91,25 @@ public class WorldHUDLayer extends MPLayer
 	{
 		super.mouseDragged(e);
 		showArrow = hoveredCity != null && hoveredCity.getUserId() == Game.userID && e.getModifiers() == 16; // LMB
-		drag = e.getPoint();
-		
-		boolean ontoAny = false;
-		for (Component c : Game.world.components)
+		if (showArrow)
 		{
-			if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
-			if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !c.equals(selectedCity))
+			drag = e.getPoint();
+			
+			boolean ontoAny = false;
+			for (Component c : Game.world.components)
 			{
-				drag = new Point(c.getX() + Game.world.x + City.SIZE / 2, c.getY() + Game.world.y + City.SIZE / 2);
-				draggedOnto = (City) c;
-				draggedOnto.state = 2;
-				ontoAny = true;
+				if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
+				if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !c.equals(selectedCity))
+				{
+					drag = new Point(c.getX() + Game.world.x + City.SIZE / 2, c.getY() + Game.world.y + City.SIZE / 2);
+					draggedOnto = (City) c;
+					draggedOnto.state = 2;
+					ontoAny = true;
+				}
 			}
+			
+			if (!ontoAny) draggedOnto = null;
 		}
-		
-		if (!ontoAny) draggedOnto = null;
 	}
 	
 	@Override

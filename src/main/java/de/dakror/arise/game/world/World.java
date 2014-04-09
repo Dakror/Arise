@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import org.json.JSONArray;
 
 import de.dakror.arise.game.Game;
-import de.dakror.arise.layer.CityLayer;
 import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.packet.Packet;
@@ -76,16 +75,11 @@ public class World extends MPLayer
 	@Override
 	public void draw(Graphics2D g)
 	{
-		if (Game.currentGame.getActiveLayer() instanceof CityLayer)
-		{
-			citiesDrawn = 0;
-			return;
-		}
-		
 		AffineTransform old = g.getTransform();
 		AffineTransform at = g.getTransform();
 		at.translate(x, y);
 		g.setTransform(at);
+		
 		for (int i = 0; i < Math.ceil(width / (float) CHUNKSIZE); i++)
 			for (int j = 0; j < Math.ceil(height / (float) CHUNKSIZE); j++)
 				if (new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(minX + i * CHUNKSIZE + x, minY + j * CHUNKSIZE + y, CHUNKSIZE, CHUNKSIZE))) g.drawImage(chunk, minX + i * CHUNKSIZE, minY + j * CHUNKSIZE, null);

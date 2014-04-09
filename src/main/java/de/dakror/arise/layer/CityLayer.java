@@ -21,7 +21,6 @@ import de.dakror.arise.game.world.City;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
 import de.dakror.arise.settings.Resources;
 import de.dakror.gamesetup.GameFrame;
-import de.dakror.gamesetup.layer.Layer;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.util.Helper;
 
@@ -126,6 +125,7 @@ public class CityLayer extends MPLayer
 	@Override
 	public void mousePressed(MouseEvent e)
 	{
+		if (CityHUDLayer.anyComponentClicked) return;
 		super.mousePressed(e);
 		
 		boolean anyBuildingActive = false;
@@ -138,18 +138,7 @@ public class CityLayer extends MPLayer
 			}
 		}
 		
-		CityHUDLayer chl = null;
-		
-		if (!anyBuildingActive)
-		{
-			for (Layer l : Game.currentGame.layers)
-				if (l instanceof CityHUDLayer)
-				{
-					chl = (CityHUDLayer) l;
-					break;
-				}
-			if (!chl.anyComponentClicked) CityHUDLayer.selectedBuilding = null;
-		}
+		if (!anyBuildingActive) CityHUDLayer.selectedBuilding = null;
 		
 		if (activeBuilding != null)
 		{
@@ -166,16 +155,6 @@ public class CityLayer extends MPLayer
 				{
 					e1.printStackTrace();
 				}
-				
-				// Building b = Building.getBuildingByTypeId(x / 32, y / 32, 0, activeBuilding.getTypeId());
-				// b.setStageChangeTimestamp(System.currentTimeMillis() / 1000);
-				// components.add(b);
-				// resources.add(Resource.BUILDINGS, 1);
-				// resources.add(Resources.mul(activeBuilding.getBuildingCosts(), -1));
-				// activeBuilding = null;
-				// chl.updateBuildingbar();
-				// sortComponents();
-				// saveData();
 			}
 			if (e.getButton() == MouseEvent.BUTTON3)
 			{
@@ -183,6 +162,13 @@ public class CityLayer extends MPLayer
 				Game.applet.setCursor(Cursor.getDefaultCursor());
 			}
 		}
+	}
+	
+	@Override
+	public void mouseReleased(MouseEvent e)
+	{
+		if (CityHUDLayer.anyComponentClicked) return;
+		super.mouseReleased(e);
 	}
 	
 	public void sortComponents()

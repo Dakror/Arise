@@ -85,6 +85,6 @@ public class User
 	@Override
 	public String toString()
 	{
-		return username + ", " + ip.getHostAddress() + ":" + port + ", UserID=" + id;
+		return username.trim() + ", " + ip.getHostAddress() + ":" + port + ", UserID=" + id;
 	}
 }

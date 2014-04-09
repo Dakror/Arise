@@ -51,7 +51,7 @@ public class CityHUDLayer extends MPLayer
 	public static BuildButton upgrade, deconstruct;
 	public static CityLayer cl;
 	
-	public boolean anyComponentClicked;
+	public static boolean anyComponentClicked;
 	
 	BufferedImage cache;
 	
@@ -415,7 +415,7 @@ public class CityHUDLayer extends MPLayer
 				{
 					if (packet.getNewStage() == -1)
 					{
-						if (selectedBuilding.equals(c)) selectedBuilding = null;
+						if (selectedBuilding != null && selectedBuilding.equals(c)) selectedBuilding = null;
 						cl.components.remove(c);
 					}
 					else

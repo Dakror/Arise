@@ -76,11 +76,12 @@ public class Server extends Thread
 			setPriority(MAX_PRIORITY);
 			out("Connecting to database");
 			DBManager.init();
-			updater = new ServerUpdater();
 			out("Fetching configuration");
 			Game.loadConfig();
+			updater = new ServerUpdater();
 			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
+			
 			start();
 		}
 		catch (BindException e)
@@ -510,8 +511,8 @@ public class Server extends Thread
 	
 	public static void err(Object... p)
 	{
-		String timestamp = new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date());
-		if (p.length == 1) System.err.println(timestamp + p[0]);
-		else System.err.println(timestamp + Arrays.toString(p));
+		String timestamp = new SimpleDateFormat("'['HH:mm:ss'] [ERROR]: '").format(new Date());
+		if (p.length == 1) System.err.print(timestamp + p[0]);
+		else System.err.print(timestamp + Arrays.toString(p));
 	}
 }

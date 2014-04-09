@@ -2,9 +2,6 @@ package de.dakror.arise.net;
 
 import java.net.InetAddress;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 /**
  * @author Dakror
@@ -28,22 +25,6 @@ public class User
 		this.port = port;
 		
 		interact();
-	}
-	
-	public User(JSONObject o)
-	{
-		try
-		{
-			if (o.has("i")) ip = InetAddress.getByName(o.getString("i"));
-			if (o.has("p")) port = o.getInt("p");
-			world = o.getInt("w");
-			id = o.getInt("u");
-			interact();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 	}
 	
 	public InetAddress getIP()
@@ -101,29 +82,9 @@ public class User
 		return username;
 	}
 	
-	public String serialize()
-	{
-		JSONObject o = new JSONObject();
-		
-		try
-		{
-			o.put("u", id);
-			o.put("i", ip.getHostAddress());
-			o.put("p", port);
-			o.put("w", world);
-			o.put("c", city);
-		}
-		catch (JSONException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return o.toString();
-	}
-	
 	@Override
 	public String toString()
 	{
-		return serialize().toString();
+		return username + ", " + ip.getHostAddress() + ":" + port + ", UserID=" + id;
 	}
 }

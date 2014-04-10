@@ -26,7 +26,7 @@ public class ServerUpdater extends Thread
 		{
 			while (running)
 			{
-				DBManager.updateBuildingTimers();
+				DBManager.updateTimers();
 				DBManager.updateBuildingStage();
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)

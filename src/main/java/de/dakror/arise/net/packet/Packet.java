@@ -29,6 +29,7 @@ public abstract class Packet
 		BUILDINGMETA(Packet16BuildingMeta.class),
 		CITYATTACK(Packet17CityAttack.class),
 		BATTLERESULT(Packet18BattleResult.class),
+		TRANSFER(Packet19Transfer.class),
 		
 		;
 		

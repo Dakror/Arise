@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -15,6 +16,7 @@ import de.dakror.arise.layer.dialog.AttackCityDialog;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet05Resources;
+import de.dakror.arise.settings.TransferType;
 import de.dakror.gamesetup.ui.Component;
 
 /**
@@ -28,13 +30,16 @@ public class WorldHUDLayer extends MPLayer
 	boolean showArrow;
 	Point drag;
 	City draggedOnto;
+	TransferType dragType;
 	
 	int hovId, draggedOntoId;
 	boolean waitingForResources;
 	
 	@Override
 	public void init()
-	{}
+	{
+		dragType = TransferType.TROOPS_ATTACK;
+	}
 	
 	@Override
 	public void draw(Graphics2D g)
@@ -60,19 +65,31 @@ public class WorldHUDLayer extends MPLayer
 				boolean aid = draggedOnto == null ? false : draggedOnto.getUserId() == Game.userID;
 				
 				g.setStroke(new BasicStroke(10, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
-				g.setColor(aid ? Color.decode("#0096ba") : Color.decode("#a80000"));
+				g.setColor(dragType.getColor());
 				g.drawLine(x1, y1, drag.x, drag.y);
-				g.setColor(c);
+				
 				g.setStroke(s);
 				
 				double angle = Math.atan2(drag.y - y1, drag.x - x1);
 				AffineTransform old = g.getTransform();
 				AffineTransform at = g.getTransform();
 				at.rotate(angle, drag.x, drag.y);
+				at.translate(drag.x - 10, drag.y - 23);
 				g.setTransform(at);
 				
-				g.drawImage(Game.getImage("system/arrow" + (aid ? "Blu" : "Red") + ".png"), drag.x - 10, drag.y - 23, 24, 48, null);
+				Polygon head = new Polygon();
+				head.addPoint(24, 24);
+				head.addPoint(0, 0);
+				head.addPoint(0, 48);
+				g.setStroke(new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
+				g.setColor(Color.black);
+				g.draw(head);
+				g.setStroke(s);
+				g.setColor(dragType.getColor());
+				g.fill(head);
 				
+				// g.drawImage(Game.getImage("system/arrow" + (aid ? "Blu" : "Red") + ".png"), drag.x - 10, drag.y - 23, 24, 48, null);
+				g.setColor(c);
 				g.setTransform(old);
 			}
 		}

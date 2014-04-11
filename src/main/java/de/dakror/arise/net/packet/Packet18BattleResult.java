@@ -22,13 +22,13 @@ public class Packet18BattleResult extends Packet
 	{
 		super(18);
 		String[] parts = readData(data).split(":");
-		won = Boolean.parseBoolean(parts[0]);
-		def = Boolean.parseBoolean(parts[1]);
-		dead = Integer.parseInt(parts[2]);
-		attCity = parts[3];
-		defCity = parts[4];
-		attCityOwner = parts[5];
-		defCityOwner = parts[6];
+		won = Boolean.parseBoolean(new String(parts[0]));
+		def = Boolean.parseBoolean(new String(parts[1]));
+		dead = Integer.parseInt(new String(parts[2]));
+		attCity = new String(parts[3]);
+		defCity = new String(parts[4]);
+		attCityOwner = new String(parts[5]);
+		defCityOwner = new String(parts[6]);
 	}
 	
 	@Override

@@ -19,9 +19,9 @@ public class Packet09BuildingStage extends Packet
 	{
 		super(9);
 		String[] parts = readData(data).split(":");
-		buildingId = Integer.parseInt(parts[0]);
-		newStage = Integer.parseInt(parts[1]);
-		timeLeft = Integer.parseInt(parts[2]);
+		buildingId = Integer.parseInt(new String(parts[0]));
+		newStage = Integer.parseInt(new String(parts[1]));
+		timeLeft = Integer.parseInt(new String(parts[2]));
 	}
 	
 	@Override

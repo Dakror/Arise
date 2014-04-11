@@ -92,6 +92,7 @@ public class Arise extends JApplet
 			{
 				System.setProperty("http.proxyHost", "192.168.0.7");
 				System.setProperty("http.proxyPort", "800");
+				if (args.length > 1 && args[1].equals("-local")) localServer = true;
 			}
 			
 			if (args.length > 0 && args[0].equals("-local")) localServer = true;

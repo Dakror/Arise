@@ -18,8 +18,8 @@ public class Packet13BuildingLevel extends Packet
 	{
 		super(13);
 		String[] parts = readData(data).split(":");
-		buildingId = Integer.parseInt(parts[0]);
-		newLevel = Integer.parseInt(parts[1]);
+		buildingId = Integer.parseInt(new String(parts[0]));
+		newLevel = Integer.parseInt(new String(parts[1]));
 	}
 	
 	public int getBuildingId()

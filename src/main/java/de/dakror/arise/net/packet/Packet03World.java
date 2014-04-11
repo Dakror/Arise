@@ -31,9 +31,9 @@ public class Packet03World extends Packet
 		{
 			String[] parts = s.trim().split(":");
 			
-			id = Integer.parseInt(parts[0]);
-			name = parts[1];
-			speed = Integer.parseInt(parts[2]);
+			id = Integer.parseInt(new String(parts[0]));
+			name = new String(parts[1]);
+			speed = Integer.parseInt(new String(parts[2]));
 		}
 	}
 	

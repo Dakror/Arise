@@ -1,6 +1,9 @@
 package de.dakror.arise.net;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -64,6 +67,8 @@ public class Server extends Thread
 	
 	DatagramSocket socket;
 	
+	public BufferedWriter logWriter;
+	
 	public Server(InetAddress ip)
 	{
 		currentServer = this;
@@ -80,6 +85,26 @@ public class Server extends Thread
 			Game.loadConfig();
 			updater = new ServerUpdater();
 			
+			if (AriseServer.isLogging())
+			{
+				logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
+				Runtime.getRuntime().addShutdownHook(new Thread()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							logWriter.close();
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				});
+			}
+			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			
 			start();
@@ -88,7 +113,7 @@ public class Server extends Thread
 		{
 			err("There is a server already running on this machine!");
 		}
-		catch (SocketException e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -160,7 +185,7 @@ public class Server extends Thread
 					if (loggedIn && worldExists)
 					{
 						String[] parts = s.split(":");
-						User u = new User(Integer.parseInt(parts[1].trim()), p.getWorldId(), parts[2], address, port);
+						User u = new User(Integer.parseInt(new String(parts[1]).trim()), p.getWorldId(), new String(parts[2]), address, port);
 						boolean alreadyLoggedIn = getUserForId(u.getId()) != null;
 						
 						if (alreadyLoggedIn)
@@ -170,8 +195,8 @@ public class Server extends Thread
 						}
 						else
 						{
-							out("User " + parts[2].trim() + " (#" + u.getId() + ")" + " logged in on world #" + p.getWorldId() + ".");
-							sendPacket(new Packet01Login(parts[2], u.getId(), p.getWorldId(), Response.LOGIN_OK), u);
+							out("User " + new String(parts[2]).trim() + " (#" + u.getId() + ")" + " logged in on world #" + p.getWorldId() + ".");
+							sendPacket(new Packet01Login(new String(parts[2]), u.getId(), p.getWorldId(), Response.LOGIN_OK), u);
 							clients.add(u);
 						}
 					}

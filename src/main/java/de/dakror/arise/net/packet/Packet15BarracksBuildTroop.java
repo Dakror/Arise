@@ -24,10 +24,10 @@ public class Packet15BarracksBuildTroop extends Packet
 		super(15);
 		
 		String[] parts = readData(data).split(":");
-		cityId = Integer.parseInt(parts[0]);
-		buildingId = Integer.parseInt(parts[1]);
-		type = TroopType.values()[Integer.parseInt(parts[2])];
-		amount = Integer.parseInt(parts[3]);
+		cityId = Integer.parseInt(new String(parts[0]));
+		buildingId = Integer.parseInt(new String(parts[1]));
+		type = TroopType.values()[Integer.parseInt(new String(parts[2]))];
+		amount = Integer.parseInt(new String(parts[3]));
 	}
 	
 	@Override

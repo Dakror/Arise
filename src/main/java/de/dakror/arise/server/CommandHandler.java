@@ -34,7 +34,7 @@ public class CommandHandler extends Thread
 		input = input.trim();
 		String[] parts = input.split(" ");
 		
-		switch (parts[0].toLowerCase())
+		switch (new String(parts[0]).toLowerCase())
 		{
 			case "stop":
 			{
@@ -54,7 +54,7 @@ public class CommandHandler extends Thread
 			}
 			case "world":
 			{
-				if (parts.length == 2 && parts[1].equals("-list"))
+				if (parts.length == 2 && new String(parts[1]).equals("-list"))
 				{
 					WorldData[] worlds = DBManager.listWorlds();
 					for (WorldData w : worlds)
@@ -62,14 +62,14 @@ public class CommandHandler extends Thread
 					
 					if (worlds.length == 0) CFG.p("There aren't any worlds yet. Create some with WORLD -add");
 				}
-				else if (parts.length == 5 && parts[1].equals("-add"))
+				else if (parts.length == 5 && new String(parts[1]).equals("-add"))
 				{
 					try
 					{
-						int id = Integer.parseInt(parts[2]);
-						int speed = Integer.parseInt(parts[4]);
+						int id = Integer.parseInt(new String(parts[2]));
+						int speed = Integer.parseInt(new String(parts[4]));
 						
-						if (DBManager.createWorld(id, parts[3], speed)) CFG.p("Successfully created world " + parts[3] + " (#" + id + ")");
+						if (DBManager.createWorld(id, new String(parts[3]), speed)) CFG.p("Successfully created world " + new String(parts[3]) + " (#" + id + ")");
 						else CFG.e("There's a world with this id already!");
 					}
 					catch (Exception e)
@@ -87,7 +87,7 @@ public class CommandHandler extends Thread
 				{
 					try
 					{
-						int id = Integer.parseInt(parts[1]);
+						int id = Integer.parseInt(new String(parts[1]));
 						User user = Server.currentServer.getUserForId(id);
 						if (user == null) CFG.e("There currently is no player connected with id=" + id);
 						else
@@ -121,9 +121,9 @@ public class CommandHandler extends Thread
 			{
 				if (parts.length == 2)
 				{
-					if (new File(parts[1]).isDirectory())
+					if (new File(new String(parts[1])).isDirectory())
 					{
-						AriseServer.properties.setProperty("logfile", new File(parts[1]).getPath().replace("\\", "/"));
+						AriseServer.properties.setProperty("logfile", new File(new String(parts[1])).getPath().replace("\\", "/"));
 						AriseServer.saveProperties();
 						CFG.p("Log directory set. Restart the server to make it take effect.");
 					}

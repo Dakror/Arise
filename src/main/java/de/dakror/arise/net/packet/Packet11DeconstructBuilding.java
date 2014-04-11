@@ -18,8 +18,8 @@ public class Packet11DeconstructBuilding extends Packet
 	{
 		super(11);
 		String[] parts = readData(data).split(":");
-		buildingId = Integer.parseInt(parts[0]);
-		cityId = Integer.parseInt(parts[1]);
+		buildingId = Integer.parseInt(new String(parts[0]));
+		cityId = Integer.parseInt(new String(parts[1]));
 	}
 	
 	public int getBuildingId()

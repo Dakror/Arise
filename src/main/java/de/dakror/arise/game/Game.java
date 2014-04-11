@@ -43,7 +43,6 @@ public class Game extends GameApplet
 	public static int userID;
 	public static int worldID = 1;
 	
-	
 	public static boolean gotoMenu;
 	
 	long usedMem;

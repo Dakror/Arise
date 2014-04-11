@@ -20,8 +20,8 @@ public class Packet16BuildingMeta extends Packet
 	{
 		super(16);
 		String[] parts = readData(data).split("\\[#\\]");
-		buildingId = Integer.parseInt(parts[0]);
-		if (parts.length > 1) meta = parts[1];
+		buildingId = Integer.parseInt(new String(parts[0]));
+		if (parts.length > 1) meta = new String(parts[1]);
 		else meta = "";
 	}
 	

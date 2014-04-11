@@ -1,5 +1,8 @@
 package de.dakror.arise.server;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet02Disconnect;
@@ -37,8 +40,9 @@ public class ServerUpdater extends Thread
 					
 					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();
+					Server.currentServer.logWriter.append(new SimpleDateFormat("dd.MM.yy HH:mm").format(new Date()) + ";" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024f / 1024f) + ";" + Server.currentServer.clients.size() + "\r\n");
+					System.gc();
 				}
-				System.gc();
 				Thread.sleep(1000);
 			}
 		}

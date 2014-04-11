@@ -1,6 +1,9 @@
 package de.dakror.arise.net;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -64,6 +67,8 @@ public class Server extends Thread
 	
 	DatagramSocket socket;
 	
+	public BufferedWriter logWriter;
+	
 	public Server(InetAddress ip)
 	{
 		currentServer = this;
@@ -80,6 +85,8 @@ public class Server extends Thread
 			Game.loadConfig();
 			updater = new ServerUpdater();
 			
+			if (AriseServer.isLogging()) logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
+			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			
 			start();
@@ -88,7 +95,7 @@ public class Server extends Thread
 		{
 			err("There is a server already running on this machine!");
 		}
-		catch (SocketException e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
@@ -493,6 +500,7 @@ public class Server extends Thread
 		try
 		{
 			sendPacketToAllClients(new Packet02Disconnect(0, Packet02Disconnect.Cause.SERVER_CLOSED));
+			logWriter.close();
 		}
 		catch (Exception e)
 		{

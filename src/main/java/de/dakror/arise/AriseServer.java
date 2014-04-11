@@ -50,8 +50,8 @@ public class AriseServer
 		
 		if (isLogging())
 		{
-			File logFile = new File(new File(properties.getProperty("logfile")), "AriseServer " + new SimpleDateFormat("dd.MM.yy, HH-mm-ss").format(new Date()) + ".log");
-			System.setErr(new ErrorOutputStream(System.err, logFile));
+			File errors = new File(new File(properties.getProperty("logfile")), "AriseServer " + new SimpleDateFormat("dd.MM.yy, HH-mm-ss").format(new Date()) + ".log");
+			System.setErr(new ErrorOutputStream(System.err, errors));
 		}
 		
 		server = new Server(args.length > 1 ? InetAddress.getByName(args[1]) : InetAddress.getLocalHost());

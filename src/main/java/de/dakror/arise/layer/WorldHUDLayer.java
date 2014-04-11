@@ -62,7 +62,6 @@ public class WorldHUDLayer extends MPLayer
 				int x1 = hoveredCity.getX() + Game.world.x + City.SIZE / 2, y1 = hoveredCity.getY() + Game.world.y + City.SIZE / 2;
 				
 				g.drawLine(x1, y1, drag.x, drag.y);
-				boolean aid = draggedOnto == null ? false : draggedOnto.getUserId() == Game.userID;
 				
 				g.setStroke(new BasicStroke(10, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
 				g.setColor(dragType.getColor());

@@ -40,7 +40,7 @@ public class ServerUpdater extends Thread
 					
 					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();
-					Server.currentServer.logWriter.append(new SimpleDateFormat("dd.MM.yy HH:mm").format(new Date()) + ";" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024f / 1024f) + ";" + Server.currentServer.clients.size() + "\r\n");
+					Server.currentServer.logWriter.append(new SimpleDateFormat("MM-dd-yy HH:mm").format(new Date()) + ";" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024f / 1024f) + ";" + Server.currentServer.clients.size() + "\r\n");
 					System.gc();
 				}
 				Thread.sleep(1000);

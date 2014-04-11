@@ -85,7 +85,25 @@ public class Server extends Thread
 			Game.loadConfig();
 			updater = new ServerUpdater();
 			
-			if (AriseServer.isLogging()) logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
+			if (AriseServer.isLogging())
+			{
+				logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
+				Runtime.getRuntime().addShutdownHook(new Thread()
+				{
+					@Override
+					public void run()
+					{
+						try
+						{
+							logWriter.close();
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				});
+			}
 			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			
@@ -500,7 +518,6 @@ public class Server extends Thread
 		try
 		{
 			sendPacketToAllClients(new Packet02Disconnect(0, Packet02Disconnect.Cause.SERVER_CLOSED));
-			logWriter.close();
 		}
 		catch (Exception e)
 		{

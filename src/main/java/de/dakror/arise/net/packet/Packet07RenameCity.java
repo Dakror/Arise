@@ -16,8 +16,8 @@ public class Packet07RenameCity extends Packet
 	{
 		super(7);
 		String[] parts = readData(data).split(":");
-		cityId = Integer.parseInt(parts[0]);
-		newName = parts[1];
+		cityId = Integer.parseInt(new String(parts[0]));
+		newName = new String(parts[1]);
 	}
 	
 	@Override

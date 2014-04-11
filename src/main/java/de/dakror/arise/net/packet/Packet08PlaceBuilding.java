@@ -21,10 +21,10 @@ public class Packet08PlaceBuilding extends Packet
 		super(8);
 		String[] parts = readData(data).split(":");
 		
-		cityId = Integer.parseInt(parts[0]);
-		type = Integer.parseInt(parts[1]);
-		x = Integer.parseInt(parts[2]);
-		y = Integer.parseInt(parts[3]);
+		cityId = Integer.parseInt(new String(parts[0]));
+		type = Integer.parseInt(new String(parts[1]));
+		x = Integer.parseInt(new String(parts[2]));
+		y = Integer.parseInt(new String(parts[3]));
 	}
 	
 	@Override

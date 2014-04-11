@@ -36,15 +36,15 @@ public class Packet06Building extends Packet
 		if (s.contains(":"))
 		{
 			String[] parts = s.split(":");
-			cityId = Integer.parseInt(parts[0]);
-			id = Integer.parseInt(parts[1]);
-			type = Integer.parseInt(parts[2]);
-			level = Integer.parseInt(parts[3]);
-			x = Integer.parseInt(parts[4]);
-			y = Integer.parseInt(parts[5]);
-			stage = Integer.parseInt(parts[6]);
-			timeleft = Integer.parseInt(parts[7]);
-			if (parts.length == 9) meta = parts[8];
+			cityId = Integer.parseInt(new String(parts[0]));
+			id = Integer.parseInt(new String(parts[1]));
+			type = Integer.parseInt(new String(parts[2]));
+			level = Integer.parseInt(new String(parts[3]));
+			x = Integer.parseInt(new String(parts[4]));
+			y = Integer.parseInt(new String(parts[5]));
+			stage = Integer.parseInt(new String(parts[6]));
+			timeleft = Integer.parseInt(new String(parts[7]));
+			if (parts.length == 9) meta = new String(parts[8]);
 		}
 		else cityId = Integer.parseInt(s.trim());
 	}

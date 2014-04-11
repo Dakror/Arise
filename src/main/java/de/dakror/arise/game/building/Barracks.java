@@ -67,7 +67,7 @@ public class Barracks extends Building
 			String[] parts = metadata.split(":");
 			if (parts.length != 2) return;
 			
-			if (DBManager.addCityTroops(cityId, TroopType.values()[Integer.parseInt(parts[0])], Integer.parseInt(parts[1]), true))
+			if (DBManager.addCityTroops(cityId, TroopType.values()[Integer.parseInt(new String(parts[0]))], Integer.parseInt(new String(parts[1])), true))
 			{
 				try
 				{

@@ -18,8 +18,8 @@ public class Packet14CityLevel extends Packet
 	{
 		super(14);
 		String[] parts = readData(data).split(":");
-		cityId = Integer.parseInt(parts[0]);
-		newLevel = Integer.parseInt(parts[1]);
+		cityId = Integer.parseInt(new String(parts[0]));
+		newLevel = Integer.parseInt(new String(parts[1]));
 	}
 	
 	public int getCityId()

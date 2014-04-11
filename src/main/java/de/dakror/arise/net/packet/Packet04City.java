@@ -34,14 +34,14 @@ public class Packet04City extends Packet
 		if (s.contains(":"))
 		{
 			String[] parts = s.split(":");
-			cities = Integer.parseInt(parts[0].trim());
-			cityId = Integer.parseInt(parts[1].trim());
-			x = Integer.parseInt(parts[2].trim());
-			y = Integer.parseInt(parts[3].trim());
-			userId = Integer.parseInt(parts[4].trim());
-			level = Integer.parseInt(parts[5].trim());
-			cityName = parts[6];
-			username = parts[7];
+			cities = Integer.parseInt(new String(parts[0]).trim());
+			cityId = Integer.parseInt(new String(parts[1]).trim());
+			x = Integer.parseInt(new String(parts[2]).trim());
+			y = Integer.parseInt(new String(parts[3]).trim());
+			userId = Integer.parseInt(new String(parts[4]).trim());
+			level = Integer.parseInt(new String(parts[5]).trim());
+			cityName = new String(parts[6]);
+			username = new String(parts[7]);
 		}
 		else worldId = Integer.parseInt(s.trim());
 	}

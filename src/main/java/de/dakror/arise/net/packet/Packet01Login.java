@@ -50,17 +50,17 @@ public class Packet01Login extends Packet
 		super(1);
 		
 		String[] parts = readData(data).split(":");
-		username = parts[0];
+		username = new String(new String(parts[0]));
 		if (parts.length == 4)
 		{
-			userId = Integer.parseInt(parts[1]);
-			reponse = Response.values()[Integer.parseInt(parts[2])];
-			worldId = Integer.parseInt(parts[3]);
+			userId = Integer.parseInt(new String(parts[1]));
+			reponse = Response.values()[Integer.parseInt(new String(parts[2]))];
+			worldId = Integer.parseInt(new String(parts[3]));
 		}
 		else if (parts.length == 3)
 		{
-			pwdMd5 = parts[1];
-			worldId = Integer.parseInt(parts[2]);
+			pwdMd5 = new String(new String(parts[1]));
+			worldId = Integer.parseInt(new String(parts[2]));
 		}
 		else throw new IllegalArgumentException("To few parameters for packet!");
 	}

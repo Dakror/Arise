@@ -15,13 +15,12 @@ public class Packet10Attribute extends Packet
 		this.value = value.toString();
 	}
 	
-	
 	public Packet10Attribute(byte[] data)
 	{
 		super(10);
 		String[] parts = readData(data).split(":");
-		key = parts[0];
-		value = parts[1];
+		key = new String(parts[0]);
+		value = new String(parts[1]);
 	}
 	
 	public String getKey()

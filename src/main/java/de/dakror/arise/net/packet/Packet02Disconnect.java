@@ -41,8 +41,8 @@ public class Packet02Disconnect extends Packet
 	{
 		super(2);
 		String[] parts = readData(data).split(":");
-		id = Integer.parseInt(parts[0]);
-		cause = Cause.values()[Integer.parseInt(parts[1].trim())];
+		id = Integer.parseInt(new String(parts[0]));
+		cause = Cause.values()[Integer.parseInt(new String(parts[1].trim()))];
 	}
 	
 	@Override

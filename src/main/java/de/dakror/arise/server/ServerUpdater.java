@@ -30,7 +30,7 @@ public class ServerUpdater extends Thread
 			while (running)
 			{
 				DBManager.updateTimers();
-				DBManager.updateBuildingStage(); // ram issue
+				// DBManager.updateBuildingStage(); // ram issue
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)
 				{
@@ -40,7 +40,7 @@ public class ServerUpdater extends Thread
 					
 					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();
-					Server.currentServer.logWriter.append(new SimpleDateFormat("MM-dd-yy HH:mm").format(new Date()) + ";" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024f / 1024f) + ";" + Server.currentServer.clients.size() + "\r\n");
+					Server.currentServer.logWriter.append(new SimpleDateFormat("MM-dd-yy HH:mm").format(new Date()) + ";" + (Runtime.getRuntime().totalMemory() / 1024f / 1024f) + ";" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024f / 1024f) + ";" + Server.currentServer.clients.size() + "\r\n");
 					Server.currentServer.logWriter.flush();
 					System.gc();
 				}

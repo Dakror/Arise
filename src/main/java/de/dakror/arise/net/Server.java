@@ -83,8 +83,6 @@ public class Server extends Thread
 			DBManager.init();
 			out("Fetching configuration");
 			Game.loadConfig();
-			updater = new ServerUpdater();
-			
 			if (AriseServer.isLogging())
 			{
 				logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
@@ -104,6 +102,7 @@ public class Server extends Thread
 					}
 				});
 			}
+			updater = new ServerUpdater();
 			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			

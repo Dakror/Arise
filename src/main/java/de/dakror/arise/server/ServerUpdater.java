@@ -30,7 +30,7 @@ public class ServerUpdater extends Thread
 			while (running)
 			{
 				DBManager.updateTimers();
-				DBManager.updateBuildingStage();
+				DBManager.updateBuildingStage(); // ram issue
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)
 				{

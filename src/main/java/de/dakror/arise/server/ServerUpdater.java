@@ -19,6 +19,8 @@ public class ServerUpdater extends Thread
 	public ServerUpdater()
 	{
 		running = true;
+		setName("ServerUpdater Thread");
+		setContextClassLoader(null);
 		start();
 	}
 	
@@ -29,7 +31,7 @@ public class ServerUpdater extends Thread
 		{
 			while (running)
 			{
-				DBManager.updateTimers();
+				// DBManager.updateTimers();
 				// DBManager.updateBuildingStage(); // ram issue
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)

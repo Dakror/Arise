@@ -610,6 +610,8 @@ public class DBManager
 			Statement s = connection.createStatement();
 			s.executeUpdate(sql);
 			s.close();
+			
+			s = null;
 		}
 		catch (SQLException e)
 		{

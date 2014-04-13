@@ -77,7 +77,7 @@ public class Server extends Thread
 			dir = new File(CFG.DIR, "Server");
 			dir.mkdir();
 			socket = new DatagramSocket(new InetSocketAddress(ip, Server.PORT));
-			setName("Server-Thread");
+			setName("Server Thread");
 			setPriority(MAX_PRIORITY);
 			out("Connecting to database");
 			DBManager.init();

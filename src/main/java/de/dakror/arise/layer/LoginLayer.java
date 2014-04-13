@@ -256,7 +256,7 @@ public class LoginLayer extends MPLayer
 		{
 			Game.world.onReceivePacket(p);
 			
-			if (Game.world.components.size() >= ((Packet04City) p).getCities())
+			if (Game.world.getCityCount() >= ((Packet04City) p).getCities())
 			{
 				startGame = true;
 				Game.currentGame.removeLoadingLayer();

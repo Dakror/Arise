@@ -61,33 +61,40 @@ public class WorldHUDLayer extends MPLayer
 				
 				int x1 = hoveredCity.getX() + Game.world.x + City.SIZE / 2, y1 = hoveredCity.getY() + Game.world.y + City.SIZE / 2;
 				
-				g.drawLine(x1, y1, drag.x, drag.y);
-				
-				g.setStroke(new BasicStroke(10, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
-				g.setColor(dragType.getColor());
-				g.drawLine(x1, y1, drag.x, drag.y);
+				// g.drawLine(x1, y1, drag.x, drag.y);
+				//
+				// g.setStroke(new BasicStroke(10, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
+				// g.setColor(dragType.getColor());
+				// g.drawLine(x1, y1, drag.x, drag.y);
 				
 				g.setStroke(s);
 				
 				double angle = Math.atan2(drag.y - y1, drag.x - x1);
+				int length = (int) (Math.sqrt(Math.pow((drag.x - x1), 2) + Math.pow((drag.y - y1), 2))) - 24;
 				AffineTransform old = g.getTransform();
 				AffineTransform at = g.getTransform();
-				at.rotate(angle, drag.x, drag.y);
-				at.translate(drag.x - 10, drag.y - 23);
-				g.setTransform(at);
+				at.rotate(angle, x1, y1);
+				at.translate(x1, y1);
 				
-				Polygon head = new Polygon();
-				head.addPoint(24, 24);
-				head.addPoint(0, 0);
-				head.addPoint(0, 48);
+				g.setTransform(at);
+				Polygon arrow = new Polygon();
+				if (length >= 0)
+				{
+					arrow.addPoint(0, -6);
+					arrow.addPoint(0, 6);
+					arrow.addPoint(length, 6);
+				}
+				arrow.addPoint(length, 18);
+				arrow.addPoint(length + 24, 0);
+				arrow.addPoint(length, -18);
+				if (length >= 0) arrow.addPoint(length, -6);
 				g.setStroke(new BasicStroke(2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
 				g.setColor(Color.black);
-				g.draw(head);
+				g.draw(arrow);
 				g.setStroke(s);
 				g.setColor(dragType.getColor());
-				g.fill(head);
+				g.fill(arrow);
 				
-				// g.drawImage(Game.getImage("system/arrow" + (aid ? "Blu" : "Red") + ".png"), drag.x - 10, drag.y - 23, 24, 48, null);
 				g.setColor(c);
 				g.setTransform(old);
 			}
@@ -114,13 +121,16 @@ public class WorldHUDLayer extends MPLayer
 			boolean ontoAny = false;
 			for (Component c : Game.world.components)
 			{
-				if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
-				if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !c.equals(selectedCity))
+				if (c instanceof City)
 				{
-					drag = new Point(c.getX() + Game.world.x + City.SIZE / 2, c.getY() + Game.world.y + City.SIZE / 2);
-					draggedOnto = (City) c;
-					draggedOnto.state = 2;
-					ontoAny = true;
+					if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
+					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !c.equals(selectedCity))
+					{
+						drag = new Point(c.getX() + Game.world.x + City.SIZE / 2, c.getY() + Game.world.y + City.SIZE / 2);
+						draggedOnto = (City) c;
+						draggedOnto.state = 2;
+						ontoAny = true;
+					}
 				}
 			}
 			

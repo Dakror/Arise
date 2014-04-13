@@ -17,7 +17,7 @@ public enum TransferType
 	
 	private TransferType(String c)
 	{
-		this.color = Color.decode(c);
+		color = Color.decode(c);
 	}
 	
 	public Color getColor()

@@ -33,7 +33,7 @@ public class World extends MPLayer
 	String name;
 	
 	int speed, id, width, height, tick, minX, minY;
-	public int x, y, cities, citiesDrawn;
+	public int x, y;
 	public boolean anyCityActive;
 	
 	long lastCheck;
@@ -84,8 +84,6 @@ public class World extends MPLayer
 			for (int j = 0; j < Math.ceil(height / (float) CHUNKSIZE); j++)
 				if (new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(minX + i * CHUNKSIZE + x, minY + j * CHUNKSIZE + y, CHUNKSIZE, CHUNKSIZE))) g.drawImage(chunk, minX + i * CHUNKSIZE, minY + j * CHUNKSIZE, null);
 		
-		int citiesDrawn = 0;
-		
 		Component hovered = null;
 		
 		for (Component c : components)
@@ -93,12 +91,10 @@ public class World extends MPLayer
 			if (!new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(c.getX() + x, c.getY() + y, c.getWidth(), c.getHeight()))) continue;
 			c.draw(g);
 			if (c.state == 2) hovered = c;
-			citiesDrawn++;
 		}
 		
 		if (hovered != null) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
 		
-		this.citiesDrawn = citiesDrawn;
 		
 		g.setTransform(old);
 	}
@@ -223,6 +219,23 @@ public class World extends MPLayer
 	public int getHeight()
 	{
 		return height;
+	}
+	
+	public int getCityCount()
+	{
+		int i = 0;
+		for (Component c : components)
+			if (c instanceof City) i++;
+		
+		return i;
+	}
+	
+	public City getCityForId(int id)
+	{
+		for (Component c : components)
+			if (c instanceof City && ((City) c).getId() == id) return (City) c;
+		
+		return null;
 	}
 	
 	@Override

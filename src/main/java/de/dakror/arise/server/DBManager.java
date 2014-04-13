@@ -199,8 +199,9 @@ public class DBManager
 		{
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT COUNT() as CITIES FROM CITIES WHERE WORLD_ID = " + worldId);
-			rs2 = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId);
 			int cities = rs.getInt(1);
+			
+			rs2 = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId);
 			
 			while (rs2.next())
 			{
@@ -430,9 +431,10 @@ public class DBManager
 		try
 		{
 			st = connection.createStatement();
-			rs = st.executeQuery("SELECT ARMY, WOOD, STONE, GOLD FROM CITIES WHERE ID = " + cityId);
 			rs2 = st.executeQuery("SELECT COUNT() FROM BUILDINGS WHERE CITY_ID = " + cityId);
 			int buildings = rs2.getInt(1);
+			
+			rs = st.executeQuery("SELECT ARMY, WOOD, STONE, GOLD FROM CITIES WHERE ID = " + cityId);
 			
 			String a = rs.getString(1);
 			if (a.trim().length() > 0)

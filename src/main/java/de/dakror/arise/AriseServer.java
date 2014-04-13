@@ -50,6 +50,7 @@ public class AriseServer
 		
 		if (isLogging())
 		{
+			cleanupLogs();
 			File errors = new File(new File(properties.getProperty("logfile")), "AriseServer " + new SimpleDateFormat("dd.MM.yy, HH-mm-ss").format(new Date()) + ".log");
 			System.setErr(new ErrorOutputStream(System.err, errors));
 		}
@@ -73,6 +74,14 @@ public class AriseServer
 	public static boolean isLogging()
 	{
 		return properties.containsKey("logfile") && properties.getProperty("logfile").trim().length() > 0;
+	}
+	
+	public static void cleanupLogs()
+	{
+		for (File f : new File(properties.getProperty("logfile")).listFiles())
+		{
+			if (f.getName().contains("AriseServer") && f.length() == 0) f.delete();
+		}
 	}
 	
 	public static void createTrafficFrame() throws IOException

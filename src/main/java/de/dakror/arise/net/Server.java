@@ -77,14 +77,12 @@ public class Server extends Thread
 			dir = new File(CFG.DIR, "Server");
 			dir.mkdir();
 			socket = new DatagramSocket(new InetSocketAddress(ip, Server.PORT));
-			setName("Server-Thread");
+			setName("Server Thread");
 			setPriority(MAX_PRIORITY);
 			out("Connecting to database");
 			DBManager.init();
 			out("Fetching configuration");
 			Game.loadConfig();
-			updater = new ServerUpdater();
-			
 			if (AriseServer.isLogging())
 			{
 				logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
@@ -104,6 +102,7 @@ public class Server extends Thread
 					}
 				});
 			}
+			updater = new ServerUpdater();
 			
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			

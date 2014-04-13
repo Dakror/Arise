@@ -31,14 +31,14 @@ public class ServerUpdater extends Thread
 		{
 			while (running)
 			{
-				// DBManager.updateTimers();
-				// DBManager.updateBuildingStage(); // ram issue
+				DBManager.updateTimers();
+				DBManager.updateBuildingStage();
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)
 				{
-					// DBManager.updateCityResources(); // ram issue
-					// DBManager.dispatchCityResources();
-					// kickInactiveUsers();
+					DBManager.updateCityResources();
+					DBManager.dispatchCityResources();
+					kickInactiveUsers();
 					
 					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();

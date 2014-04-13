@@ -20,7 +20,6 @@ public class ServerUpdater extends Thread
 	{
 		running = true;
 		setName("ServerUpdater Thread");
-		setContextClassLoader(null);
 		start();
 	}
 	

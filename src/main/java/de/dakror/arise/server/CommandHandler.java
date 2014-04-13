@@ -19,7 +19,6 @@ public class CommandHandler extends Thread
 	public CommandHandler()
 	{
 		setName("CommandHandler Thread");
-		setContextClassLoader(null);
 		start();
 	}
 	

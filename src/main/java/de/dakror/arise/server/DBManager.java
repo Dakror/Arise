@@ -64,8 +64,13 @@ public class DBManager
 	public static WorldData[] listWorlds()
 	{
 		ArrayList<WorldData> worlds = new ArrayList<>();
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM WORLDS"))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM WORLDS");
+			
 			while (rs.next())
 				worlds.add(new WorldData(rs.getInt(1), rs.getString(2), rs.getInt(3)));
 		}
@@ -73,13 +78,29 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return worlds.toArray(new WorldData[] {});
 	}
 	
 	public static boolean createWorld(int id, String name, int speed)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM WORLDS WHERE ID = " + id))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM WORLDS WHERE ID = " + id);
 			if (rs.next()) return false;
 			
 			execUpdate("INSERT INTO WORLDS VALUES(" + id + ", '" + name + "', " + speed + ")");
@@ -89,14 +110,30 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	public static Packet03World getWorldForId(int worldId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM WORLDS WHERE ID = " + worldId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM WORLDS WHERE ID = " + worldId);
 			if (!rs.next()) return new Packet03World(-1);
 			
 			return new Packet03World(rs.getInt(1), rs.getString(2), rs.getInt(3));
@@ -104,14 +141,30 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return new Packet03World(-1);
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return new Packet03World(-1);
 	}
 	
 	public static int getWorldSpeedForCity(int cityId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT SPEED FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT SPEED FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
 			if (!rs.next()) return 0;
 			
 			return rs.getInt(1);
@@ -119,16 +172,34 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return 0;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return 0;
 	}
 	
 	public static ArrayList<Packet04City> getCities(int worldId)
 	{
 		ArrayList<Packet04City> packets = new ArrayList<>();
 		JSONObject users = getUsersFromWebsite();
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT COUNT() as CITIES FROM CITIES WHERE WORLD_ID = " + worldId); ResultSet rs2 = connection.createStatement().executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId);)
+		Statement st = null;
+		ResultSet rs = null;
+		ResultSet rs2 = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT COUNT() as CITIES FROM CITIES WHERE WORLD_ID = " + worldId);
+			rs2 = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId);
 			int cities = rs.getInt(1);
 			
 			while (rs2.next())
@@ -141,14 +212,31 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				rs2.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		
 		return packets;
 	}
 	
 	public static String getCityNameForId(int cityId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT NAME FROM CITIES WHERE ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT NAME FROM CITIES WHERE ID = " + cityId);
 			if (!rs.next()) return null;
 			return rs.getString(1);
 		}
@@ -156,13 +244,29 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 	
 	public static String getUsernameForCityId(int cityId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT USER_ID FROM CITIES WHERE ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT USER_ID FROM CITIES WHERE ID = " + cityId);
 			if (!rs.next()) return null;
 			return getUsersFromWebsite().getString("" + rs.getInt(1));
 		}
@@ -170,13 +274,29 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 	
 	public static int getUserIdForCityId(int cityId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT USER_ID FROM CITIES WHERE ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT USER_ID FROM CITIES WHERE ID = " + cityId);
 			if (!rs.next()) return 0;
 			return rs.getInt(1);
 		}
@@ -184,48 +304,108 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return 0;
 	}
 	
 	public static boolean cityExists(int x, int y, int worldId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE WORLD_ID = " + worldId + " AND X = " + x + " AND Y = " + y))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM CITIES WHERE WORLD_ID = " + worldId + " AND X = " + x + " AND Y = " + y);
 			return rs.next();
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	public static boolean isCityFromUser(int cityId, User user)
 	{
 		if (user == null) return false;
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId + " AND USER_ID = " + user.getId()))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId + " AND USER_ID = " + user.getId());
 			return rs.next();
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	public static Packet04City getSpawnCity(int worldId, int userId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId + " AND USER_ID = " + userId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId + " AND USER_ID = " + userId);
 			JSONObject users = getUsersFromWebsite();
 			return new Packet04City(1, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), users.getString("" + rs.getInt(4)));
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return null;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
 	
 	public static JSONObject getUsersFromWebsite()
@@ -237,15 +417,21 @@ public class DBManager
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 	
 	public static Resources getCityResources(int cityId)
 	{
 		Resources res = new Resources();
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY, WOOD, STONE, GOLD FROM CITIES WHERE ID = " + cityId); ResultSet rs2 = connection.createStatement().executeQuery("SELECT COUNT() FROM BUILDINGS WHERE CITY_ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		ResultSet rs2 = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT ARMY, WOOD, STONE, GOLD FROM CITIES WHERE ID = " + cityId);
+			rs2 = st.executeQuery("SELECT COUNT() FROM BUILDINGS WHERE CITY_ID = " + cityId);
 			int buildings = rs2.getInt(1);
 			
 			String a = rs.getString(1);
@@ -267,14 +453,31 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				rs2.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return res;
 	}
 	
 	public static ArrayList<Packet06Building> getCityBuildings(int cityId)
 	{
 		ArrayList<Packet06Building> p = new ArrayList<>();
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT, META FROM BUILDINGS WHERE CITY_ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT, META FROM BUILDINGS WHERE CITY_ID = " + cityId);
 			while (rs.next())
 				p.add(new Packet06Building(cityId, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getString(8)));
 		}
@@ -282,18 +485,46 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return p;
 	}
 	
 	public static Packet06Building getCityBuilding(int cityId, int buildingId)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT, META FROM BUILDINGS WHERE CITY_ID = " + cityId + " AND ID = " + buildingId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT, META FROM BUILDINGS WHERE CITY_ID = " + cityId + " AND ID = " + buildingId);
 			if (rs.next()) return new Packet06Building(cityId, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getString(8));
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
@@ -317,8 +548,12 @@ public class DBManager
 	
 	public static boolean renameCity(int cityId, String newName, User user)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM CITIES WHERE ID = " + cityId);
 			if (!rs.next()) return false;
 			
 			execUpdate("UPDATE CITIES SET NAME = '" + newName + "' WHERE ID = " + cityId);
@@ -327,14 +562,32 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	public static boolean spawnPlayer(int worldId, User user)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId); ResultSet rs2 = connection.createStatement().executeQuery("SELECT COUNT() as COUNT FROM CITIES WHERE WORLD_ID = " + worldId))
+		Statement st = null;
+		ResultSet rs = null;
+		ResultSet rs2 = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
+			rs2 = st.executeQuery("SELECT COUNT() as COUNT FROM CITIES WHERE WORLD_ID = " + worldId);
 			if (rs.next()) return false;
 			
 			int cities = rs2.getInt(1);
@@ -351,8 +604,21 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				rs2.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	public static boolean add(int cityId, Resources res)
@@ -362,8 +628,12 @@ public class DBManager
 	
 	public static boolean buy(int cityId, Resources res)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT ((WOOD - " + res.getF(Resource.WOOD) + " >= 0) + (STONE - " + res.getF(Resource.STONE) + " >= 0) + (GOLD - " + res.getF(Resource.GOLD) + " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1"))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT ((WOOD - " + res.getF(Resource.WOOD) + " >= 0) + (STONE - " + res.getF(Resource.STONE) + " >= 0) + (GOLD - " + res.getF(Resource.GOLD) + " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1");
 			if (!rs.next()) return false;
 			
 			execUpdate("UPDATE CITIES SET WOOD = WOOD - " + res.getF(Resource.WOOD) + ", STONE = STONE - " + res.getF(Resource.STONE) + ", GOLD = GOLD - " + res.getF(Resource.GOLD) + " WHERE ID = " + cityId);
@@ -372,14 +642,30 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return false;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 	
 	public static int placeBuilding(int cityId, int type, int x, int y)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT last_insert_rowid()"))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT last_insert_rowid()");
 			Building b = Building.getBuildingByTypeId(x, y, 0, type);
 			
 			if (buy(cityId, b.getBuildingCosts()))
@@ -392,14 +678,30 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return 0;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return 0;
 	}
 	
 	public static int deconstructBuilding(int cityId, int id)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id);
 			if (!rs.next()) return -1;
 			if (rs.getInt("STAGE") != 1) return -1;
 			
@@ -410,14 +712,30 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return -1;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return -1;
 	}
 	
 	public static int upgradeBuilding(int cityId, int id)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT LEVEL, TYPE, STAGE FROM BUILDINGS WHERE ID = " + id);
 			if (!rs.next()) return -1;
 			if (rs.getInt(3) != 1) return -1;
 			
@@ -433,14 +751,30 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
-			return -1;
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return -1;
 	}
 	
 	public static boolean addCityTroops(int cityId, TroopType type, int amount, boolean timesTroops)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId);
 			if (!rs.next()) return false;
 			
 			String[] armyParts = rs.getString("ARMY").split(":");
@@ -459,13 +793,29 @@ public class DBManager
 		{
 			e.printStackTrace();
 		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
 		return false;
 	}
 	
 	public static int barracksBuildTroops(Packet15BarracksBuildTroop p)
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM BUILDINGS WHERE (META = '' OR META IS NULL) AND TIMELEFT = 0 AND STAGE = 1 AND ID = " + p.getBuildingId()))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM BUILDINGS WHERE (META = '' OR META IS NULL) AND TIMELEFT = 0 AND STAGE = 1 AND ID = " + p.getBuildingId());
 			int speed = getWorldSpeedForCity(p.getCityId());
 			if (speed == 0) return -1;
 			
@@ -483,6 +833,18 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		return -1;
 	}
@@ -502,8 +864,12 @@ public class DBManager
 	
 	public static void updateBuildingStage()
 	{
-		try (ResultSet rs = connection.createStatement().executeQuery("SELECT BUILDINGS.ID, BUILDINGS.TYPE, BUILDINGS.STAGE, BUILDINGS.LEVEL, BUILDINGS.META, CITIES.ID as CITY_ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META != '')"))
+		Statement st = null;
+		ResultSet rs = null;
+		try
 		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT BUILDINGS.ID, BUILDINGS.TYPE, BUILDINGS.STAGE, BUILDINGS.LEVEL, BUILDINGS.META, CITIES.ID as CITY_ID, CITIES.USER_ID FROM BUILDINGS, CITIES WHERE BUILDINGS.CITY_ID = CITIES.ID AND BUILDINGS.TIMELEFT = 0 AND (BUILDINGS.STAGE != 1 OR BUILDINGS.META != '')");
 			while (rs.next())
 			{
 				User owner = Server.currentServer.getUserForId(rs.getInt("USER_ID"));
@@ -574,6 +940,18 @@ public class DBManager
 		catch (SQLException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -34,9 +34,9 @@ public class ServerUpdater extends Thread
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)
 				{
-					DBManager.updateCityResources();
-					DBManager.dispatchCityResources();
-					kickInactiveUsers();
+					// DBManager.updateCityResources(); // ram issue
+					// DBManager.dispatchCityResources();
+					// kickInactiveUsers();
 					
 					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();

@@ -24,6 +24,7 @@ import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
+import de.dakror.arise.server.data.WorldData;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TroopType;

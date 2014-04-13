@@ -17,9 +17,6 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.AriseServer;
-import de.dakror.arise.battlesim.Army;
-import de.dakror.arise.battlesim.BattleResult;
-import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -41,11 +38,9 @@ import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet16BuildingMeta;
 import de.dakror.arise.net.packet.Packet17CityAttack;
-import de.dakror.arise.net.packet.Packet18BattleResult;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
-import de.dakror.arise.settings.TroopType;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -419,40 +414,40 @@ public class Server extends Thread
 				
 				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user) && p.getAttArmy().getLength() > 0)
 				{
-					new Thread()
-					{
-						@Override
-						public void run()
-						{
-							Army att = new Army(true, p.getAttArmy());
-							Army def = new Army(false, DBManager.getCityResources(p.getDefCityId()));
-							BattleResult br = BattleSimulator.simulateBattle(att, def);
-							
-							out(br.toString(p.getAttCityId(), p.getDefCityId()));
-							
-							if (br.isAttackers()) DBManager.resetCityArmy(p.getDefCityId());
-							else
-							{
-								for (TroopType t : TroopType.values())
-									DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
-							}
-							
-							for (TroopType t : TroopType.values())
-								DBManager.addCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, -br.getDead().get(t.getType()), false); // winner city
-							
-							try
-							{
-								String ac = DBManager.getCityNameForId(p.getAttCityId()), dc = DBManager.getCityNameForId(p.getDefCityId()), aco = user.getUsername(), dco = DBManager.getUsernameForCityId(p.getDefCityId());
-								sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), user); // to attacker
-								User defOwner = getUserForId(DBManager.getUserIdForCityId(p.getDefCityId()));
-								if (defOwner != null) sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), defOwner); // to defender
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-						}
-					}.start();
+					// new Thread()
+					// {
+					// @Override
+					// public void run()
+					// {
+					// Army att = new Army(true, p.getAttArmy());
+					// Army def = new Army(false, DBManager.getCityResources(p.getDefCityId()));
+					// BattleResult br = BattleSimulator.simulateBattle(att, def);
+					//
+					// out(br.toString(p.getAttCityId(), p.getDefCityId()));
+					//
+					// if (br.isAttackers()) DBManager.resetCityArmy(p.getDefCityId());
+					// else
+					// {
+					// for (TroopType t : TroopType.values())
+					// DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
+					// }
+					//
+					// for (TroopType t : TroopType.values())
+					// DBManager.addCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, -br.getDead().get(t.getType()), false); // winner city
+					//
+					// try
+					// {
+					// String ac = DBManager.getCityNameForId(p.getAttCityId()), dc = DBManager.getCityNameForId(p.getDefCityId()), aco = user.getUsername(), dco = DBManager.getUsernameForCityId(p.getDefCityId());
+					// sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), user); // to attacker
+					// User defOwner = getUserForId(DBManager.getUserIdForCityId(p.getDefCityId()));
+					// if (defOwner != null) sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), defOwner); // to defender
+					// }
+					// catch (Exception e)
+					// {
+					// e.printStackTrace();
+					// }
+					// }
+					// }.start();
 				}
 				
 				break;

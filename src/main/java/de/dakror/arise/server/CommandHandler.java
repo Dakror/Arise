@@ -8,6 +8,7 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
+import de.dakror.arise.server.data.WorldData;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.util.Assistant;
 

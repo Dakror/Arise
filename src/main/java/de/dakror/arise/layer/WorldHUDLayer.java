@@ -114,6 +114,9 @@ public class WorldHUDLayer extends MPLayer
 	public void mouseDragged(MouseEvent e)
 	{
 		super.mouseDragged(e);
+		
+		selectedCity = null;
+		
 		showArrow = hoveredCity != null && hoveredCity.getUserId() == Game.userID && e.getModifiers() == 16; // LMB
 		if (showArrow)
 		{
@@ -125,7 +128,7 @@ public class WorldHUDLayer extends MPLayer
 				if (c instanceof City)
 				{
 					if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
-					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !c.equals(selectedCity))
+					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity))
 					{
 						boolean canTarget = true;
 						

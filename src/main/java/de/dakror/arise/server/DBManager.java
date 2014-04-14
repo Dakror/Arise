@@ -900,6 +900,43 @@ public class DBManager
 		return addTransfer(p.getAttCityId(), p.getDefCityId(), TransferType.TROOPS_ATTACK, p.getAttArmy(), duration);
 	}
 	
+	public static ArrayList<Packet19Transfer> getTransfers(User user)
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		ArrayList<Packet19Transfer> list = new ArrayList<>();
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT, (CITIES.ID = TRANSFERS.CITY_TO_ID) AS ISTARGET FROM TRANSFERS, CITIES WHERE (CITIES.ID = TRANSFERS.CITY_FROM_ID OR CITIES.ID = TRANSFERS.CITY_TO_ID) AND CITIES.USER_ID = " + user.getId() + " AND CITIES.WORLD_ID = " + user.getWorldId());
+			while (rs.next())
+			{
+				TransferType type = TransferType.values()[rs.getInt("TYPE")];
+				if (!type.isVisibleForTarget() && rs.getInt("ISTARGET") == 1) continue;
+				
+				list.add(new Packet19Transfer(rs.getInt("ID"), rs.getInt("CITY_FROM_ID"), rs.getInt("CITY_TO_ID"), type, new Resources(rs.getString("VALUE")), rs.getInt("TIMELEFT")));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
+	}
+	
 	// -- tick methods -- //
 	
 	public static void updateTimers()

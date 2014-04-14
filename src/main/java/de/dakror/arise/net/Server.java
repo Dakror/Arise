@@ -39,6 +39,7 @@ import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet16BuildingMeta;
 import de.dakror.arise.net.packet.Packet17CityAttack;
+import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
@@ -340,6 +341,8 @@ public class Server extends Thread
 									sendPacket(packet, user);
 								
 								// -- transfers -- //
+								for (Packet19Transfer packet : DBManager.getTransfers(user))
+									sendPacket(packet, user);
 								
 								sendPacket(new Packet10Attribute(Key.loading_complete), user);
 							}

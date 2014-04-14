@@ -108,7 +108,7 @@ public class World extends MPLayer
 	public void update(int tick)
 	{
 		this.tick = tick;
-		
+		if (tick % 120 == 0) sortComponents();
 		updateComponents(tick);
 	}
 	
@@ -149,8 +149,16 @@ public class World extends MPLayer
 			public int compare(Component o1, Component o2)
 			{
 				if (o1.getClass().equals(o2.getClass())) return 0;
-				if (o1 instanceof Transfer) return -1;
-				return 1;
+				if (o1 instanceof Transfer)
+				{
+					if (o2.equals(((Transfer) o1).getCityFrom())) return -1;
+					else return 1;
+				}
+				
+				CFG.p("hiho");
+				
+				if (o1.equals(((Transfer) o2).getCityFrom())) return -1;
+				else return -1;
 			}
 		});
 		

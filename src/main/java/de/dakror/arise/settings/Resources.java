@@ -1,6 +1,5 @@
 package de.dakror.arise.settings;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,9 +7,6 @@ import java.util.HashMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 
 /**
@@ -121,9 +117,13 @@ public class Resources
 			set(serializableResources[i], bb.getFloat());
 	}
 	
-	public Resources(String b64String)
+	public Resources(String string)
 	{
-		this(decode(b64String));
+		this();
+		
+		String[] parts = string.split(":");
+		for (int i = 0; i < serializableResources.length; i++)
+			set(serializableResources[i], Integer.parseInt(parts[i]));
 	}
 	
 	public int get(Resource t)
@@ -224,7 +224,11 @@ public class Resources
 	
 	public String getStringData()
 	{
-		return new BASE64Encoder().encode(getBinaryData());
+		String string = "";
+		for (Resource r : serializableResources)
+			string += get(r) + ":";
+		
+		return new String(string.substring(0, string.length() - 1));
 	}
 	
 	public static Resources mul(Resources res, int f)
@@ -255,19 +259,5 @@ public class Resources
 		}
 		
 		return smallestDivision;
-	}
-	
-	private static byte[] decode(String s)
-	{
-		try
-		{
-			return new BASE64Decoder().decodeBuffer(s);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		
-		return null;
 	}
 }

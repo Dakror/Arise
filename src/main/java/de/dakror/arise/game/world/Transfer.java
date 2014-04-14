@@ -11,10 +11,14 @@ import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
+import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.TransferType;
+import de.dakror.arise.util.Assistant;
+import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.ClickableComponent;
+import de.dakror.gamesetup.util.Helper;
 
 /**
  * @author Dakror
@@ -104,6 +108,22 @@ public class Transfer extends ClickableComponent
 	public City getCityTo()
 	{
 		return to;
+	}
+	
+	@Override
+	public void drawTooltip(int x, int y, Graphics2D g)
+	{
+		String tooltip = type.getDescription() + ": " + Assistant.formatSeconds(timeleft);
+		int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30;
+		int height = 64;
+		int x1 = x;
+		int y1 = y - 80;
+		
+		if (x1 + width > Game.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
+		if (y1 + height > Game.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
+		
+		Helper.drawShadow(x1, y1, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30, height, g);
+		Helper.drawString(tooltip, x1 + 15, y1 + 40, g, 30);
 	}
 	
 	@Override

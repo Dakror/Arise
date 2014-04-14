@@ -84,9 +84,8 @@ public class Assistant
 		String hours = (s / 3600) % 60 + "";
 		hours = hours.length() == 1 ? "0" + hours : hours;
 		String days = s / (3600 * 24) + "";
-		days = days.length() == 1 ? "0" + days : days;
 		
-		return (days.equals("00") ? "" : days + "d ") + (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
+		return (days.equals("0") ? "" : days + "Tag" + (days.equals("1") ? "e" : "") + " ") + (hours.equals("00") ? "" : hours + ":") + minutes + ":" + seconds;
 	}
 	
 	public static InetAddress getBroadcastAddress()

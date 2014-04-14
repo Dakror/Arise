@@ -58,25 +58,30 @@ public class City extends ClickableComponent
 	@Override
 	public void draw(Graphics2D g)
 	{
-		if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this)))
+		try
 		{
+			if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this)))
+			{
+				Color c = g.getColor();
+				g.setColor(Color.black);
+				g.drawRect(x, y, width, height);
+				g.setColor(c);
+			}
+			
+			Helper.setRenderingHints(g, false);
+			Helper.drawImage2(Game.getImage("world/TileB.png"), x + 16, y + 16, 64, 64, levels[level][0], levels[level][1], levels[level][2], levels[level][3], g);
+			Helper.setRenderingHints(g, true);
+			
+			int y1 = y + height - 15;
+			y1 = y1 < Game.world.getHeight() ? y1 : Game.world.getHeight() - 25;
 			Color c = g.getColor();
-			g.setColor(Color.black);
-			g.drawRect(x, y, width, height);
+			g.setColor(userId == Game.userID ? Color.decode("#007eff") : Color.white);
+			Helper.drawHorizontallyCenteredString(name, x, width, y1, g, 20);
+			Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
 			g.setColor(c);
 		}
-		
-		Helper.setRenderingHints(g, false);
-		Helper.drawImage2(Game.getImage("world/TileB.png"), x + 16, y + 16, 64, 64, levels[level][0], levels[level][1], levels[level][2], levels[level][3], g);
-		Helper.setRenderingHints(g, true);
-		
-		int y1 = y + height - 15;
-		y1 = y1 < Game.world.getHeight() ? y1 : Game.world.getHeight() - 25;
-		Color c = g.getColor();
-		g.setColor(userId == Game.userID ? Color.decode("#007eff") : Color.white);
-		Helper.drawHorizontallyCenteredString(name, x, width, y1, g, 20);
-		Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
-		g.setColor(c);
+		catch (NullPointerException e)
+		{}
 	}
 	
 	@Override

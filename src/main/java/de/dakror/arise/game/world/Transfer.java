@@ -10,10 +10,12 @@ import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
+import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.settings.Resources;
+import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TransferType;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.GameFrame;
@@ -97,7 +99,7 @@ public class Transfer extends ClickableComponent
 	@Override
 	public void update(int tick)
 	{
-		// if (timeleft > 0) timeleft--;
+		if (timeleft > 0 && tick % Game.currentGame.getUPS() == 0) timeleft--;
 	}
 	
 	public City getCityFrom()
@@ -113,17 +115,27 @@ public class Transfer extends ClickableComponent
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		String tooltip = type.getDescription() + ": " + Assistant.formatSeconds(timeleft);
-		int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30;
-		int height = 64;
+		String tooltip = type.getDescription();
+		String timer = "Dauer: " + Assistant.formatSeconds(timeleft);
+		int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 35;
+		int w2 = g.getFontMetrics(g.getFont().deriveFont(27f)).stringWidth(timer) + 35;
+		width = w2 > width ? w2 : width;
+		
+		ArrayList<Resource> filled = value.getFilled();
+		int height = 90 + filled.size() * 30;
 		int x1 = x;
 		int y1 = y - 80;
 		
 		if (x1 + width > Game.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
 		if (y1 + height > Game.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
 		
-		Helper.drawShadow(x1, y1, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30, height, g);
+		Helper.drawShadow(x1, y1, width, height, g);
 		Helper.drawString(tooltip, x1 + 15, y1 + 40, g, 30);
+		Helper.drawString(timer, x1 + 20, y1 + 70, g, 27);
+		for (int i = 0; i < filled.size(); i++)
+		{
+			Assistant.drawResource(value, filled.get(i), x1 + 20, y1 + 80 + i * 40, 25, 30, g);
+		}
 	}
 	
 	@Override

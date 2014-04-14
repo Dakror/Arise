@@ -113,6 +113,11 @@ public class Transfer extends ClickableComponent
 		return to;
 	}
 	
+	public int getId()
+	{
+		return id;
+	}
+	
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{

@@ -20,6 +20,12 @@ public class Packet19Transfer extends Packet
 	 */
 	Resources value;
 	
+	public Packet19Transfer(int id)
+	{
+		super(19);
+		this.id = id;
+	}
+	
 	public Packet19Transfer(int id, int cityFrom, int cityTo, TransferType type, Resources value, int timeleft)
 	{
 		super(19);
@@ -34,6 +40,15 @@ public class Packet19Transfer extends Packet
 	public Packet19Transfer(byte[] data)
 	{
 		super(19);
+		
+		String str = readData(data);
+		
+		if (str.startsWith("::"))
+		{
+			id = Integer.parseInt(new String(str.trim().replace("::", "")));
+			return;
+		}
+		
 		ByteBuffer bb = ByteBuffer.wrap(data);
 		bb.get(); // skip id
 		
@@ -50,6 +65,8 @@ public class Packet19Transfer extends Packet
 	@Override
 	protected byte[] getPacketData()
 	{
+		if (value == null) return ("::" + id).getBytes();
+		
 		byte[] val = value.getBinaryData();
 		
 		ByteBuffer bb = ByteBuffer.allocate(val.length + 24);
@@ -62,6 +79,11 @@ public class Packet19Transfer extends Packet
 		bb.put(val);
 		
 		return bb.array();
+	}
+	
+	public boolean isMarkedForRemoval()
+	{
+		return value == null;
 	}
 	
 	public int getId()

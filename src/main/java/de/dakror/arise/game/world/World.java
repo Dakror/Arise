@@ -316,11 +316,23 @@ public class World extends MPLayer
 			}
 			else CFG.e("Received invalid packet05resources: current gotoCity.id=" + gotoCity.getId() + ", packet.id=" + ((Packet05Resources) p).getCityId());
 		}
+		
 		if (p.getType() == PacketTypes.TRANSFER)
 		{
 			Packet19Transfer packet = (Packet19Transfer) p;
-			components.add(new Transfer(getCityForId(packet.getCityFrom()), getCityForId(packet.getCityTo()), packet));
-			sortComponents();
+			
+			if (packet.isMarkedForRemoval())
+			{
+				for (Component c : components)
+					if (c instanceof Transfer && ((Transfer) c).getId() == packet.getId()) components.remove(c);
+				
+				sortComponents();
+			}
+			else
+			{
+				components.add(new Transfer(getCityForId(packet.getCityFrom()), getCityForId(packet.getCityTo()), packet));
+				sortComponents();
+			}
 		}
 	}
 }

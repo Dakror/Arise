@@ -7,6 +7,7 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet18BattleResult;
 import de.dakror.arise.server.data.TransferData;
+import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.TroopType;
 
 /**
@@ -24,6 +25,7 @@ public class TransferExecutor
 				break;
 			}
 			default:
+				CFG.p("Couldn't execute action for TransferType " + data.type.name());
 				break;
 		}
 	}
@@ -55,7 +57,7 @@ public class TransferExecutor
 				{
 					String ac = DBManager.getCityNameForId(transferData.cityFromId);
 					String dc = DBManager.getCityNameForId(transferData.cityToId);
-					User attOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(transferData.cityToId));
+					User attOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(transferData.cityFromId));
 					User defOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(transferData.cityToId));
 					
 					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), defOwner.getUsername()), attOwner); // to attacker

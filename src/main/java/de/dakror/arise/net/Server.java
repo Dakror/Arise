@@ -434,6 +434,7 @@ public class Server extends Thread
 					try
 					{
 						sendPacket(DBManager.transferAttackTroops(p), user);
+						sendPacket(new Packet05Resources(p.getAttCityId(), DBManager.getCityResources(p.getAttCityId())), user);
 					}
 					catch (Exception e)
 					{
@@ -465,6 +466,12 @@ public class Server extends Thread
 			else if (exception.getId() == u.getId()) continue;
 			sendPacket(p, u);
 		}
+	}
+	
+	public void sendPacketToAllClientsOnWorld(Packet p, int worldId) throws Exception
+	{
+		for (User u : clients)
+			if (u.getWorldId() == worldId) sendPacket(p, u);
 	}
 	
 	public void sendPacket(Packet p, User u) throws Exception
@@ -525,4 +532,5 @@ public class Server extends Thread
 		if (p.length == 1) System.err.print(timestamp + p[0]);
 		else System.err.print(timestamp + Arrays.toString(p));
 	}
+	
 }

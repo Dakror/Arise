@@ -27,6 +27,7 @@ import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet17CityAttack;
 import de.dakror.arise.net.packet.Packet19Transfer;
+import de.dakror.arise.server.data.TransferData;
 import de.dakror.arise.server.data.WorldData;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -661,12 +662,11 @@ public class DBManager
 		return false;
 	}
 	
+	// -- buildings --//
 	public static void resetCityArmy(int cityId)
 	{
 		execUpdate("UPDATE CITIES SET ARMY = '0:0:0:0:0:0:0' WHERE ID = " + cityId);
 	}
-	
-	// -- buildings --//
 	
 	public static boolean addCityTroops(int cityId, TroopType type, int amount, boolean timesTroops)
 	{
@@ -897,6 +897,9 @@ public class DBManager
 	{
 		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCity(p.getAttCityId());
 		
+		for (TroopType t : TroopType.values())
+			DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
+		
 		return addTransfer(p.getAttCityId(), p.getDefCityId(), TransferType.TROOPS_ATTACK, p.getAttArmy(), duration);
 	}
 	
@@ -1021,6 +1024,44 @@ public class DBManager
 			}
 		}
 		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void updateTransfers()
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT FROM TRANSFERS WHERE TRANSFERS.TIMELEFT = 0");
+			while (rs.next())
+			{
+				TransferExecutor.execute(new TransferData(rs.getInt("ID"), rs.getInt("TIMELEFT"), rs.getInt("CITY_FROM_ID"), rs.getInt("CITY_TO_ID"), new Resources(rs.getString("VALUE")), TransferType.values()[rs.getInt("TYPE")]));
+				
+				User from = Server.currentServer.getUserForId(getUserIdForCityId(rs.getInt("CITY_FROM_ID")));
+				User to = Server.currentServer.getUserForId(getUserIdForCityId(rs.getInt("CITY_TO_ID")));
+				if (from != null) Server.currentServer.sendPacket(new Packet19Transfer(rs.getInt("ID")), from);
+				if (to != null) Server.currentServer.sendPacket(new Packet19Transfer(rs.getInt("ID")), to);
+			}
+			
+			execUpdate("DELETE FROM TRANSFERS WHERE TIMELEFT = 0");
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}

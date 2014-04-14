@@ -13,6 +13,7 @@ import java.awt.geom.Area;
 import java.util.ArrayList;
 
 import de.dakror.arise.game.Game;
+import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
@@ -115,6 +116,8 @@ public class Transfer extends ClickableComponent
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
+		if (!(Game.currentGame.getActiveLayer() instanceof WorldHUDLayer)) return;
+		
 		String tooltip = type.getDescription();
 		String timer = "Dauer: " + Assistant.formatSeconds(timeleft);
 		int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 35;
@@ -134,7 +137,7 @@ public class Transfer extends ClickableComponent
 		Helper.drawString(timer, x1 + 20, y1 + 70, g, 27);
 		for (int i = 0; i < filled.size(); i++)
 		{
-			Assistant.drawResource(value, filled.get(i), x1 + 20, y1 + 80 + i * 40, 25, 30, g);
+			Assistant.drawResource(value, filled.get(i), x1 + 20, y1 + 80 + i * 30, 25, 30, g);
 		}
 	}
 	

@@ -895,7 +895,7 @@ public class DBManager
 	
 	public static Packet19Transfer transferAttackTroops(Packet17CityAttack p)
 	{
-		int duration = new Army(true, p.getAttArmy()).getMarchDuration();
+		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCity(p.getAttCityId());
 		
 		return addTransfer(p.getAttCityId(), p.getDefCityId(), TransferType.TROOPS_ATTACK, p.getAttArmy(), duration);
 	}

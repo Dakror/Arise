@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
@@ -39,7 +40,7 @@ public class Transfer extends ClickableComponent
 		timeleft = data.getTimeleft();
 		
 		angle = Math.atan2(to.y - from.y, to.x - from.x);
-		distance = (int) Math.sqrt(Math.pow((to.x + City.SIZE / 2) - (from.x + City.SIZE / 2), 2) + Math.pow((to.y + City.SIZE / 2) - (from.y + City.SIZE / 2), 2));
+		distance = (int) (Math.sqrt(Math.pow((to.x + City.SIZE / 2) - (from.x + City.SIZE / 2), 2) + Math.pow((to.y + City.SIZE / 2) - (from.y + City.SIZE / 2), 2)) - City.SIZE / 4 * Math.sqrt(2));
 		Polygon polygon = new Polygon();
 		
 		if (distance >= 0)
@@ -59,6 +60,7 @@ public class Transfer extends ClickableComponent
 		at.translate(x1, y1);
 		arrow = new Area(polygon);
 		arrow.transform(at);
+		arrow.subtract(new Area(new Rectangle(x1 - 32, y1 - 32, 64, 64)));
 	}
 	
 	@Override

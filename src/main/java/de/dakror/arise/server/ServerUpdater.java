@@ -32,6 +32,7 @@ public class ServerUpdater extends Thread
 			{
 				DBManager.updateTimers();
 				DBManager.updateBuildingStage();
+				DBManager.updateTransfers();
 				
 				if (System.currentTimeMillis() - lastCheck >= 60000)
 				{
@@ -39,7 +40,6 @@ public class ServerUpdater extends Thread
 					DBManager.dispatchCityResources();
 					kickInactiveUsers();
 					
-					// DakrorBin.checkForUpdates();
 					lastCheck = System.currentTimeMillis();
 					Server.currentServer.logWriter.append(new SimpleDateFormat("MM-dd-yy HH:mm").format(new Date()) + ";" + (Runtime.getRuntime().totalMemory() / 1024f / 1024f) + ";" + ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024f / 1024f) + ";" + Server.currentServer.clients.size() + "\r\n");
 					Server.currentServer.logWriter.flush();
@@ -56,10 +56,10 @@ public class ServerUpdater extends Thread
 	
 	public void kickInactiveUsers() throws Exception
 	{
-		long hourInMs = 1000 * 60 * 60;
+		long s = 1000 * 40;
 		for (User u : Server.currentServer.clients)
 		{
-			if (System.currentTimeMillis() - u.getLastInteraction() > hourInMs)
+			if (System.currentTimeMillis() - u.getLastInteraction() > s)
 			{
 				Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.KICK), u);
 				Server.out("Kicked user: #" + u.getId() + " (" + Cause.KICK + ")");

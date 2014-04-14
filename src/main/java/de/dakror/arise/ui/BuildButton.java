@@ -115,91 +115,97 @@ public class BuildButton extends IconButton
 	@Override
 	public void drawTooltip(int x, int y, Graphics2D g)
 	{
-		if (level < maxLevel - 1 || maxLevel == 0)
+		try
 		{
-			Color c = g.getColor();
-			ArrayList<Resource> resources = buildingCosts.getFilled();
-			ArrayList<Resource> products = this.products.getFilled();
-			
-			if (tooltipCache == null)
+			if (level < maxLevel - 1 || maxLevel == 0)
 			{
-				int hW = g.getFontMetrics(g.getFont().deriveFont(40f)).stringWidth(tooltip) + 40;
-				int width = hW > 250 ? hW : 250;
-				tooltipRows = Helper.getLineCount(desc, width - 40, g, 25);
-				tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30) + (minCityLevel > 0 ? 35 : 0) - (buildingCosts.size() == 0 ? 30 : 0);
+				Color c = g.getColor();
+				ArrayList<Resource> resources = buildingCosts.getFilled();
+				ArrayList<Resource> products = this.products.getFilled();
 				
-				tooltipCache = new BufferedImage(width, tooltipHeight, BufferedImage.TYPE_INT_ARGB);
-				
-				Graphics2D g2 = (Graphics2D) tooltipCache.getGraphics();
-				Helper.setRenderingHints(g2, true);
-				g2.setFont(g.getFont());
-				
-				Helper.drawShadow(0, 0, width, tooltipHeight, g2);
-				g2.setColor(Color.white);
-				Helper.drawString(tooltip, 20, 50, g2, 40);
-				Helper.drawStringWrapped(desc, 30, 80, width - 40, g2, 25);
-				if (resources.size() > 0) Helper.drawString("Kosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
-				if (products.size() > 0) Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
-				for (int i = 0; i < products.size(); i++)
+				if (tooltipCache == null)
 				{
-					Resource r = products.get(i);
-					float sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
-					float f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
+					int hW = g.getFontMetrics(g.getFont().deriveFont(40f)).stringWidth(tooltip) + 40;
+					int width = hW > 250 ? hW : 250;
+					tooltipRows = Helper.getLineCount(desc, width - 40, g, 25);
+					tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30) + (minCityLevel > 0 ? 35 : 0) - (buildingCosts.size() == 0 ? 30 : 0);
 					
-					String scStr = sc > 0 ? (upgradeMode ? " -> " + (sc + f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(sc + f, 0) + (r.isUsable() ? "/h" : "") : " (+" + Assistant.formatNumber(sc, 0) + "/lvl)") : "";
-					String str = (f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(f, 0) + (r.isUsable() ? "/h" : "") + scStr;
+					tooltipCache = new BufferedImage(width, tooltipHeight, BufferedImage.TYPE_INT_ARGB);
 					
-					Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30 + (minCityLevel > 0 ? 60 : 0), 25, new Point(r.getIconX(), r.getIconY()), str, 30, g2);
+					Graphics2D g2 = (Graphics2D) tooltipCache.getGraphics();
+					Helper.setRenderingHints(g2, true);
+					g2.setFont(g.getFont());
+					
+					Helper.drawShadow(0, 0, width, tooltipHeight, g2);
+					g2.setColor(Color.white);
+					Helper.drawString(tooltip, 20, 50, g2, 40);
+					Helper.drawStringWrapped(desc, 30, 80, width - 40, g2, 25);
+					if (resources.size() > 0) Helper.drawString("Kosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
+					if (products.size() > 0) Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
+					for (int i = 0; i < products.size(); i++)
+					{
+						Resource r = products.get(i);
+						float sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
+						float f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
+						
+						String scStr = sc > 0 ? (upgradeMode ? " -> " + (sc + f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(sc + f, 0) + (r.isUsable() ? "/h" : "") : " (+" + Assistant.formatNumber(sc, 0) + "/lvl)") : "";
+						String str = (f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(f, 0) + (r.isUsable() ? "/h" : "") + scStr;
+						
+						Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30 + (minCityLevel > 0 ? 60 : 0), 25, new Point(r.getIconX(), r.getIconY()), str, 30, g2);
+					}
 				}
-			}
-			int width = tooltipCache.getWidth();
-			int height = tooltipCache.getHeight();
-			int x1 = x;
-			int y1 = y;
-			
-			if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
-			if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
-			
-			g.drawImage(tooltipCache, x1, y1, null);
-			
-			for (int i = 0; i < resources.size(); i++)
-			{
-				Resource r = resources.get(i);
-				if (r.isUsable())
+				
+				int width = tooltipCache.getWidth();
+				int height = tooltipCache.getHeight();
+				int x1 = x;
+				int y1 = y;
+				
+				if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
+				if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
+				
+				g.drawImage(tooltipCache, x1, y1, null);
+				
+				for (int i = 0; i < resources.size(); i++)
 				{
-					boolean en = CityLayer.resources.get(r) >= buildingCosts.get(r);
-					g.setColor(en ? Color.white : Color.red);
+					Resource r = resources.get(i);
+					if (r.isUsable())
+					{
+						boolean en = CityLayer.resources.get(r) >= buildingCosts.get(r);
+						g.setColor(en ? Color.white : Color.red);
+					}
+					else
+					{
+						boolean en = CityLayer.resources.get(r) < buildingCosts.get(r);
+						g.setColor(en ? Color.decode("#18acf1") : Color.red);
+					}
+					Assistant.drawResource(buildingCosts, r, x1 + 30, y1 + 100 + tooltipRows * 25 + i * 30, 25, 30, g);
 				}
-				else
+				
+				if (minCityLevel > 0)
 				{
-					boolean en = CityLayer.resources.get(r) < buildingCosts.get(r);
-					g.setColor(en ? Color.decode("#18acf1") : Color.red);
+					g.setColor(CityHUDLayer.cl.city.getLevel() >= minCityLevel ? Color.white : Color.red);
+					Helper.drawString("min. Stadtlevel: " + (minCityLevel + 1), x1 + 25, y1 + 80 + tooltipRows * 25 + 40 + resources.size() * 30 + products.size() * 30, g, 25);
 				}
-				Assistant.drawResource(buildingCosts, r, x1 + 30, y1 + 100 + tooltipRows * 25 + i * 30, 25, 30, g);
+				
+				g.setColor(c);
 			}
-			
-			if (minCityLevel > 0)
+			else
 			{
-				g.setColor(CityHUDLayer.cl.city.getLevel() >= minCityLevel ? Color.white : Color.red);
-				Helper.drawString("min. Stadtlevel: " + (minCityLevel + 1), x1 + 25, y1 + 80 + tooltipRows * 25 + 40 + resources.size() * 30 + products.size() * 30, g, 25);
+				String tooltip = "Bereits maximiert.";
+				int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30;
+				int height = 64;
+				int x1 = x;
+				int y1 = y;
+				
+				if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
+				if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
+				
+				Helper.drawShadow(x1, y1, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30, height, g);
+				Helper.drawString(tooltip, x1 + 15, y1 + 40, g, 30);
 			}
-			
-			g.setColor(c);
 		}
-		else
-		{
-			String tooltip = "Bereits maximiert.";
-			int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30;
-			int height = 64;
-			int x1 = x;
-			int y1 = y;
-			
-			if (x1 + width > GameFrame.getWidth()) x1 -= (x1 + width) - GameFrame.getWidth();
-			if (y1 + height > GameFrame.getHeight()) y1 -= (y1 + height) - GameFrame.getHeight();
-			
-			Helper.drawShadow(x1, y1, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30, height, g);
-			Helper.drawString(tooltip, x1 + 15, y1 + 40, g, 30);
-		}
+		catch (Exception e)
+		{}
 	}
 	
 	public void checkIfCanEffort()

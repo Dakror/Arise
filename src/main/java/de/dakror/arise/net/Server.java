@@ -17,9 +17,6 @@ import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import de.dakror.arise.AriseServer;
-import de.dakror.arise.battlesim.Army;
-import de.dakror.arise.battlesim.BattleResult;
-import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -36,16 +33,16 @@ import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet08PlaceBuilding;
 import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet10Attribute.Key;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet16BuildingMeta;
 import de.dakror.arise.net.packet.Packet17CityAttack;
-import de.dakror.arise.net.packet.Packet18BattleResult;
+import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.server.DBManager;
 import de.dakror.arise.server.ServerUpdater;
 import de.dakror.arise.settings.CFG;
-import de.dakror.arise.settings.TroopType;
 import de.dakror.gamesetup.util.Helper;
 
 /**
@@ -254,20 +251,6 @@ public class Server extends Thread
 					e.printStackTrace();
 				}
 			}
-			case CITY:
-			{
-				Packet04City p = new Packet04City(data);
-				try
-				{
-					for (Packet04City packet : DBManager.getCities(p.getWorldId()))
-						sendPacket(packet, user);
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-				break;
-			}
 			case RESOURCES:
 			{
 				try
@@ -342,7 +325,36 @@ public class Server extends Thread
 				Packet10Attribute p = new Packet10Attribute(data);
 				if (user != null)
 				{
-					if (p.getKey().equals("city")) user.setCity(Integer.parseInt(p.getValue()));
+					switch (p.getKey())
+					{
+						case city:
+						{
+							user.setCity(Integer.parseInt(p.getValue()));
+							break;
+						}
+						case world_data:
+						{
+							try
+							{
+								// -- cities -- //
+								for (Packet04City packet : DBManager.getCities(Integer.parseInt(p.getValue())))
+									sendPacket(packet, user);
+								
+								// -- transfers -- //
+								for (Packet19Transfer packet : DBManager.getTransfers(user))
+									sendPacket(packet, user);
+								
+								sendPacket(new Packet10Attribute(Key.loading_complete), user);
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+							break;
+						}
+						default:
+							;
+					}
 				}
 				
 				break;
@@ -419,40 +431,15 @@ public class Server extends Thread
 				
 				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user) && p.getAttArmy().getLength() > 0)
 				{
-					new Thread()
+					try
 					{
-						@Override
-						public void run()
-						{
-							Army att = new Army(true, p.getAttArmy());
-							Army def = new Army(false, DBManager.getCityResources(p.getDefCityId()));
-							BattleResult br = BattleSimulator.simulateBattle(att, def);
-							
-							out(br.toString(p.getAttCityId(), p.getDefCityId()));
-							
-							if (br.isAttackers()) DBManager.resetCityArmy(p.getDefCityId());
-							else
-							{
-								for (TroopType t : TroopType.values())
-									DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
-							}
-							
-							for (TroopType t : TroopType.values())
-								DBManager.addCityTroops(br.isAttackers() ? p.getAttCityId() : p.getDefCityId(), t, -br.getDead().get(t.getType()), false); // winner city
-							
-							try
-							{
-								String ac = DBManager.getCityNameForId(p.getAttCityId()), dc = DBManager.getCityNameForId(p.getDefCityId()), aco = user.getUsername(), dco = DBManager.getUsernameForCityId(p.getDefCityId());
-								sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), user); // to attacker
-								User defOwner = getUserForId(DBManager.getUserIdForCityId(p.getDefCityId()));
-								if (defOwner != null) sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, aco, dco), defOwner); // to defender
-							}
-							catch (Exception e)
-							{
-								e.printStackTrace();
-							}
-						}
-					}.start();
+						sendPacket(DBManager.transferAttackTroops(p), user);
+						sendPacket(new Packet05Resources(p.getAttCityId(), DBManager.getCityResources(p.getAttCityId())), user);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 				
 				break;
@@ -479,6 +466,12 @@ public class Server extends Thread
 			else if (exception.getId() == u.getId()) continue;
 			sendPacket(p, u);
 		}
+	}
+	
+	public void sendPacketToAllClientsOnWorld(Packet p, int worldId) throws Exception
+	{
+		for (User u : clients)
+			if (u.getWorldId() == worldId) sendPacket(p, u);
 	}
 	
 	public void sendPacket(Packet p, User u) throws Exception
@@ -539,4 +532,5 @@ public class Server extends Thread
 		if (p.length == 1) System.err.print(timestamp + p[0]);
 		else System.err.print(timestamp + Arrays.toString(p));
 	}
+	
 }

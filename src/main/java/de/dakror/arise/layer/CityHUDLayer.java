@@ -23,6 +23,7 @@ import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet10Attribute.Key;
 import de.dakror.arise.net.packet.Packet11DeconstructBuilding;
 import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
@@ -274,7 +275,7 @@ public class CityHUDLayer extends MPLayer
 		{
 			try
 			{
-				Game.client.sendPacket(new Packet10Attribute("city", -1));
+				Game.client.sendPacket(new Packet10Attribute(Key.city, -1));
 			}
 			catch (IOException e)
 			{

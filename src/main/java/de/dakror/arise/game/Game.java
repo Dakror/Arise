@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.Arise;
+import de.dakror.arise.battlesim.Army;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoadingLayer;
@@ -73,6 +74,7 @@ public class Game extends GameApplet
 		Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
 		Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
 		Building.MAX_LEVEL = config.getInt("maxlevel");
+		Army.MARCH_SECONDS = config.getInt("troops");
 	}
 	
 	@Override
@@ -139,8 +141,6 @@ public class Game extends GameApplet
 			Helper.drawString("Build " + DakrorBin.buildDate, 10, 26, g, 18);
 			Helper.drawString("FPS: " + getFPS(), 10, 52, g, 18);
 			Helper.drawString("UPS: " + getUPS(), 10, 52 + 26, g, 18);
-			
-			if (world != null) Helper.drawString("E: " + world.citiesDrawn + " / " + world.cities, 10, 52 + 52, g, 18);
 			
 			Helper.drawString("RAM: " + Helper.formatBinarySize(usedMem, 2) + " / " + Helper.formatBinarySize(Runtime.getRuntime().totalMemory(), 2), 10, 52 + 52 + 26, g, 18);
 			Helper.drawString("CPUs: " + Runtime.getRuntime().availableProcessors(), 10, 52 + 52 + 52, g, 18);

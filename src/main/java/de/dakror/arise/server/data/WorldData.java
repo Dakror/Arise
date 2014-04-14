@@ -1,4 +1,4 @@
-package de.dakror.arise.server;
+package de.dakror.arise.server.data;
 
 /**
  * @author Dakror

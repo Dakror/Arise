@@ -17,6 +17,7 @@ public enum TroopType
 	
 	;
 	
+	
 	private Resource type;
 	private Resources costs;
 	private Dice attack, defense, evadeChance, hitChance;

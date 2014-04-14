@@ -8,6 +8,7 @@ import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
+import de.dakror.arise.server.data.WorldData;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.util.Assistant;
 
@@ -92,17 +93,29 @@ public class CommandHandler extends Thread
 						if (user == null) CFG.e("There currently is no player connected with id=" + id);
 						else
 						{
-							Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.INACTIVE), user);
-							Server.out("Kicked user: #" + user.getId() + " (" + Cause.INACTIVE + ")");
+							Cause cause = Cause.KICK;
+							if (parts.length > 2)
+							{
+								try
+								{
+									cause = Cause.values()[Integer.parseInt(parts[2])];
+								}
+								catch (Exception e)
+								{
+									CFG.e("Invalid parameters! Usage: KICK <int:id> [int:cause]");
+								}
+							}
+							Server.currentServer.sendPacket(new Packet02Disconnect(0, cause), user);
+							Server.out("Kicked user: #" + user.getId() + " (" + cause + ")");
 							Server.currentServer.clients.remove(user);
 						}
 					}
 					catch (Exception e)
 					{
-						CFG.e("Invalid parameters! Usage: KICK <int:id>");
+						CFG.e("Invalid parameters! Usage: KICK <int:id> [int:cause]");
 					}
 				}
-				else CFG.e("Invalid parameters! Usage: KICK <int:id>");
+				else CFG.e("Invalid parameters! Usage: KICK <int:id> [int:cause]");
 				break;
 			}
 			case "traffic":
@@ -143,8 +156,8 @@ public class CommandHandler extends Thread
 				CFG.p("Available commands:");
 				CFG.p("STOP - Saves all data and closes the server.");
 				CFG.p("DIR - Prints the directory path where the database is located.");
-				CFG.p("WRLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
-				CFG.p("KICK <int:id> - Kicks the player with the given id.");
+				CFG.p("WORLD [-add <int:id> <String:name> <int:speed>] [-list] - [creates a new world] [lists all existing worlds].");
+				CFG.p("KICK <int:id> [int:cause] - Kicks the player with the given id.");
 				CFG.p("TRAFFIC - Opens the traffic monitoring console.");
 				CFG.p("LOG <String:directory> - Writes from now on the server log to generated files in the given directory. Takes effect after restart.");
 				CFG.p("PLAYERS - Lists the currently logged in players.");

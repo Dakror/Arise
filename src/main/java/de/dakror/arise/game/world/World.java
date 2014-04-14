@@ -6,6 +6,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONArray;
 
@@ -18,6 +22,7 @@ import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet07RenameCity;
+import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -33,7 +38,7 @@ public class World extends MPLayer
 	String name;
 	
 	int speed, id, width, height, tick, minX, minY;
-	public int x, y, cities, citiesDrawn;
+	public int x, y;
 	public boolean anyCityActive;
 	
 	long lastCheck;
@@ -84,8 +89,6 @@ public class World extends MPLayer
 			for (int j = 0; j < Math.ceil(height / (float) CHUNKSIZE); j++)
 				if (new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(minX + i * CHUNKSIZE + x, minY + j * CHUNKSIZE + y, CHUNKSIZE, CHUNKSIZE))) g.drawImage(chunk, minX + i * CHUNKSIZE, minY + j * CHUNKSIZE, null);
 		
-		int citiesDrawn = 0;
-		
 		Component hovered = null;
 		
 		for (Component c : components)
@@ -93,12 +96,10 @@ public class World extends MPLayer
 			if (!new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(c.getX() + x, c.getY() + y, c.getWidth(), c.getHeight()))) continue;
 			c.draw(g);
 			if (c.state == 2) hovered = c;
-			citiesDrawn++;
 		}
 		
 		if (hovered != null) hovered.drawTooltip(GameFrame.currentFrame.mouse.x, GameFrame.currentFrame.mouse.y, g);
 		
-		this.citiesDrawn = citiesDrawn;
 		
 		g.setTransform(old);
 	}
@@ -107,7 +108,7 @@ public class World extends MPLayer
 	public void update(int tick)
 	{
 		this.tick = tick;
-		
+		if (tick % 120 == 0) sortComponents();
 		updateComponents(tick);
 	}
 	
@@ -137,6 +138,23 @@ public class World extends MPLayer
 		y = y < -(height - Game.getHeight() + minY) ? -(height - Game.getHeight() + minY) : y;
 		x = x > -minX ? -minX : x;
 		y = y > -minY ? -minY : y;
+	}
+	
+	public void sortComponents()
+	{
+		ArrayList<Component> c = new ArrayList<>(components);
+		Collections.sort(c, new Comparator<Component>()
+		{
+			@Override
+			public int compare(Component o1, Component o2)
+			{
+				if (o1.getClass().equals(o2.getClass())) return 1;
+				if (o1 instanceof Transfer) return -1;
+				return 1;
+			}
+		});
+		
+		components = new CopyOnWriteArrayList<>(c);
 	}
 	
 	@Override
@@ -225,6 +243,23 @@ public class World extends MPLayer
 		return height;
 	}
 	
+	public int getCityCount()
+	{
+		int i = 0;
+		for (Component c : components)
+			if (c instanceof City) i++;
+		
+		return i;
+	}
+	
+	public City getCityForId(int id)
+	{
+		for (Component c : components)
+			if (c instanceof City && ((City) c).getId() == id) return (City) c;
+		
+		return null;
+	}
+	
 	@Override
 	public void onReceivePacket(Packet p)
 	{
@@ -257,6 +292,7 @@ public class World extends MPLayer
 				City c = new City(x, y, packet);
 				components.add(c);
 				updateSize();
+				sortComponents();
 			}
 		}
 		if (p.getType() == PacketTypes.RENAMECITY)
@@ -264,7 +300,7 @@ public class World extends MPLayer
 			Packet07RenameCity packet = (Packet07RenameCity) p;
 			for (Component c : components)
 			{
-				if (((City) c).getId() == packet.getCityId())
+				if (c instanceof City && ((City) c).getId() == packet.getCityId())
 				{
 					((City) c).setName(packet.getNewName());
 					break;
@@ -279,6 +315,24 @@ public class World extends MPLayer
 				Game.currentGame.fadeTo(1, 0.05f);
 			}
 			else CFG.e("Received invalid packet05resources: current gotoCity.id=" + gotoCity.getId() + ", packet.id=" + ((Packet05Resources) p).getCityId());
+		}
+		
+		if (p.getType() == PacketTypes.TRANSFER)
+		{
+			Packet19Transfer packet = (Packet19Transfer) p;
+			
+			if (packet.isMarkedForRemoval())
+			{
+				for (Component c : components)
+					if (c instanceof Transfer && ((Transfer) c).getId() == packet.getId()) components.remove(c);
+				
+				sortComponents();
+			}
+			else
+			{
+				components.add(new Transfer(getCityForId(packet.getCityFrom()), getCityForId(packet.getCityTo()), packet));
+				sortComponents();
+			}
 		}
 	}
 }

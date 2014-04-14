@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import org.json.JSONObject;
 
+import de.dakror.arise.battlesim.Army;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.net.Server;
@@ -24,8 +25,13 @@ import de.dakror.arise.net.packet.Packet09BuildingStage;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
+import de.dakror.arise.net.packet.Packet17CityAttack;
+import de.dakror.arise.net.packet.Packet19Transfer;
+import de.dakror.arise.server.data.TransferData;
+import de.dakror.arise.server.data.WorldData;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
+import de.dakror.arise.settings.TransferType;
 import de.dakror.arise.settings.TroopType;
 import de.dakror.gamesetup.util.Helper;
 
@@ -60,6 +66,8 @@ public class DBManager
 			e.printStackTrace();
 		}
 	}
+	
+	// -- worlds -- //
 	
 	public static WorldData[] listWorlds()
 	{
@@ -188,26 +196,21 @@ public class DBManager
 		return 0;
 	}
 	
+	// -- cities -- //
+	
 	public static ArrayList<Packet04City> getCities(int worldId)
 	{
 		ArrayList<Packet04City> packets = new ArrayList<>();
 		JSONObject users = getUsersFromWebsite();
 		Statement st = null;
 		ResultSet rs = null;
-		ResultSet rs2 = null;
 		try
 		{
 			st = connection.createStatement();
-			rs = st.executeQuery("SELECT COUNT() as CITIES FROM CITIES WHERE WORLD_ID = " + worldId);
-			int cities = rs.getInt(1);
+			rs = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId);
 			
-			rs2 = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId);
-			
-			while (rs2.next())
-			{
-				Packet04City p = new Packet04City(cities, rs2.getInt(1), rs2.getInt(2), rs2.getInt(3), rs2.getInt(4), rs2.getInt(5), rs2.getString(6), users.getString("" + rs2.getInt(4)));
-				packets.add(p);
-			}
+			while (rs.next())
+				packets.add(new Packet04City(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), users.getString("" + rs.getInt(4))));
 		}
 		catch (Exception e)
 		{
@@ -218,7 +221,6 @@ public class DBManager
 			try
 			{
 				rs.close();
-				rs2.close();
 				st.close();
 			}
 			catch (SQLException e)
@@ -388,7 +390,7 @@ public class DBManager
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT ID, X, Y, USER_ID, LEVEL, NAME FROM CITIES WHERE WORLD_ID = " + worldId + " AND USER_ID = " + userId);
 			JSONObject users = getUsersFromWebsite();
-			return new Packet04City(1, rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), users.getString("" + rs.getInt(4)));
+			return new Packet04City(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5), rs.getString(6), users.getString("" + rs.getInt(4)));
 		}
 		catch (Exception e)
 		{
@@ -660,19 +662,66 @@ public class DBManager
 		return false;
 	}
 	
-	public static int placeBuilding(int cityId, int type, int x, int y)
+	// -- buildings --//
+	public static void resetCityArmy(int cityId)
+	{
+		execUpdate("UPDATE CITIES SET ARMY = '0:0:0:0:0:0:0' WHERE ID = " + cityId);
+	}
+	
+	public static boolean addCityTroops(int cityId, TroopType type, int amount, boolean timesTroops)
 	{
 		Statement st = null;
 		ResultSet rs = null;
 		try
 		{
 			st = connection.createStatement();
-			rs = st.executeQuery("SELECT last_insert_rowid()");
+			rs = st.executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId);
+			if (!rs.next()) return false;
+			
+			String[] armyParts = rs.getString("ARMY").split(":");
+			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount * (timesTroops ? Game.config.getInt("troops") : 1));
+			
+			String army = "";
+			for (String a : armyParts)
+				army += a + ":";
+			
+			army = army.substring(0, army.length() - 1);
+			
+			execUpdate("UPDATE CITIES SET ARMY = '" + army + "' WHERE ID = " + cityId);
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
+	
+	public static int placeBuilding(int cityId, int type, int x, int y)
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		try
+		{
 			Building b = Building.getBuildingByTypeId(x, y, 0, type);
 			
 			if (buy(cityId, b.getBuildingCosts()))
 			{
 				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCity(cityId) + ")");
+				st = connection.createStatement();
+				rs = st.executeQuery("SELECT last_insert_rowid() FROM BUILDINGS LIMIT 1");
 				return rs.getInt(1);
 			}
 			else return 0;
@@ -769,47 +818,6 @@ public class DBManager
 		return -1;
 	}
 	
-	public static boolean addCityTroops(int cityId, TroopType type, int amount, boolean timesTroops)
-	{
-		Statement st = null;
-		ResultSet rs = null;
-		try
-		{
-			st = connection.createStatement();
-			rs = st.executeQuery("SELECT ARMY FROM CITIES WHERE ID = " + cityId);
-			if (!rs.next()) return false;
-			
-			String[] armyParts = rs.getString("ARMY").split(":");
-			armyParts[type.ordinal()] = "" + (Integer.parseInt(armyParts[type.ordinal()]) + amount * (timesTroops ? Game.config.getInt("troops") : 1));
-			
-			String army = "";
-			for (String a : armyParts)
-				army += a + ":";
-			
-			army = army.substring(0, army.length() - 1);
-			
-			execUpdate("UPDATE CITIES SET ARMY = '" + army + "' WHERE ID = " + cityId);
-			return true;
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		finally
-		{
-			try
-			{
-				rs.close();
-				st.close();
-			}
-			catch (SQLException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-	
 	public static int barracksBuildTroops(Packet15BarracksBuildTroop p)
 	{
 		Statement st = null;
@@ -851,9 +859,85 @@ public class DBManager
 		return -1;
 	}
 	
-	public static void resetCityArmy(int cityId)
+	// -- transfers -- //
+	
+	public static Packet19Transfer addTransfer(int cityFromId, int cityToId, TransferType type, Resources value, int time)
 	{
-		execUpdate("UPDATE CITIES SET ARMY = '0:0:0:0:0:0:0' WHERE ID = " + cityId);
+		execUpdate("INSERT INTO TRANSFERS(CITY_FROM_ID, CITY_TO_ID, TYPE, VALUE, TIMELEFT) VALUES(" + cityFromId + ", " + cityToId + ", " + type.ordinal() + ", '" + value.getStringData() + "', " + time + ")");
+		
+		Statement st = null;
+		ResultSet rs = null;
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT * FROM TRANSFERS WHERE ID = last_insert_rowid()");
+			
+			return new Packet19Transfer(rs.getInt("ID"), cityFromId, cityToId, type, value, time);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	public static Packet19Transfer transferAttackTroops(Packet17CityAttack p)
+	{
+		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCity(p.getAttCityId());
+		
+		for (TroopType t : TroopType.values())
+			DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
+		
+		return addTransfer(p.getAttCityId(), p.getDefCityId(), TransferType.TROOPS_ATTACK, p.getAttArmy(), duration);
+	}
+	
+	public static ArrayList<Packet19Transfer> getTransfers(User user)
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		ArrayList<Packet19Transfer> list = new ArrayList<>();
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT, (CITIES.ID = TRANSFERS.CITY_TO_ID) AS ISTARGET FROM TRANSFERS, CITIES WHERE (CITIES.ID = TRANSFERS.CITY_FROM_ID OR CITIES.ID = TRANSFERS.CITY_TO_ID) AND CITIES.USER_ID = " + user.getId() + " AND CITIES.WORLD_ID = " + user.getWorldId());
+			while (rs.next())
+			{
+				TransferType type = TransferType.values()[rs.getInt("TYPE")];
+				if (!type.isVisibleForTarget() && rs.getInt("ISTARGET") == 1) continue;
+				
+				list.add(new Packet19Transfer(rs.getInt("ID"), rs.getInt("CITY_FROM_ID"), rs.getInt("CITY_TO_ID"), type, new Resources(rs.getString("VALUE")), rs.getInt("TIMELEFT")));
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return list;
 	}
 	
 	// -- tick methods -- //
@@ -957,6 +1041,44 @@ public class DBManager
 		}
 	}
 	
+	public static void updateTransfers()
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT FROM TRANSFERS WHERE TRANSFERS.TIMELEFT = 0");
+			while (rs.next())
+			{
+				TransferExecutor.execute(new TransferData(rs.getInt("ID"), rs.getInt("TIMELEFT"), rs.getInt("CITY_FROM_ID"), rs.getInt("CITY_TO_ID"), new Resources(rs.getString("VALUE")), TransferType.values()[rs.getInt("TYPE")]));
+				
+				User from = Server.currentServer.getUserForId(getUserIdForCityId(rs.getInt("CITY_FROM_ID")));
+				User to = Server.currentServer.getUserForId(getUserIdForCityId(rs.getInt("CITY_TO_ID")));
+				if (from != null) Server.currentServer.sendPacket(new Packet19Transfer(rs.getInt("ID")), from);
+				if (to != null) Server.currentServer.sendPacket(new Packet19Transfer(rs.getInt("ID")), to);
+			}
+			
+			execUpdate("DELETE FROM TRANSFERS WHERE TIMELEFT = 0");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public static void updateCityResources()
 	{
 		for (WorldData wd : listWorlds())
@@ -982,7 +1104,8 @@ public class DBManager
 		}
 	}
 	
-	// -- sql methods -- //
+	// -- helper methods -- //
+	
 	public static void execUpdate(String sql)
 	{
 		try

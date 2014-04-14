@@ -117,6 +117,15 @@ public class Resources
 			set(serializableResources[i], bb.getFloat());
 	}
 	
+	public Resources(String string)
+	{
+		this();
+		
+		String[] parts = string.split(":");
+		for (int i = 0; i < serializableResources.length; i++)
+			set(serializableResources[i], Integer.parseInt(parts[i]));
+	}
+	
 	public int get(Resource t)
 	{
 		return (int) (float) res.get(t);
@@ -211,6 +220,15 @@ public class Resources
 		}
 		
 		return bb.array();
+	}
+	
+	public String getStringData()
+	{
+		String string = "";
+		for (Resource r : serializableResources)
+			string += get(r) + ":";
+		
+		return new String(string.substring(0, string.length() - 1));
 	}
 	
 	public static Resources mul(Resources res, int f)

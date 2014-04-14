@@ -21,7 +21,7 @@ public class UpdateThread extends Updater
 			System.gc();
 		}
 		
-		if (System.currentTimeMillis() - lastPing > 1000 * 60 * 30 && Game.userID > 0) // ping server every half an hour
+		if (System.currentTimeMillis() - lastPing > 1000 * 30 && Game.userID > 0) // ping server every half a minute
 		{
 			try
 			{

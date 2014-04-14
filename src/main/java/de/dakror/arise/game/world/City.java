@@ -13,6 +13,7 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet10Attribute.Key;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
@@ -57,25 +58,30 @@ public class City extends ClickableComponent
 	@Override
 	public void draw(Graphics2D g)
 	{
-		if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this)))
+		try
 		{
+			if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this)))
+			{
+				Color c = g.getColor();
+				g.setColor(Color.black);
+				g.drawRect(x, y, width, height);
+				g.setColor(c);
+			}
+			
+			Helper.setRenderingHints(g, false);
+			Helper.drawImage2(Game.getImage("world/TileB.png"), x + 16, y + 16, 64, 64, levels[level][0], levels[level][1], levels[level][2], levels[level][3], g);
+			Helper.setRenderingHints(g, true);
+			
+			int y1 = y + height - 15;
+			y1 = y1 < Game.world.getHeight() ? y1 : Game.world.getHeight() - 25;
 			Color c = g.getColor();
-			g.setColor(Color.black);
-			g.drawRect(x, y, width, height);
+			g.setColor(userId == Game.userID ? Color.decode("#007eff") : Color.white);
+			Helper.drawHorizontallyCenteredString(name, x, width, y1, g, 20);
+			Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
 			g.setColor(c);
 		}
-		
-		Helper.setRenderingHints(g, false);
-		Helper.drawImage2(Game.getImage("world/TileB.png"), x + 16, y + 16, 64, 64, levels[level][0], levels[level][1], levels[level][2], levels[level][3], g);
-		Helper.setRenderingHints(g, true);
-		
-		int y1 = y + height - 15;
-		y1 = y1 < Game.world.getHeight() ? y1 : Game.world.getHeight() - 25;
-		Color c = g.getColor();
-		g.setColor(userId == Game.userID ? Color.decode("#007eff") : Color.white);
-		Helper.drawHorizontallyCenteredString(name, x, width, y1, g, 20);
-		Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
-		g.setColor(c);
+		catch (NullPointerException e)
+		{}
 	}
 	
 	@Override
@@ -147,7 +153,7 @@ public class City extends ClickableComponent
 			try
 			{
 				Game.client.sendPacket(new Packet05Resources(id));
-				Game.client.sendPacket(new Packet10Attribute("city", id));
+				Game.client.sendPacket(new Packet10Attribute(Key.city, id));
 			}
 			catch (IOException e1)
 			{

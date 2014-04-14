@@ -5,25 +5,39 @@ package de.dakror.arise.net.packet;
  */
 public class Packet10Attribute extends Packet
 {
-	String key;
+	public static enum Key
+	{
+		city,
+		world_data,
+		loading_complete,
+		
+		;
+	}
+	
+	Key key;
 	String value;
 	
-	public Packet10Attribute(String key, Object value)
+	public Packet10Attribute(Key key, Object value)
 	{
 		super(10);
 		this.key = key;
 		this.value = value.toString();
 	}
 	
+	public Packet10Attribute(Key key)
+	{
+		this(key, true);
+	}
+	
 	public Packet10Attribute(byte[] data)
 	{
 		super(10);
 		String[] parts = readData(data).split(":");
-		key = new String(parts[0]);
+		key = Key.values()[Integer.parseInt(parts[0])];
 		value = new String(parts[1]);
 	}
 	
-	public String getKey()
+	public Key getKey()
 	{
 		return key;
 	}
@@ -36,6 +50,6 @@ public class Packet10Attribute extends Packet
 	@Override
 	protected byte[] getPacketData()
 	{
-		return (key + ":" + value).getBytes();
+		return (key.ordinal() + ":" + value).getBytes();
 	}
 }

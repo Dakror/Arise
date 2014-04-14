@@ -23,7 +23,8 @@ import de.dakror.arise.net.packet.Packet.PacketTypes;
 import de.dakror.arise.net.packet.Packet01Login;
 import de.dakror.arise.net.packet.Packet01Login.Response;
 import de.dakror.arise.net.packet.Packet03World;
-import de.dakror.arise.net.packet.Packet04City;
+import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet10Attribute.Key;
 import de.dakror.gamesetup.layer.Alert;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.InputField;
@@ -245,18 +246,22 @@ public class LoginLayer extends MPLayer
 			try
 			{
 				Game.world = new World((Packet03World) p);
-				Game.client.sendPacket(new Packet04City(Game.worldID));
+				Game.client.sendPacket(new Packet10Attribute(Key.world_data, Game.worldID));
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
 		}
-		if (p.getType() == PacketTypes.CITY)
+		
+		if (p.getType() == PacketTypes.CITY || p.getType() == PacketTypes.TRANSFER)
 		{
 			Game.world.onReceivePacket(p);
-			
-			if (Game.world.components.size() >= ((Packet04City) p).getCities())
+		}
+		
+		if (p.getType() == PacketTypes.ATTRIBUTE)
+		{
+			if (((Packet10Attribute) p).getKey() == Key.loading_complete)
 			{
 				startGame = true;
 				Game.currentGame.removeLoadingLayer();

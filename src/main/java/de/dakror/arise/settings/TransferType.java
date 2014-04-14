@@ -7,17 +7,31 @@ import java.awt.Color;
  */
 public enum TransferType
 {
-	TROOPS_FRIEND("#0096ba"),
-	TROOPS_ATTACK("#a80000"),
-	RESOURCES("#1ca739"),
+	TROOPS_FRIEND("Truppenverlagerung", "#0096ba", true),
+	TROOPS_ATTACK("Angriffs-Marsch", "#a80000", false),
+	RESOURCES("Warenhandel", "#1ca739", true),
 	
 	;
 	
+	private String desc;
 	private Color color;
+	private boolean visibleForTarget;
 	
-	private TransferType(String c)
+	private TransferType(String desc, String c, boolean visibleForTarget)
 	{
-		this.color = Color.decode(c);
+		this.desc = desc;
+		color = Color.decode(c);
+		this.visibleForTarget = visibleForTarget;
+	}
+	
+	public String getDescription()
+	{
+		return desc;
+	}
+	
+	public boolean isVisibleForTarget()
+	{
+		return visibleForTarget;
 	}
 	
 	public Color getColor()

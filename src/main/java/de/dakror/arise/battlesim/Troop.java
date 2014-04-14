@@ -53,6 +53,11 @@ public class Troop
 		return size;
 	}
 	
+	public int getInitialSize()
+	{
+		return initialSize;
+	}
+	
 	public void translateY(int y)
 	{
 		this.y += y;
@@ -86,6 +91,7 @@ public class Troop
 			cooldown = type.getSpeed();
 		}
 	}
+	
 	
 	public void attack(long dmg)
 	{

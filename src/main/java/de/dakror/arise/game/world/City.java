@@ -13,6 +13,7 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet10Attribute;
+import de.dakror.arise.net.packet.Packet10Attribute.Key;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
@@ -147,7 +148,7 @@ public class City extends ClickableComponent
 			try
 			{
 				Game.client.sendPacket(new Packet05Resources(id));
-				Game.client.sendPacket(new Packet10Attribute("city", id));
+				Game.client.sendPacket(new Packet10Attribute(Key.city, id));
 			}
 			catch (IOException e1)
 			{

@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.Arise;
+import de.dakror.arise.battlesim.Army;
 import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoadingLayer;
@@ -73,6 +74,7 @@ public class Game extends GameApplet
 		Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
 		Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
 		Building.MAX_LEVEL = config.getInt("maxlevel");
+		Army.MARCH_SECONDS = config.getInt("troops");
 	}
 	
 	@Override

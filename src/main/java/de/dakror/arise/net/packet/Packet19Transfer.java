@@ -42,9 +42,8 @@ public class Packet19Transfer extends Packet
 		cityTo = bb.getInt();
 		type = TransferType.values()[bb.getInt()];
 		timeleft = bb.getInt();
-		cityFrom = bb.getInt();
 		byte[] val = new byte[bb.getInt()];
-		bb.get(val);
+		bb.get(val, 0, val.length);
 		value = new Resources(val);
 	}
 	

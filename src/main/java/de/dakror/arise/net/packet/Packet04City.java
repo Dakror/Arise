@@ -5,19 +5,12 @@ package de.dakror.arise.net.packet;
  */
 public class Packet04City extends Packet
 {
-	int x, y, userId, cityId, level, cities, worldId;
+	int x, y, userId, cityId, level;
 	String cityName, username;
 	
-	public Packet04City(int worldId)
+	public Packet04City(int cityId, int x, int y, int userId, int level, String cityName, String username)
 	{
 		super(4);
-		this.worldId = worldId;
-	}
-	
-	public Packet04City(int cities, int cityId, int x, int y, int userId, int level, String cityName, String username)
-	{
-		super(4);
-		this.cities = cities;
 		this.cityId = cityId;
 		this.x = x;
 		this.y = y;
@@ -31,26 +24,20 @@ public class Packet04City extends Packet
 	{
 		super(4);
 		String s = readData(data);
-		if (s.contains(":"))
-		{
-			String[] parts = s.split(":");
-			cities = Integer.parseInt(new String(parts[0]).trim());
-			cityId = Integer.parseInt(new String(parts[1]).trim());
-			x = Integer.parseInt(new String(parts[2]).trim());
-			y = Integer.parseInt(new String(parts[3]).trim());
-			userId = Integer.parseInt(new String(parts[4]).trim());
-			level = Integer.parseInt(new String(parts[5]).trim());
-			cityName = new String(parts[6]);
-			username = new String(parts[7]);
-		}
-		else worldId = Integer.parseInt(s.trim());
+		String[] parts = s.split(":");
+		cityId = Integer.parseInt(new String(parts[0]));
+		x = Integer.parseInt(new String(parts[1]));
+		y = Integer.parseInt(new String(parts[2]));
+		userId = Integer.parseInt(new String(parts[3]));
+		level = Integer.parseInt(new String(parts[4]));
+		cityName = new String(parts[5]);
+		username = new String(parts[6]);
 	}
 	
 	@Override
 	protected byte[] getPacketData()
 	{
-		if (cityName != null) return (cities + ":" + cityId + ":" + x + ":" + y + ":" + userId + ":" + level + ":" + cityName + ":" + username).getBytes();
-		else return ("" + worldId).getBytes();
+		return (cityId + ":" + x + ":" + y + ":" + userId + ":" + level + ":" + cityName + ":" + username).getBytes();
 	}
 	
 	public int getX()
@@ -73,19 +60,9 @@ public class Packet04City extends Packet
 		return cityId;
 	}
 	
-	public int getCities()
-	{
-		return cities;
-	}
-	
 	public int getLevel()
 	{
 		return level;
-	}
-	
-	public int getWorldId()
-	{
-		return worldId;
 	}
 	
 	public String getCityName()

@@ -6,6 +6,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.json.JSONArray;
 
@@ -18,6 +22,7 @@ import de.dakror.arise.net.packet.Packet03World;
 import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet07RenameCity;
+import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -133,6 +138,23 @@ public class World extends MPLayer
 		y = y < -(height - Game.getHeight() + minY) ? -(height - Game.getHeight() + minY) : y;
 		x = x > -minX ? -minX : x;
 		y = y > -minY ? -minY : y;
+	}
+	
+	public void sortComponents()
+	{
+		ArrayList<Component> c = new ArrayList<>(components);
+		Collections.sort(c, new Comparator<Component>()
+		{
+			@Override
+			public int compare(Component o1, Component o2)
+			{
+				if (o1.getClass().equals(o2.getClass())) return 0;
+				if (o1 instanceof Transfer) return -1;
+				return 1;
+			}
+		});
+		
+		components = new CopyOnWriteArrayList<>(c);
 	}
 	
 	@Override
@@ -270,6 +292,7 @@ public class World extends MPLayer
 				City c = new City(x, y, packet);
 				components.add(c);
 				updateSize();
+				sortComponents();
 			}
 		}
 		if (p.getType() == PacketTypes.RENAMECITY)
@@ -277,7 +300,7 @@ public class World extends MPLayer
 			Packet07RenameCity packet = (Packet07RenameCity) p;
 			for (Component c : components)
 			{
-				if (((City) c).getId() == packet.getCityId())
+				if (c instanceof City && ((City) c).getId() == packet.getCityId())
 				{
 					((City) c).setName(packet.getNewName());
 					break;
@@ -292,6 +315,12 @@ public class World extends MPLayer
 				Game.currentGame.fadeTo(1, 0.05f);
 			}
 			else CFG.e("Received invalid packet05resources: current gotoCity.id=" + gotoCity.getId() + ", packet.id=" + ((Packet05Resources) p).getCityId());
+		}
+		if (p.getType() == PacketTypes.TRANSFER)
+		{
+			Packet19Transfer packet = (Packet19Transfer) p;
+			components.add(new Transfer(getCityForId(packet.getCityFrom()), getCityForId(packet.getCityTo()), packet));
+			sortComponents();
 		}
 	}
 }

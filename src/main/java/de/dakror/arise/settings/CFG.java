@@ -11,6 +11,12 @@ public class CFG
 	public static final File DIR = new File(System.getProperty("user.home") + "/.dakror/Arise");
 	static long time;
 	
+	// ---------------------------------- //
+	
+	public static final String VERSION = "0.1.0";
+	
+	// ---------------------------------- //
+	
 	static
 	{
 		DIR.mkdirs();

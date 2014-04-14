@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import de.dakror.arise.game.Game;
 import de.dakror.arise.game.world.City;
+import de.dakror.arise.game.world.Transfer;
 import de.dakror.arise.layer.dialog.AttackCityDialog;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -126,6 +127,19 @@ public class WorldHUDLayer extends MPLayer
 					if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
 					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !c.equals(selectedCity))
 					{
+						boolean canTarget = true;
+						
+						for (Component c1 : Game.world.components)
+						{
+							if (c1 instanceof Transfer && ((Transfer) c1).getCityFrom().equals(hoveredCity) && ((Transfer) c1).getCityTo().equals(c))
+							{
+								canTarget = false;
+								break;
+							}
+						}
+						
+						if (!canTarget) continue;
+						
 						drag = new Point(c.getX() + Game.world.x + City.SIZE / 2, c.getY() + Game.world.y + City.SIZE / 2);
 						draggedOnto = (City) c;
 						draggedOnto.state = 2;

@@ -664,7 +664,7 @@ public class DBManager
 		return false;
 	}
 	
-	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attUserId, int defUserId, Army attArmy)
+	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attUserId, Army attArmy)
 	{
 		int timeleft = (int) (attArmy.getMarchDuration() * Const.TAKEOVER_FACTOR);
 		

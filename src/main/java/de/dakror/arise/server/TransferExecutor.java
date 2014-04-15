@@ -6,6 +6,7 @@ import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet18BattleResult;
+import de.dakror.arise.net.packet.Packet20Takeover;
 import de.dakror.arise.server.data.TransferData;
 import de.dakror.arise.settings.CFG;
 import de.dakror.arise.settings.TroopType;
@@ -57,8 +58,17 @@ public class TransferExecutor
 				{
 					String ac = DBManager.getCityNameForId(transferData.cityFromId);
 					String dc = DBManager.getCityNameForId(transferData.cityToId);
-					User attOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(transferData.cityFromId));
+					
+					int attUserId = DBManager.getUserIdForCityId(transferData.cityFromId);
+					User attOwner = Server.currentServer.getUserForId(attUserId);
 					User defOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(transferData.cityToId));
+					
+					if (br.isAttackers())
+					{
+						Packet20Takeover p20 = DBManager.handleTakeover(transferData.cityToId, attUserId, new Army(true, transferData.value));
+						if (attOwner != null) Server.currentServer.sendPacket(p20, attOwner);
+						if (defOwner != null) Server.currentServer.sendPacket(p20, defOwner);
+					}
 					
 					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), attOwner.getUsername()), attOwner); // to attacker
 					if (defOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), defOwner.getUsername()), defOwner); // to defender

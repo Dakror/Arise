@@ -27,6 +27,7 @@ import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet17CityAttack;
 import de.dakror.arise.net.packet.Packet19Transfer;
+import de.dakror.arise.net.packet.Packet20Takeover;
 import de.dakror.arise.server.data.TransferData;
 import de.dakror.arise.server.data.WorldData;
 import de.dakror.arise.settings.Const;
@@ -663,16 +664,13 @@ public class DBManager
 		return false;
 	}
 	
-	public static void handleTakeover(int cityTakenOverId, int attUserId, int defUserId, Army attArmy)
+	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attUserId, int defUserId, Army attArmy)
 	{
 		int timeleft = (int) (attArmy.getMarchDuration() * Const.TAKEOVER_FACTOR);
 		
 		execUpdate("UPDATE CITIES SET TAKEOVER = TAKEOVER + 1, TIMELEFT = " + timeleft + " WHERE ID = " + cityTakenOverId);
 		Statement st = null;
 		ResultSet rs = null;
-		
-		User def = Server.currentServer.getUserForId(defUserId);
-		User att = Server.currentServer.getUserForId(attUserId);
 		
 		try
 		{
@@ -682,12 +680,9 @@ public class DBManager
 			if (rs.getInt("TAKEOVER") > Const.CITY_TAKEOVERS)
 			{
 				execUpdate("UPDATE CITIES SET TAKEOVER = 0, TIMELEFT = 0, USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
-				// if(att != null)
+				return new Packet20Takeover(cityTakenOverId, -1, 0);
 			}
-			else if (def != null)
-			{	
-				
-			}
+			else return new Packet20Takeover(cityTakenOverId, rs.getInt("TAKEOVER"), timeleft);
 		}
 		catch (Exception e)
 		{
@@ -705,6 +700,8 @@ public class DBManager
 				e.printStackTrace();
 			}
 		}
+		
+		return null;
 	}
 	
 	// -- buildings --//

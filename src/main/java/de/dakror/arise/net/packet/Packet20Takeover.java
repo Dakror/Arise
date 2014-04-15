@@ -42,6 +42,11 @@ public class Packet20Takeover extends Packet
 		return stage;
 	}
 	
+	public boolean isCityTakenOver()
+	{
+		return stage == -1;
+	}
+	
 	public int getTimeleft()
 	{
 		return timeleft;

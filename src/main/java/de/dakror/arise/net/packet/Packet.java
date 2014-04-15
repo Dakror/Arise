@@ -30,6 +30,7 @@ public abstract class Packet
 		CITYATTACK(Packet17CityAttack.class),
 		BATTLERESULT(Packet18BattleResult.class),
 		TRANSFER(Packet19Transfer.class),
+		TAKEOVER(Packet20Takeover.class);
 		
 		;
 		

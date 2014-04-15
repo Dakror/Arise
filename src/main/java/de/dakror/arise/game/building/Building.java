@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.CityHUDLayer;
 import de.dakror.arise.net.User;
+import de.dakror.arise.settings.Const;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.BuildButton;
@@ -28,10 +29,6 @@ import de.dakror.gamesetup.util.Helper;
 public abstract class Building extends ClickableComponent
 {
 	public static int GRID = 32;
-	public static float DECONSTRUCT_FACTOR;
-	public static float UPGRADE_FACTOR;
-	public static int MAX_LEVEL;
-	
 	protected int tx, ty, tw, th, id, typeId, level, maxLevel, levelFac, minCityLevel;
 	public int bx, by, bw, bh;
 	/**
@@ -70,7 +67,7 @@ public abstract class Building extends ClickableComponent
 			{
 				CityHUDLayer.selectedBuilding = Building.this;
 				
-				float duration = stageChangeDuration * Building.DECONSTRUCT_FACTOR / Game.world.getSpeed();
+				float duration = stageChangeDuration * Const.DECONSTRUCT_FACTOR / Game.world.getSpeed();
 				
 				CityHUDLayer.upgrade.setUpgradeMode("Ausbau", "Die Stufe des Gebäudes wird erhöht. \nDauer: " + Assistant.formatSeconds((long) duration), getUpgradeCosts(), 0);
 				CityHUDLayer.upgrade.setProducts(products);
@@ -106,8 +103,8 @@ public abstract class Building extends ClickableComponent
 				scale = new Resources(o.getJSONObject("scale"));
 				stageChangeDuration = o.getInt("stage");
 				minCityLevel = o.has("mincitylevel") ? o.getInt("mincitylevel") : 0;
-				maxLevel = o.has("maxlevel") ? o.getInt("maxlevel") : MAX_LEVEL;
-				levelFac = o.has("levelfac") ? o.getInt("levelfac") : MAX_LEVEL;
+				maxLevel = o.has("maxlevel") ? o.getInt("maxlevel") : Const.BUILDING_MAX_LEVEL;
+				levelFac = o.has("levelfac") ? o.getInt("levelfac") : Const.BUILDING_MAX_LEVEL;
 			}
 		}
 		catch (JSONException e)
@@ -223,7 +220,7 @@ public abstract class Building extends ClickableComponent
 	
 	protected float getStageChangeDuration()
 	{
-		return Math.round(stageChangeDuration * (stage == 0 ? 1f : DECONSTRUCT_FACTOR) / Game.world.getSpeed());
+		return Math.round(stageChangeDuration * (stage == 0 ? 1f : Const.DECONSTRUCT_FACTOR) / Game.world.getSpeed());
 	}
 	
 	public String getName()
@@ -252,7 +249,7 @@ public abstract class Building extends ClickableComponent
 		res.add(buildingCosts);
 		
 		for (Resource r : res.getFilled())
-			res.set(r, (int) Math.round((MAX_LEVEL / (float) levelFac) * res.get(r) * Math.pow(UPGRADE_FACTOR, level + 1)));
+			res.set(r, (int) Math.round((Const.BUILDING_MAX_LEVEL / (float) levelFac) * res.get(r) * Math.pow(Const.UPGRADE_FACTOR, level + 1)));
 		
 		return res;
 	}

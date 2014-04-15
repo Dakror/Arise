@@ -29,6 +29,7 @@ import de.dakror.arise.net.packet.Packet17CityAttack;
 import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.server.data.TransferData;
 import de.dakror.arise.server.data.WorldData;
+import de.dakror.arise.settings.Const;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TransferType;
@@ -56,7 +57,7 @@ public class DBManager
 			
 			Statement s = connection.createStatement();
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS WORLDS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, SPEED INTEGER NOT NULL)");
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL, TAKEOVER INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS TRANSFERS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_FROM_ID INTEGER NOT NULL, CITY_TO_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, VALUE text NOT NULL, TIMELEFT INTEGER NOT NULL)");
 			s.executeUpdate("VACUUM");
@@ -662,7 +663,52 @@ public class DBManager
 		return false;
 	}
 	
+	public static void handleTakeover(int cityTakenOverId, int attUserId, int defUserId, Army attArmy)
+	{
+		int timeleft = (int) (attArmy.getMarchDuration() * Const.TAKEOVER_FACTOR);
+		
+		execUpdate("UPDATE CITIES SET TAKEOVER = TAKEOVER + 1, TIMELEFT = " + timeleft + " WHERE ID = " + cityTakenOverId);
+		Statement st = null;
+		ResultSet rs = null;
+		
+		User def = Server.currentServer.getUserForId(defUserId);
+		User att = Server.currentServer.getUserForId(attUserId);
+		
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT TAKEOVER FROM CITIES WHERE ID = " + cityTakenOverId);
+			
+			if (rs.getInt("TAKEOVER") > Const.CITY_TAKEOVERS)
+			{
+				execUpdate("UPDATE CITIES SET TAKEOVER = 0, TIMELEFT = 0, USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
+				// if(att != null)
+			}
+			else if (def != null)
+			{	
+				
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	// -- buildings --//
+	
 	public static void resetCityArmy(int cityId)
 	{
 		execUpdate("UPDATE CITIES SET ARMY = '0:0:0:0:0:0:0' WHERE ID = " + cityId);
@@ -757,8 +803,8 @@ public class DBManager
 			if (rs.getInt("STAGE") != 1) return -1;
 			
 			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt("TYPE"));
-			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
-			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
 		}
 		catch (SQLException e)
 		{
@@ -795,9 +841,9 @@ public class DBManager
 			if (rs.getInt(1) >= b.getMaxLevel()) return -1;
 			if (!buy(cityId, b.getUpgradeCosts())) return -1;
 			
-			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
 			
-			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
 		}
 		catch (SQLException e)
 		{

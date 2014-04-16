@@ -14,6 +14,7 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet10Attribute.Key;
+import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
 import de.dakror.gamesetup.util.Helper;
@@ -32,6 +33,7 @@ public class City extends ClickableComponent
 	int id;
 	int level;
 	int userId;
+	
 	int takeoverStage;
 	int timeleft;
 	
@@ -81,6 +83,15 @@ public class City extends ClickableComponent
 			Helper.drawHorizontallyCenteredString(name, x, width, y1, g, 20);
 			Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
 			g.setColor(c);
+			
+			if (timeleft > 0)
+			{
+				int[] i = Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(timeleft), x, width, y + 30, g, 26);
+				int s = 32;
+				Helper.setRenderingHints(g, false);
+				Helper.drawImage2(Game.getImage("system/icons.png"), i[0] - s, y, s, s, 0, 48, 24, 24, g);
+				Helper.setRenderingHints(g, true);
+			}
 		}
 		catch (NullPointerException e)
 		{}
@@ -107,6 +118,8 @@ public class City extends ClickableComponent
 				e.printStackTrace();
 			}
 		}
+		
+		if (timeleft > 0 && tick % Game.currentGame.getUPS() == 0) timeleft--;
 	}
 	
 	public String getName()

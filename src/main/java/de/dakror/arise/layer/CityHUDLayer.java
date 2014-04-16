@@ -29,6 +29,7 @@ import de.dakror.arise.net.packet.Packet12UpgradeBuilding;
 import de.dakror.arise.net.packet.Packet13BuildingLevel;
 import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet16BuildingMeta;
+import de.dakror.arise.net.packet.Packet20Takeover;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.ui.ArmyLabel;
@@ -482,6 +483,23 @@ public class CityHUDLayer extends MPLayer
 					((Building) c).setMetadata(packet.getMeta());
 					break;
 				}
+			}
+		}
+		
+		if (p.getType() == PacketTypes.TAKEOVER)
+		{
+			Packet20Takeover packet = (Packet20Takeover) p;
+			if (packet.getCityTakenOverId() == cl.city.getId() && packet.getNewUserId() != Game.userID && packet.getNewUserId() > 0)
+			{
+				Game.currentGame.addLayer(new Alert("Du hast diese Stadt an " + packet.getNewUsername() + " verloren!", new ClickEvent()
+				{
+					@Override
+					public void trigger()
+					{
+						goBackToWorld = true;
+						Game.currentGame.fadeTo(1, 0.05f);
+					}
+				}));
 			}
 		}
 	}

@@ -340,12 +340,13 @@ public class World extends MPLayer
 			Packet20Takeover packet = (Packet20Takeover) p;
 			
 			for (Component c : components)
+			{
 				if (c instanceof City && ((City) c).getId() == packet.getCityTakenOverId())
 				{
 					((City) c).updateTakeoverStage(packet.getStage(), packet.getTimeleft());
-					
 					if (packet.getNewUserId() != 0) ((City) c).setUser(packet.getNewUserId(), packet.getNewUsername());
 				}
+			}
 		}
 	}
 }

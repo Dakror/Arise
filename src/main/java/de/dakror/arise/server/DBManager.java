@@ -680,9 +680,9 @@ public class DBManager
 			if (rs.getInt("TAKEOVER") > Const.CITY_TAKEOVERS)
 			{
 				execUpdate("UPDATE CITIES SET TAKEOVER = 0, TIMELEFT = 0, USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
-				return new Packet20Takeover(cityTakenOverId, -1, 0);
+				return new Packet20Takeover(cityTakenOverId, -1, 0, attUserId, getUsersFromWebsite().getString(attUserId + ""));
 			}
-			else return new Packet20Takeover(cityTakenOverId, rs.getInt("TAKEOVER"), timeleft);
+			else return new Packet20Takeover(cityTakenOverId, rs.getInt("TAKEOVER"), timeleft, 0, "");
 		}
 		catch (Exception e)
 		{

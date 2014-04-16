@@ -32,6 +32,8 @@ public class City extends ClickableComponent
 	int id;
 	int level;
 	int userId;
+	int takeoverStage;
+	int timeleft;
 	
 	public Packet05Resources resourcePacket;
 	
@@ -140,6 +142,18 @@ public class City extends ClickableComponent
 	public int getUserId()
 	{
 		return userId;
+	}
+	
+	public void setUser(int userId, String username)
+	{
+		this.userId = userId;
+		this.username = username;
+	}
+	
+	public void updateTakeoverStage(int takeoverStage, int timeleft)
+	{
+		this.takeoverStage = takeoverStage;
+		this.timeleft = timeleft;
 	}
 	
 	@Override

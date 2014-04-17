@@ -54,6 +54,8 @@ public class TransferExecutor
 						DBManager.addCityTroops(transferData.cityToId, t, -br.getDead().get(t.getType()), false); // winner is defending city, their deads get subtracted here
 				}
 				
+				// TODO send winning attackers back home
+				
 				try
 				{
 					String ac = DBManager.getCityNameForId(transferData.cityFromId);

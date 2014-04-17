@@ -3,11 +3,13 @@ package de.dakror.arise.layer.dialog;
 import java.awt.Graphics2D;
 import java.io.IOException;
 
+import de.dakror.arise.battlesim.Army;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.layer.MPLayer;
 import de.dakror.arise.net.packet.Packet17CityAttack;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.TroopType;
+import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.Component;
 import de.dakror.gamesetup.ui.Slider;
@@ -67,25 +69,9 @@ public class AttackCityDialog extends MPLayer
 			@Override
 			public void trigger()
 			{
-				Resources res = new Resources();
-				for (Component c : components)
-				{
-					if (c instanceof Slider)
-					{
-						for (TroopType t : TroopType.values())
-						{
-							if (((Slider) c).getTitle().equals(t.getType().getName()))
-							{
-								res.set(t.getType(), ((Slider) c).getValue());
-								break;
-							}
-						}
-					}
-				}
-				
 				try
 				{
-					Game.client.sendPacket(new Packet17CityAttack(attCityId, defCityId, res));
+					Game.client.sendPacket(new Packet17CityAttack(attCityId, defCityId, getSelectedResources()));
 				}
 				catch (IOException e)
 				{
@@ -97,11 +83,34 @@ public class AttackCityDialog extends MPLayer
 		components.add(attack);
 	}
 	
+	public Resources getSelectedResources()
+	{
+		Resources res = new Resources();
+		for (Component c : components)
+		{
+			if (c instanceof Slider)
+			{
+				for (TroopType t : TroopType.values())
+				{
+					if (((Slider) c).getTitle().equals(t.getType().getName()))
+					{
+						res.set(t.getType(), ((Slider) c).getValue());
+						break;
+					}
+				}
+			}
+		}
+		return res;
+	}
+	
 	@Override
 	public void draw(Graphics2D g)
 	{
 		Helper.drawContainer((Game.getWidth() - width) / 2, (Game.getHeight() - height) / 2, width, height, false, false, g);
 		Helper.drawHorizontallyCenteredString("Stadt angreifen", Game.getWidth(), (Game.getHeight() - height) / 2 + 40, g, 35);
+		
+		Army army = new Army(true, getSelectedResources());
+		Helper.drawHorizontallyCenteredString("Marschdauer: " + Assistant.formatSeconds(army.getMarchDuration() / Game.world.getSpeed()), Game.getWidth(), (Game.getHeight() - height) / 2 + 200, g, 30);
 		
 		drawComponents(g);
 	}

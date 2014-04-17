@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.Arise;
@@ -55,24 +54,19 @@ public class Game extends GameApplet
 	{
 		try
 		{
-			loadConfig(new URL("http://dakror.de/arise/config.json"));
+			config = new JSONObject(Helper.getURLContent(Game.class.getResource("/config.json")));
+			
+			Const.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
+			Const.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
+			Const.BUILDING_MAX_LEVEL = config.getInt("maxlevel");
+			Const.CITY_TAKEOVERS = config.getInt("takeovers");
+			Const.TAKEOVER_FACTOR = (float) config.getDouble("takeover_factor");
+			Const.MARCH_SECONDS = config.getInt("troops");
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	public static void loadConfig(URL url) throws JSONException
-	{
-		config = new JSONObject(Helper.getURLContent(url));
-		
-		Const.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
-		Const.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
-		Const.BUILDING_MAX_LEVEL = config.getInt("maxlevel");
-		Const.CITY_TAKEOVERS = config.getInt("takeovers");
-		Const.TAKEOVER_FACTOR = (float) config.getDouble("takeover_factor");
-		Const.MARCH_SECONDS = config.getInt("troops");
 	}
 	
 	@Override

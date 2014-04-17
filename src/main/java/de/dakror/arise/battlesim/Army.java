@@ -109,12 +109,12 @@ public class Army
 	
 	public int getMarchDuration()
 	{
-		int duration = 0;
+		float duration = 0;
 		
 		for (Troop t : troops)
 			duration += t.size() * t.getType().getSpeed();
 		
-		return duration * Const.MARCH_SECONDS;
+		return (int) (duration * 10 * Const.MARCH_SECONDS);
 	}
 	
 	public void tick(Army enemy)

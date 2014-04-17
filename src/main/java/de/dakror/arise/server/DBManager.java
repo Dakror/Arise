@@ -167,7 +167,7 @@ public class DBManager
 		return new Packet03World(-1);
 	}
 	
-	public static int getWorldSpeedForCity(int cityId)
+	public static int getWorldSpeedForCityId(int cityId)
 	{
 		Statement st = null;
 		ResultSet rs = null;
@@ -547,7 +547,7 @@ public class DBManager
 			if (b.getStage() == 1) r.add(b.getScalingProducts());
 		}
 		
-		int worldSpeed = getWorldSpeedForCity(cityId);
+		int worldSpeed = getWorldSpeedForCityId(cityId);
 		
 		return Resources.mul(r, worldSpeed);
 	}
@@ -666,7 +666,7 @@ public class DBManager
 	
 	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attUserId, Army attArmy)
 	{
-		int timeleft = (int) (attArmy.getMarchDuration() * Const.TAKEOVER_FACTOR);
+		int timeleft = (int) (attArmy.getMarchDuration() / (float) getWorldSpeedForCityId(cityTakenOverId) * Const.TAKEOVER_FACTOR);
 		
 		execUpdate("UPDATE CITIES SET TAKEOVER = TAKEOVER + 1, TIMELEFT = " + timeleft + " WHERE ID = " + cityTakenOverId);
 		Statement st = null;
@@ -762,7 +762,7 @@ public class DBManager
 			
 			if (buy(cityId, b.getBuildingCosts()))
 			{
-				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCity(cityId) + ")");
+				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCityId(cityId) + ")");
 				st = connection.createStatement();
 				rs = st.executeQuery("SELECT last_insert_rowid() FROM BUILDINGS LIMIT 1");
 				return rs.getInt(1);
@@ -800,8 +800,8 @@ public class DBManager
 			if (rs.getInt("STAGE") != 1) return -1;
 			
 			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt("TYPE"));
-			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
-			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = " + id);
+			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId));
 		}
 		catch (SQLException e)
 		{
@@ -838,9 +838,9 @@ public class DBManager
 			if (rs.getInt(1) >= b.getMaxLevel()) return -1;
 			if (!buy(cityId, b.getUpgradeCosts())) return -1;
 			
-			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = " + id);
 			
-			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId));
 		}
 		catch (SQLException e)
 		{
@@ -869,7 +869,7 @@ public class DBManager
 		{
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT * FROM BUILDINGS WHERE (META = '' OR META IS NULL) AND TIMELEFT = 0 AND STAGE = 1 AND ID = " + p.getBuildingId());
-			int speed = getWorldSpeedForCity(p.getCityId());
+			int speed = getWorldSpeedForCityId(p.getCityId());
 			if (speed == 0) return -1;
 			
 			if (!rs.next()) return -1;
@@ -938,7 +938,7 @@ public class DBManager
 	
 	public static Packet19Transfer transferAttackTroops(Packet17CityAttack p)
 	{
-		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCity(p.getAttCityId());
+		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCityId(p.getAttCityId());
 		
 		for (TroopType t : TroopType.values())
 			DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);

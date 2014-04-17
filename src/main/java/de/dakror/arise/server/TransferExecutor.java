@@ -44,15 +44,15 @@ public class TransferExecutor
 				
 				Server.out(br.toString(transferData.cityFromId, transferData.cityToId));
 				
-				if (br.isAttackers()) DBManager.resetCityArmy(transferData.cityToId);
+				if (br.isAttackers())
+				{
+					DBManager.resetCityArmy(transferData.cityToId); // losers lose everything
+				}
 				else
 				{
 					for (TroopType t : TroopType.values())
-						DBManager.addCityTroops(transferData.cityFromId, t, -transferData.value.get(t.getType()), false);
+						DBManager.addCityTroops(transferData.cityToId, t, -br.getDead().get(t.getType()), false); // winner is defending city, their deads get subtracted here
 				}
-				
-				for (TroopType t : TroopType.values())
-					DBManager.addCityTroops(br.isAttackers() ? transferData.cityFromId : transferData.cityToId, t, -br.getDead().get(t.getType()), false); // winner city
 				
 				try
 				{

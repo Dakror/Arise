@@ -677,12 +677,12 @@ public class DBManager
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT TAKEOVERS FROM CITIES WHERE ID = " + cityTakenOverId);
 			
-			if (rs.getInt("TAKEOVER") > Const.CITY_TAKEOVERS)
+			if (rs.getInt("TAKEOVERS") > Const.CITY_TAKEOVERS)
 			{
 				execUpdate("UPDATE CITIES SET TAKEOVERS = 0, TIMELEFT = 0, USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
 				return new Packet20Takeover(cityTakenOverId, -1, 0, attUserId, getUsersFromWebsite().getString(attUserId + ""));
 			}
-			else return new Packet20Takeover(cityTakenOverId, rs.getInt("TAKEOVER"), timeleft, 0, "");
+			else return new Packet20Takeover(cityTakenOverId, rs.getInt("TAKEOVERS"), timeleft, 0, "");
 		}
 		catch (Exception e)
 		{
@@ -944,6 +944,12 @@ public class DBManager
 			DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
 		
 		return addTransfer(p.getAttCityId(), p.getDefCityId(), TransferType.TROOPS_ATTACK, p.getAttArmy(), duration);
+	}
+	
+	public static Packet19Transfer transferAttackTroopsBackHome(int currentCityId, int homeCityId, Resources alive)
+	{
+		Army army = new Army(true, alive);
+		return addTransfer(currentCityId, homeCityId, TransferType.TROOPS_FRIEND, alive, (int) (army.getMarchDuration() / (float) DBManager.getWorldSpeedForCityId(homeCityId)));
 	}
 	
 	public static ArrayList<Packet19Transfer> getTransfers(User user)

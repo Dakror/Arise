@@ -6,9 +6,11 @@ import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
 import de.dakror.arise.net.packet.Packet18BattleResult;
+import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.net.packet.Packet20Takeover;
 import de.dakror.arise.server.data.TransferData;
 import de.dakror.arise.settings.CFG;
+import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.TroopType;
 
 /**
@@ -44,17 +46,21 @@ public class TransferExecutor
 				
 				Server.out(br.toString(transferData.cityFromId, transferData.cityToId));
 				
+				Packet19Transfer transferBack = null;
+				
 				if (br.isAttackers())
 				{
 					DBManager.resetCityArmy(transferData.cityToId); // losers lose everything
+					
+					Resources alive = new Resources(transferData.value.getBinaryData());
+					alive.add(Resources.mul(br.getDead(), -1));
+					transferBack = DBManager.transferAttackTroopsBackHome(transferData.cityToId, transferData.cityFromId, alive); // winning attackers get sent back home
 				}
 				else
 				{
 					for (TroopType t : TroopType.values())
 						DBManager.addCityTroops(transferData.cityToId, t, -br.getDead().get(t.getType()), false); // winner is defending city, their deads get subtracted here
 				}
-				
-				// TODO send winning attackers back home
 				
 				try
 				{
@@ -68,8 +74,16 @@ public class TransferExecutor
 					if (br.isAttackers())
 					{
 						Packet20Takeover p20 = DBManager.handleTakeover(transferData.cityToId, attUserId, new Army(true, transferData.value));
-						if (attOwner != null) Server.currentServer.sendPacket(p20, attOwner);
-						if (defOwner != null) Server.currentServer.sendPacket(p20, defOwner);
+						if (attOwner != null)
+						{
+							Server.currentServer.sendPacket(p20, attOwner);
+							if (transferBack != null) Server.currentServer.sendPacket(transferBack, attOwner);
+						}
+						if (defOwner != null)
+						{
+							Server.currentServer.sendPacket(p20, defOwner);
+							if (transferBack != null) Server.currentServer.sendPacket(transferBack, defOwner);
+						}
 					}
 					
 					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), attOwner.getUsername()), attOwner); // to attacker

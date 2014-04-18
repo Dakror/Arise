@@ -5,6 +5,7 @@ import de.dakror.arise.battlesim.BattleResult;
 import de.dakror.arise.battlesim.BattleSimulator;
 import de.dakror.arise.net.Server;
 import de.dakror.arise.net.User;
+import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet18BattleResult;
 import de.dakror.arise.net.packet.Packet19Transfer;
 import de.dakror.arise.net.packet.Packet20Takeover;
@@ -18,13 +19,22 @@ import de.dakror.arise.settings.TroopType;
  */
 public class TransferExecutor
 {
-	public static void execute(TransferData data)
+	public static void execute(TransferData data) throws Exception
 	{
 		switch (data.type)
 		{
 			case TROOPS_ATTACK:
 			{
 				executeTroopAttack(data);
+				break;
+			}
+			case TROOPS_FRIEND:
+			{
+				for (TroopType type : TroopType.values())
+					DBManager.addCityTroops(data.cityToId, type, data.value.get(type.getType()), false);
+				
+				User recOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(data.cityToId));
+				if (recOwner != null) Server.currentServer.sendPacket(new Packet05Resources(data.cityToId, DBManager.getCityResources(data.cityToId)), recOwner);
 				break;
 			}
 			default:

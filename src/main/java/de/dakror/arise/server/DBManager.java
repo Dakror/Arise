@@ -58,9 +58,10 @@ public class DBManager
 			
 			Statement s = connection.createStatement();
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS WORLDS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, SPEED INTEGER NOT NULL)");
-			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL, TAKEOVERS INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS TRANSFERS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_FROM_ID INTEGER NOT NULL, CITY_TO_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, VALUE text NOT NULL, TIMELEFT INTEGER NOT NULL)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS TAKEOVERS(CITY_ID INTEGER NOT NULL, CITY_FROM_ID INTEGER NOT NULL, COUNT INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL)");
 			s.executeUpdate("VACUUM");
 		}
 		catch (Exception e)
@@ -664,25 +665,33 @@ public class DBManager
 		return false;
 	}
 	
-	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attUserId, Army attArmy)
+	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attCityId, int attUserId, Army attArmy)
 	{
 		int timeleft = (int) (attArmy.getMarchDuration() / (float) getWorldSpeedForCityId(cityTakenOverId) * Const.TAKEOVER_FACTOR);
 		
-		execUpdate("UPDATE CITIES SET TAKEOVERS = TAKEOVERS + 1, TIMELEFT = " + timeleft + " WHERE ID = " + cityTakenOverId);
 		Statement st = null;
 		ResultSet rs = null;
 		
 		try
 		{
 			st = connection.createStatement();
-			rs = st.executeQuery("SELECT TAKEOVERS FROM CITIES WHERE ID = " + cityTakenOverId);
-			
-			if (rs.getInt("TAKEOVERS") > Const.CITY_TAKEOVERS)
+			rs = st.executeQuery("SELECT COUNT FROM TAKEOVERS WHERE CITY_ID = " + cityTakenOverId);
+			if (!rs.next())
 			{
-				execUpdate("UPDATE CITIES SET TAKEOVERS = 0, TIMELEFT = 0, USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
+				execUpdate("INSERT INTO TAKEOVERS(CITY_ID, CITY_FROM_ID, COUNT, TIMELEFT) VALUES(" + cityTakenOverId + ", " + attCityId + ", 1, " + timeleft + ")");
+				return new Packet20Takeover(cityTakenOverId, 1, timeleft, 0, "");
+			}
+			
+			if (rs.getInt("COUNT") >= Const.CITY_TAKEOVERS)
+			{
+				execUpdate("DELETE FROM TAKEOVERS WHERE CITY_ID = " + cityTakenOverId);
 				return new Packet20Takeover(cityTakenOverId, -1, 0, attUserId, getUsersFromWebsite().getString(attUserId + ""));
 			}
-			else return new Packet20Takeover(cityTakenOverId, rs.getInt("TAKEOVERS"), timeleft, 0, "");
+			else
+			{
+				execUpdate("UPDATE TAKEOVERS SET COUNT = COUNT + 1, TIMELEFT = " + timeleft + " WHERE CITY_ID = " + cityTakenOverId);
+				return new Packet20Takeover(cityTakenOverId, rs.getInt("COUNT") + 1, timeleft, 0, "");
+			}
 		}
 		catch (Exception e)
 		{
@@ -995,6 +1004,7 @@ public class DBManager
 	{
 		execUpdate("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
 		execUpdate("UPDATE TRANSFERS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
+		execUpdate("UPDATE TAKEOVERS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
 	}
 	
 	public static void updateBuildingStage()

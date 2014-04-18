@@ -73,7 +73,7 @@ public class TransferExecutor
 					
 					if (br.isAttackers())
 					{
-						Packet20Takeover p20 = DBManager.handleTakeover(transferData.cityToId, attUserId, new Army(true, transferData.value));
+						Packet20Takeover p20 = DBManager.handleTakeover(transferData.cityToId, transferData.cityFromId, attUserId, new Army(true, transferData.value));
 						if (attOwner != null)
 						{
 							Server.currentServer.sendPacket(p20, attOwner);

@@ -86,14 +86,16 @@ public class TransferExecutor
 						Packet20Takeover p20 = DBManager.handleTakeover(transferData.cityToId, transferData.cityFromId, attUserId, new Army(true, transferData.value));
 						if (attOwner != null)
 						{
-							Server.currentServer.sendPacket(p20, attOwner);
+							if (!p20.isCityTakenOver()) Server.currentServer.sendPacket(p20, attOwner);
 							if (transferBack != null) Server.currentServer.sendPacket(transferBack, attOwner);
 						}
 						if (defOwner != null)
 						{
-							Server.currentServer.sendPacket(p20, defOwner);
+							if (!p20.isCityTakenOver()) Server.currentServer.sendPacket(p20, defOwner);
 							if (transferBack != null) Server.currentServer.sendPacket(transferBack, defOwner);
 						}
+						
+						if (p20.isCityTakenOver()) Server.currentServer.sendPacketToAllClientsOnWorld(p20, DBManager.getWorldIdForCityId(transferData.cityFromId));
 					}
 					
 					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), attOwner.getUsername()), attOwner); // to attacker

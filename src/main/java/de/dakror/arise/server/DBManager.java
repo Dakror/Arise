@@ -199,6 +199,37 @@ public class DBManager
 		return 0;
 	}
 	
+	public static int getWorldIdForCityId(int cityId)
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT WORLDS.ID FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
+			if (!rs.next()) return 0;
+			
+			return rs.getInt(1);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+	
 	// -- cities -- //
 	
 	public static ArrayList<Packet04City> getCities(int worldId)
@@ -685,6 +716,7 @@ public class DBManager
 			if (rs.getInt("COUNT") >= Const.CITY_TAKEOVERS)
 			{
 				execUpdate("DELETE FROM TAKEOVERS WHERE CITY_ID = " + cityTakenOverId);
+				execUpdate("UPDATE CITIES SET USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
 				return new Packet20Takeover(cityTakenOverId, -1, 0, attUserId, getUsersFromWebsite().getString(attUserId + ""));
 			}
 			else

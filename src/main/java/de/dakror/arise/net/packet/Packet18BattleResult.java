@@ -77,9 +77,9 @@ public class Packet18BattleResult extends Packet
 	{
 		if (won)
 		{
-			String add = " und das gegnerische Heer zerschlagen!.";
+			String add = " und das gegnerische Heer zerschlagen!";
 			if (def) return "Deine Stadt " + defCity + " \nhat sich erfolgreich gegen die Truppen von \n" + attCityOwner + " aus " + attCity + " \nzur Wehr gesetzt" + add;
-			else return "Deine Stadt " + attCity + " \nhat einen erfolgreichen Angriff auf die Stadt \n" + defCity + " von " + defCityOwner + " \nausgeführt" + add + (dead > 0 ? "\nJedoch sind beim Ansturm \n" + dead + " \nSoldaten umgekommen." : "Dein Heer hat keine Verluste zu melden.");
+			else return "Deine Stadt " + attCity + " \nhat einen erfolgreichen Angriff auf die Stadt \n" + defCity + " von " + defCityOwner + " \nausgeführt" + add + (dead > 0 ? " \nJedoch sind beim Ansturm \n" + dead + " \nSoldaten umgekommen." : " \nDein Heer hat keine Verluste zu melden.");
 		}
 		else
 		{

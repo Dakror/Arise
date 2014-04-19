@@ -128,7 +128,7 @@ public class WorldHUDLayer extends MPLayer
 				if (c instanceof City)
 				{
 					if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
-					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity))
+					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !((City) c).isInTakeoverCooldown())
 					{
 						boolean canTarget = true;
 						

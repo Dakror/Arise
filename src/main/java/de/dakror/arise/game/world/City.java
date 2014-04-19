@@ -14,6 +14,7 @@ import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet06Building;
 import de.dakror.arise.net.packet.Packet10Attribute;
 import de.dakror.arise.net.packet.Packet10Attribute.Key;
+import de.dakror.arise.settings.Const;
 import de.dakror.arise.util.Assistant;
 import de.dakror.gamesetup.ui.ClickEvent;
 import de.dakror.gamesetup.ui.ClickableComponent;
@@ -84,12 +85,16 @@ public class City extends ClickableComponent
 			Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
 			g.setColor(c);
 			
-			if (timeleft > 0)
+			if (timeleft > 0 || takeoverStage > 0)
 			{
 				int[] i = Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(timeleft), x, width, y + 30, g, 26);
 				int s = 32;
 				Helper.setRenderingHints(g, false);
 				Helper.drawImage2(Game.getImage("system/icons.png"), i[0] - s, y, s, s, 0, 48, 24, 24, g);
+				
+				int height = (int) ((takeoverStage / (float) Const.CITY_TAKEOVERS) * s);
+				int sh = (int) ((takeoverStage / (float) Const.CITY_TAKEOVERS) * 24);
+				Helper.drawImage2(Game.getImage("system/icons.png"), i[0] - s, y + (s - height), s, height, 24, 48 + (24 - sh), 24, sh, g);
 				Helper.setRenderingHints(g, true);
 			}
 		}
@@ -161,6 +166,11 @@ public class City extends ClickableComponent
 	{
 		this.userId = userId;
 		this.username = username;
+	}
+	
+	public boolean isInTakeoverCooldown()
+	{
+		return timeleft > 0;
 	}
 	
 	public void updateTakeoverStage(int takeoverStage, int timeleft)

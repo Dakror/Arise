@@ -16,6 +16,7 @@ public class Packet20Takeover extends Packet
 		this.stage = stage;
 		this.timeleft = timeleft;
 		this.newUserId = newUserId;
+		this.newUsername = newUsername;
 	}
 	
 	public Packet20Takeover(byte[] data)

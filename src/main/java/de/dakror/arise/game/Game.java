@@ -7,18 +7,16 @@ import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.dakror.arise.Arise;
-import de.dakror.arise.battlesim.Army;
-import de.dakror.arise.game.building.Building;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.LoginLayer;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.Client;
+import de.dakror.arise.settings.Const;
 import de.dakror.dakrorbin.DakrorBin;
 import de.dakror.gamesetup.applet.GameApplet;
 import de.dakror.gamesetup.layer.Alert;
@@ -32,15 +30,12 @@ import de.dakror.gamesetup.util.Helper;
  */
 public class Game extends GameApplet
 {
-	public static final int INTERVAL = 10;
-	
 	public static Client client;
 	public static Game currentGame;
 	public static JSONObject config;
 	public static String username;
 	public static World world;
 	
-	public static int secondInMinute;
 	public static int userID;
 	public static int worldID = 1;
 	
@@ -59,22 +54,19 @@ public class Game extends GameApplet
 	{
 		try
 		{
-			loadConfig(new URL("http://dakror.de/arise/config.json"));
+			config = new JSONObject(Helper.getURLContent(Game.class.getResource("/config.json")));
+			
+			Const.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
+			Const.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
+			Const.BUILDING_MAX_LEVEL = config.getInt("maxlevel");
+			Const.CITY_TAKEOVERS = config.getInt("takeovers");
+			Const.TAKEOVER_FACTOR = (float) config.getDouble("takeover_factor");
+			Const.MARCH_SECONDS = config.getInt("troops");
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	public static void loadConfig(URL url) throws JSONException
-	{
-		config = new JSONObject(Helper.getURLContent(url));
-		
-		Building.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
-		Building.UPGRADE_FACTOR = (float) config.getDouble("upgrade");
-		Building.MAX_LEVEL = config.getInt("maxlevel");
-		Army.MARCH_SECONDS = config.getInt("troops");
 	}
 	
 	@Override

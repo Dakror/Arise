@@ -27,8 +27,10 @@ import de.dakror.arise.net.packet.Packet14CityLevel;
 import de.dakror.arise.net.packet.Packet15BarracksBuildTroop;
 import de.dakror.arise.net.packet.Packet17CityAttack;
 import de.dakror.arise.net.packet.Packet19Transfer;
+import de.dakror.arise.net.packet.Packet20Takeover;
 import de.dakror.arise.server.data.TransferData;
 import de.dakror.arise.server.data.WorldData;
+import de.dakror.arise.settings.Const;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.Resources.Resource;
 import de.dakror.arise.settings.TransferType;
@@ -59,6 +61,7 @@ public class DBManager
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS CITIES(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, NAME varchar(50) NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, USER_ID INTEGER NOT NULL, WORLD_ID INTEGER NOT NULL, LEVEL INTEGER NOT NULL, ARMY text NOT NULL, WOOD FLOAT NOT NULL, STONE FLOAT NOT NULL, GOLD FLOAT NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS BUILDINGS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, LEVEL INTEGER NOT NULL, X INTEGER NOT NULL, Y INTEGER NOT NULL, STAGE INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL, META text NOT NULL)");
 			s.executeUpdate("CREATE TABLE IF NOT EXISTS TRANSFERS(ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, CITY_FROM_ID INTEGER NOT NULL, CITY_TO_ID INTEGER NOT NULL, TYPE INTEGER NOT NULL, VALUE text NOT NULL, TIMELEFT INTEGER NOT NULL)");
+			s.executeUpdate("CREATE TABLE IF NOT EXISTS TAKEOVERS(CITY_ID INTEGER NOT NULL, CITY_FROM_ID INTEGER NOT NULL, COUNT INTEGER NOT NULL, TIMELEFT INTEGER NOT NULL)");
 			s.executeUpdate("VACUUM");
 		}
 		catch (Exception e)
@@ -165,7 +168,7 @@ public class DBManager
 		return new Packet03World(-1);
 	}
 	
-	public static int getWorldSpeedForCity(int cityId)
+	public static int getWorldSpeedForCityId(int cityId)
 	{
 		Statement st = null;
 		ResultSet rs = null;
@@ -173,6 +176,37 @@ public class DBManager
 		{
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT SPEED FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
+			if (!rs.next()) return 0;
+			
+			return rs.getInt(1);
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+	
+	public static int getWorldIdForCityId(int cityId)
+	{
+		Statement st = null;
+		ResultSet rs = null;
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT WORLDS.ID FROM WORLDS, CITIES WHERE WORLDS.ID = CITIES.WORLD_ID AND CITIES.ID = " + cityId);
 			if (!rs.next()) return 0;
 			
 			return rs.getInt(1);
@@ -545,7 +579,7 @@ public class DBManager
 			if (b.getStage() == 1) r.add(b.getScalingProducts());
 		}
 		
-		int worldSpeed = getWorldSpeedForCity(cityId);
+		int worldSpeed = getWorldSpeedForCityId(cityId);
 		
 		return Resources.mul(r, worldSpeed);
 	}
@@ -662,7 +696,57 @@ public class DBManager
 		return false;
 	}
 	
+	public static Packet20Takeover handleTakeover(int cityTakenOverId, int attCityId, int attUserId, Army attArmy)
+	{
+		int timeleft = (int) (attArmy.getMarchDuration() / (float) getWorldSpeedForCityId(cityTakenOverId) * Const.TAKEOVER_FACTOR);
+		
+		Statement st = null;
+		ResultSet rs = null;
+		
+		try
+		{
+			st = connection.createStatement();
+			rs = st.executeQuery("SELECT COUNT FROM TAKEOVERS WHERE CITY_ID = " + cityTakenOverId);
+			if (!rs.next())
+			{
+				execUpdate("INSERT INTO TAKEOVERS(CITY_ID, CITY_FROM_ID, COUNT, TIMELEFT) VALUES(" + cityTakenOverId + ", " + attCityId + ", 1, " + timeleft + ")");
+				return new Packet20Takeover(cityTakenOverId, 1, timeleft, 0, "");
+			}
+			
+			if (rs.getInt("COUNT") >= Const.CITY_TAKEOVERS)
+			{
+				execUpdate("DELETE FROM TAKEOVERS WHERE CITY_ID = " + cityTakenOverId);
+				execUpdate("UPDATE CITIES SET USER_ID = " + attUserId + " WHERE ID = " + cityTakenOverId);
+				return new Packet20Takeover(cityTakenOverId, -1, 0, attUserId, getUsersFromWebsite().getString(attUserId + ""));
+			}
+			else
+			{
+				execUpdate("UPDATE TAKEOVERS SET COUNT = COUNT + 1, TIMELEFT = " + timeleft + " WHERE CITY_ID = " + cityTakenOverId);
+				return new Packet20Takeover(cityTakenOverId, rs.getInt("COUNT") + 1, timeleft, 0, "");
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			try
+			{
+				rs.close();
+				st.close();
+			}
+			catch (SQLException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
+	
 	// -- buildings --//
+	
 	public static void resetCityArmy(int cityId)
 	{
 		execUpdate("UPDATE CITIES SET ARMY = '0:0:0:0:0:0:0' WHERE ID = " + cityId);
@@ -719,7 +803,7 @@ public class DBManager
 			
 			if (buy(cityId, b.getBuildingCosts()))
 			{
-				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCity(cityId) + ")");
+				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCityId(cityId) + ")");
 				st = connection.createStatement();
 				rs = st.executeQuery("SELECT last_insert_rowid() FROM BUILDINGS LIMIT 1");
 				return rs.getInt(1);
@@ -757,8 +841,8 @@ public class DBManager
 			if (rs.getInt("STAGE") != 1) return -1;
 			
 			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt("TYPE"));
-			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
-			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = " + id);
+			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId));
 		}
 		catch (SQLException e)
 		{
@@ -795,9 +879,9 @@ public class DBManager
 			if (rs.getInt(1) >= b.getMaxLevel()) return -1;
 			if (!buy(cityId, b.getUpgradeCosts())) return -1;
 			
-			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId)) + " WHERE ID = " + id);
+			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = " + id);
 			
-			return (int) ((b.getStageChangeSeconds() * Building.DECONSTRUCT_FACTOR) / getWorldSpeedForCity(cityId));
+			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId));
 		}
 		catch (SQLException e)
 		{
@@ -826,7 +910,7 @@ public class DBManager
 		{
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT * FROM BUILDINGS WHERE (META = '' OR META IS NULL) AND TIMELEFT = 0 AND STAGE = 1 AND ID = " + p.getBuildingId());
-			int speed = getWorldSpeedForCity(p.getCityId());
+			int speed = getWorldSpeedForCityId(p.getCityId());
 			if (speed == 0) return -1;
 			
 			if (!rs.next()) return -1;
@@ -895,12 +979,18 @@ public class DBManager
 	
 	public static Packet19Transfer transferAttackTroops(Packet17CityAttack p)
 	{
-		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCity(p.getAttCityId());
+		int duration = new Army(true, p.getAttArmy()).getMarchDuration() / getWorldSpeedForCityId(p.getAttCityId());
 		
 		for (TroopType t : TroopType.values())
 			DBManager.addCityTroops(p.getAttCityId(), t, -p.getAttArmy().get(t.getType()), false);
 		
 		return addTransfer(p.getAttCityId(), p.getDefCityId(), TransferType.TROOPS_ATTACK, p.getAttArmy(), duration);
+	}
+	
+	public static Packet19Transfer transferAttackTroopsBackHome(int currentCityId, int homeCityId, Resources alive)
+	{
+		Army army = new Army(true, alive);
+		return addTransfer(currentCityId, homeCityId, TransferType.TROOPS_FRIEND, alive, (int) (army.getMarchDuration() / (float) DBManager.getWorldSpeedForCityId(homeCityId)));
 	}
 	
 	public static ArrayList<Packet19Transfer> getTransfers(User user)
@@ -946,6 +1036,7 @@ public class DBManager
 	{
 		execUpdate("UPDATE BUILDINGS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
 		execUpdate("UPDATE TRANSFERS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
+		execUpdate("UPDATE TAKEOVERS SET TIMELEFT = TIMELEFT - 1 WHERE TIMELEFT > 0");
 	}
 	
 	public static void updateBuildingStage()

@@ -2,6 +2,7 @@ package de.dakror.arise.battlesim;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import de.dakror.arise.settings.Const;
 import de.dakror.arise.settings.Resources;
 import de.dakror.arise.settings.TroopType;
 
@@ -11,8 +12,6 @@ import de.dakror.arise.settings.TroopType;
  */
 public class Army
 {
-	public static int MARCH_SECONDS;
-	
 	private boolean attacking;
 	
 	private CopyOnWriteArrayList<Troop> troops;
@@ -110,12 +109,12 @@ public class Army
 	
 	public int getMarchDuration()
 	{
-		int duration = 0;
+		float duration = 0;
 		
 		for (Troop t : troops)
 			duration += t.size() * t.getType().getSpeed();
 		
-		return duration * MARCH_SECONDS;
+		return (int) (duration * 10 * Const.MARCH_SECONDS);
 	}
 	
 	public void tick(Army enemy)

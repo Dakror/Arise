@@ -23,6 +23,7 @@ import de.dakror.arise.net.packet.Packet04City;
 import de.dakror.arise.net.packet.Packet05Resources;
 import de.dakror.arise.net.packet.Packet07RenameCity;
 import de.dakror.arise.net.packet.Packet19Transfer;
+import de.dakror.arise.net.packet.Packet20Takeover;
 import de.dakror.arise.settings.CFG;
 import de.dakror.gamesetup.GameFrame;
 import de.dakror.gamesetup.ui.Component;
@@ -332,6 +333,19 @@ public class World extends MPLayer
 			{
 				components.add(new Transfer(getCityForId(packet.getCityFrom()), getCityForId(packet.getCityTo()), packet));
 				sortComponents();
+			}
+		}
+		if (p.getType() == PacketTypes.TAKEOVER)
+		{
+			Packet20Takeover packet = (Packet20Takeover) p;
+			
+			for (Component c : components)
+			{
+				if (c instanceof City && ((City) c).getId() == packet.getCityTakenOverId())
+				{
+					((City) c).updateTakeoverStage(packet.getStage(), packet.getTimeleft());
+					if (packet.getNewUserId() != 0) ((City) c).setUser(packet.getNewUserId(), packet.getNewUsername());
+				}
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package de.dakror.arise.layer;
 import java.awt.Graphics2D;
 import java.io.IOException;
 
+import de.dakror.arise.Arise;
 import de.dakror.arise.game.Game;
 import de.dakror.arise.net.packet.Packet;
 import de.dakror.arise.net.packet.Packet.PacketTypes;
@@ -79,7 +80,8 @@ public class PauseLayer extends MPLayer
 				}
 			}
 		});
-		if (Game.userID != 0) components.add(logout);
+		
+		if (Game.userID != 0 && !Arise.wrapper) components.add(logout);
 		
 		TextButton exit = new TextButton(back.getX(), back.getY() + TextButton.HEIGHT * 2, "Beenden");
 		exit.addClickEvent(new ClickEvent()

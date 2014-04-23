@@ -13,6 +13,7 @@ import de.dakror.arise.Arise;
 import de.dakror.arise.game.world.World;
 import de.dakror.arise.layer.LoadingLayer;
 import de.dakror.arise.layer.LoginLayer;
+import de.dakror.arise.layer.LoginLayerDakrorLauncher;
 import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.layer.WorldHUDLayer;
 import de.dakror.arise.net.Client;
@@ -78,7 +79,7 @@ public class Game extends GameApplet
 		{
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
 			
-			addLayer(new LoginLayer());
+			addLayer(Arise.wrapper ? new LoginLayerDakrorLauncher() : new LoginLayer());
 			addLayer(new LoadingLayer());
 			
 			loadConfig();

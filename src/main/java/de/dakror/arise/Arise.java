@@ -18,6 +18,7 @@ import de.dakror.arise.layer.PauseLayer;
 import de.dakror.arise.net.packet.Packet02Disconnect;
 import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 import de.dakror.dakrorbin.DakrorBin;
+import de.dakror.dakrorbin.Launch;
 
 /**
  * @author Dakror
@@ -88,14 +89,19 @@ public class Arise extends JApplet
 	{
 		try
 		{
-			if (args.length > 0 && args[0].equals("-school")) // school fixes :D
-			{
-				System.setProperty("http.proxyHost", "192.168.0.7");
-				System.setProperty("http.proxyPort", "800");
-				if (args.length > 1 && args[1].equals("-local")) localServer = true;
-			}
+			Launch.init(args);
 			
-			if (args.length > 0 && args[0].equals("-local")) localServer = true;
+			if (args.length > 0)
+			{
+				for (String s : args)
+				{
+					if (s.equals("-local"))
+					{
+						localServer = true;
+						break;
+					}
+				}
+			}
 			
 			wrapper = true;
 			
@@ -138,8 +144,6 @@ public class Arise extends JApplet
 			frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(DakrorBin.buildTimestamp));
 			
 			arise.init();
-			
-			DakrorBin.checkForUpdates();
 		}
 		catch (Exception e1)
 		{

@@ -79,7 +79,7 @@ public class Game extends GameApplet
 		{
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
 			
-			addLayer(Arise.wrapper ? new LoginLayerDakrorLauncher() : new LoginLayer());
+			if (!Arise.wrapper) addLayer(new LoginLayer());
 			addLayer(new LoadingLayer());
 			
 			loadConfig();
@@ -108,6 +108,8 @@ public class Game extends GameApplet
 			{
 				removeLoadingLayer();
 				client.start();
+				
+				if (Arise.wrapper) addLayer(new LoginLayerDakrorLauncher());
 			}
 		}
 		catch (Exception e)

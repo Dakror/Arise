@@ -56,10 +56,9 @@ public class ServerUpdater extends Thread
 	
 	public void kickInactiveUsers() throws Exception
 	{
-		long s = 1000 * 40;
 		for (User u : Server.currentServer.clients)
 		{
-			if (System.currentTimeMillis() - u.getLastInteraction() > s)
+			if (System.currentTimeMillis() - u.getLastInteraction() > 2000)
 			{
 				Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.INACTIVE), u);
 				Server.out("Kicked user: #" + u.getId() + " (" + Cause.INACTIVE + ")");

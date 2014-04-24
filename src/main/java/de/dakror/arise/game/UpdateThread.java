@@ -18,20 +18,15 @@ public class UpdateThread extends Updater
 		if (tick % 60 == 0)
 		{
 			Game.currentGame.usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-			System.gc();
-		}
-		
-		if (System.currentTimeMillis() - lastPing > 1000 * 30 && Game.userID > 0) // ping server every half a minute
-		{
 			try
 			{
 				Game.client.sendPacket(new Packet00Handshake());
-				lastPing = System.currentTimeMillis();
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
+			System.gc();
 		}
 	}
 }

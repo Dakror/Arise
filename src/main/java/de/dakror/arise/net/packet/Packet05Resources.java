@@ -7,30 +7,25 @@ import de.dakror.arise.settings.Resources;
 /**
  * @author Dakror
  */
-public class Packet05Resources extends Packet
-{
+public class Packet05Resources extends Packet {
 	Resources resources;
 	int cityId;
 	
-	public Packet05Resources(int cityId)
-	{
+	public Packet05Resources(int cityId) {
 		super(5);
 		this.cityId = cityId;
 	}
 	
-	public Packet05Resources(int cityId, Resources res)
-	{
+	public Packet05Resources(int cityId, Resources res) {
 		super(5);
 		this.cityId = cityId;
 		resources = res;
 	}
 	
-	public Packet05Resources(byte[] data)
-	{
+	public Packet05Resources(byte[] data) {
 		super(5);
 		
-		if (data.length > 5)
-		{
+		if (data.length > 5) {
 			ByteBuffer bb = ByteBuffer.wrap(data);
 			bb.get(); // skip packet id
 			
@@ -38,25 +33,20 @@ public class Packet05Resources extends Packet
 			byte[] d = new byte[bb.capacity() - 5];
 			bb.get(d, 0, d.length);
 			resources = new Resources(d);
-		}
-		else cityId = Integer.parseInt(readData(data).trim());
+		} else cityId = Integer.parseInt(readData(data).trim());
 	}
 	
-	public Resources getResources()
-	{
+	public Resources getResources() {
 		return resources;
 	}
 	
-	public int getCityId()
-	{
+	public int getCityId() {
 		return cityId;
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
-		if (resources == null)
-		{
+	protected byte[] getPacketData() {
+		if (resources == null) {
 			ByteBuffer bb = ByteBuffer.allocate(4);
 			bb.putInt(cityId);
 			return bb.array();

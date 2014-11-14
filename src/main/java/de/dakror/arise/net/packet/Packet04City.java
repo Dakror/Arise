@@ -3,13 +3,11 @@ package de.dakror.arise.net.packet;
 /**
  * @author Dakror
  */
-public class Packet04City extends Packet
-{
+public class Packet04City extends Packet {
 	int x, y, userId, cityId, level;
 	String cityName, username;
 	
-	public Packet04City(int cityId, int x, int y, int userId, int level, String cityName, String username)
-	{
+	public Packet04City(int cityId, int x, int y, int userId, int level, String cityName, String username) {
 		super(4);
 		this.cityId = cityId;
 		this.x = x;
@@ -20,8 +18,7 @@ public class Packet04City extends Packet
 		this.username = username;
 	}
 	
-	public Packet04City(byte[] data)
-	{
+	public Packet04City(byte[] data) {
 		super(4);
 		String s = readData(data);
 		String[] parts = s.split(":");
@@ -35,43 +32,35 @@ public class Packet04City extends Packet
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		return (cityId + ":" + x + ":" + y + ":" + userId + ":" + level + ":" + cityName + ":" + username).getBytes();
 	}
 	
-	public int getX()
-	{
+	public int getX() {
 		return x;
 	}
 	
-	public int getY()
-	{
+	public int getY() {
 		return y;
 	}
 	
-	public int getUserId()
-	{
+	public int getUserId() {
 		return userId;
 	}
 	
-	public int getCityId()
-	{
+	public int getCityId() {
 		return cityId;
 	}
 	
-	public int getLevel()
-	{
+	public int getLevel() {
 		return level;
 	}
 	
-	public String getCityName()
-	{
+	public String getCityName() {
 		return cityName;
 	}
 	
-	public String getUsername()
-	{
+	public String getUsername() {
 		return username;
 	}
 }

@@ -3,13 +3,11 @@ package de.dakror.arise.server.data;
 /**
  * @author Dakror
  */
-public class WorldData
-{
+public class WorldData {
 	public int id, speed;
 	public String name;
 	
-	public WorldData(int id, String name, int speed)
-	{
+	public WorldData(int id, String name, int speed) {
 		this.id = id;
 		this.name = name;
 		this.speed = speed;

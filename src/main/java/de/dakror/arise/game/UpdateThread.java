@@ -8,22 +8,16 @@ import de.dakror.gamesetup.Updater;
 /**
  * @author Dakror
  */
-public class UpdateThread extends Updater
-{
+public class UpdateThread extends Updater {
 	long lastPing = 0;
 	
 	@Override
-	public void update()
-	{
-		if (tick % 60 == 0)
-		{
+	public void update() {
+		if (tick % 60 == 0) {
 			Game.currentGame.usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-			try
-			{
+			try {
 				Game.client.sendPacket(new Packet00Handshake());
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			System.gc();

@@ -26,8 +26,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class Transfer extends ClickableComponent
-{
+public class Transfer extends ClickableComponent {
 	Area arrow;
 	TransferType type;
 	Resources value;
@@ -35,8 +34,7 @@ public class Transfer extends ClickableComponent
 	double angle;
 	City from, to;
 	
-	public Transfer(City from, City to, Packet19Transfer data)
-	{
+	public Transfer(City from, City to, Packet19Transfer data) {
 		super(from.x + City.SIZE / 2, from.y + City.SIZE / 2, Math.abs(to.x - from.x), Math.abs(to.y - from.y));
 		
 		this.from = from;
@@ -50,8 +48,7 @@ public class Transfer extends ClickableComponent
 		distance = (int) (Math.sqrt(Math.pow((to.x + City.SIZE / 2) - (from.x + City.SIZE / 2), 2) + Math.pow((to.y + City.SIZE / 2) - (from.y + City.SIZE / 2), 2)) - City.SIZE / 4 * Math.sqrt(2));
 		Polygon polygon = new Polygon();
 		
-		if (distance >= 0)
-		{
+		if (distance >= 0) {
 			polygon.addPoint(0, -6);
 			polygon.addPoint(0, 6);
 			polygon.addPoint(distance - 24, 6);
@@ -71,10 +68,8 @@ public class Transfer extends ClickableComponent
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
-		try
-		{
+	public void draw(Graphics2D g) {
+		try {
 			Stroke s = g.getStroke();
 			Color c = g.getColor();
 			Composite cs = g.getComposite();
@@ -92,35 +87,28 @@ public class Transfer extends ClickableComponent
 			
 			g.setColor(c);
 			g.setComposite(cs);
-		}
-		catch (NullPointerException e)
-		{}
+		} catch (NullPointerException e) {}
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		if (timeleft > 0 && tick % Game.currentGame.getUPS() == 0) timeleft--;
 	}
 	
-	public City getCityFrom()
-	{
+	public City getCityFrom() {
 		return from;
 	}
 	
-	public City getCityTo()
-	{
+	public City getCityTo() {
 		return to;
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
 	@Override
-	public void drawTooltip(int x, int y, Graphics2D g)
-	{
+	public void drawTooltip(int x, int y, Graphics2D g) {
 		if (!(Game.currentGame.getActiveLayer() instanceof WorldHUDLayer)) return;
 		
 		String tooltip = type.getDescription();
@@ -140,15 +128,13 @@ public class Transfer extends ClickableComponent
 		Helper.drawShadow(x1, y1, width, height, g);
 		Helper.drawString(tooltip, x1 + 15, y1 + 40, g, 30);
 		Helper.drawString(timer, x1 + 20, y1 + 70, g, 27);
-		for (int i = 0; i < filled.size(); i++)
-		{
+		for (int i = 0; i < filled.size(); i++) {
 			Assistant.drawResource(value, filled.get(i), x1 + 20, y1 + 80 + i * 30, 25, 30, g);
 		}
 	}
 	
 	@Override
-	public boolean contains(int x, int y)
-	{
+	public boolean contains(int x, int y) {
 		return arrow.contains(x, y);
 	}
 }

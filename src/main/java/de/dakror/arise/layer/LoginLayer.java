@@ -34,23 +34,19 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class LoginLayer extends MPLayer
-{
+public class LoginLayer extends MPLayer {
 	BufferedImage cache;
 	TextButton login;
 	InputField username, password;
 	boolean startGame;
 	
-	public LoginLayer()
-	{
+	public LoginLayer() {
 		startGame = false;
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
-		if (cache == null)
-		{
+	public void draw(Graphics2D g) {
+		if (cache == null) {
 			cache = new BufferedImage(Game.getWidth(), Game.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics2D g2 = (Graphics2D) cache.getGraphics();
 			Helper.setRenderingHints(g2, true);
@@ -73,59 +69,45 @@ public class LoginLayer extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		if (login != null) login.enabled = username.getText().length() >= 4 && password.getText().length() > 0;
 		
 		if (Game.currentGame.alpha == 1 && startGame) Game.currentGame.startGame();
 	}
 	
-	public void initFirstPage()
-	{
+	public void initFirstPage() {
 		login = null;
 		components.clear();
 		
 		TextButton login = new TextButton((Game.getWidth() - (TextButton.WIDTH + 40)) / 2 + 20, 320, "Anmelden");
-		login.addClickEvent(new ClickEvent()
-		{
+		login.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				initSecondPage();
 			}
 		});
 		components.add(login);
 		TextButton register = new TextButton(login.getX(), login.getY() + TextButton.HEIGHT, "Registrieren");
-		register.addClickEvent(new ClickEvent()
-		{
+		register.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
+			public void trigger() {
+				try {
 					if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de#register"), "_blank");
 					else Desktop.getDesktop().browse(new URL("http://dakror.de#register").toURI());
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		});
 		components.add(register);
 		TextButton exit = new TextButton(login.getX(), register.getY() + TextButton.HEIGHT * 2, "Beenden");
-		exit.addClickEvent(new ClickEvent()
-		{
+		exit.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
+			public void trigger() {
+				try {
 					if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
 					else System.exit(0);
-				}
-				catch (MalformedURLException e)
-				{
+				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				}
 			}
@@ -133,15 +115,12 @@ public class LoginLayer extends MPLayer
 		components.add(exit);
 	}
 	
-	public void initSecondPage()
-	{
+	public void initSecondPage() {
 		components.clear();
 		TextButton back = new TextButton((Game.getWidth() - (TextButton.WIDTH + 40)) / 2 + 20, 320, "Zurück");
-		back.addClickEvent(new ClickEvent()
-		{
+		back.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				initFirstPage();
 			}
 		});
@@ -162,19 +141,14 @@ public class LoginLayer extends MPLayer
 		
 		login = new TextButton(back.getX(), back.getY() + TextButton.HEIGHT * 3, "Anmelden");
 		login.enabled = false;
-		login.addClickEvent(new ClickEvent()
-		{
+		login.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
+			public void trigger() {
+				try {
 					final String pw = new String(HexBin.encode(MessageDigest.getInstance("MD5").digest(password.getText().getBytes()))).toLowerCase();
 					Game.client.sendPacket(new Packet01Login(username.getText(), pw, Game.worldID));
 					Game.currentGame.addLayer(new LoadingLayer());
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -183,86 +157,63 @@ public class LoginLayer extends MPLayer
 	}
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		initFirstPage();
 	}
 	
 	@Override
-	public void keyPressed(KeyEvent e)
-	{
+	public void keyPressed(KeyEvent e) {
 		super.keyPressed(e);
 		
-		if (e.getKeyCode() == KeyEvent.VK_F2)
-		{
+		if (e.getKeyCode() == KeyEvent.VK_F2) {
 			String id = JOptionPane.showInputDialog("ID der gewünschten Welt: ", Game.worldID);
-			try
-			{
+			try {
 				int i = Integer.parseInt(id);
 				Game.worldID = i;
-			}
-			catch (Exception e1)
-			{}
+			} catch (Exception e1) {}
 		}
 	}
 	
 	@Override
-	public void onReceivePacket(Packet p)
-	{
+	public void onReceivePacket(Packet p) {
 		super.onReceivePacket(p);
 		
-		if (p.getType() == PacketTypes.LOGIN)
-		{
-			if (((Packet01Login) p).getResponse() != Response.LOGIN_OK)
-			{
+		if (p.getType() == PacketTypes.LOGIN) {
+			if (((Packet01Login) p).getResponse() != Response.LOGIN_OK) {
 				Game.currentGame.removeLoadingLayer();
-				Game.currentGame.addLayer(new Alert(((Packet01Login) p).getResponse().text, new ClickEvent()
-				{
+				Game.currentGame.addLayer(new Alert(((Packet01Login) p).getResponse().text, new ClickEvent() {
 					@Override
-					public void trigger()
-					{
+					public void trigger() {
 						password.setText("");
 						Game.worldID = 1;
 					}
 				}));
-			}
-			else
-			{
+			} else {
 				Game.username = ((Packet01Login) p).getUsername();
 				Game.userID = ((Packet01Login) p).getUserId();
-				try
-				{
+				try {
 					Game.client.sendPacket(new Packet03World(Game.worldID));
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		
-		if (p.getType() == PacketTypes.WORLD)
-		{
-			try
-			{
+		if (p.getType() == PacketTypes.WORLD) {
+			try {
 				Game.world = new World((Packet03World) p);
 				Game.client.sendPacket(new Packet10Attribute(Key.world_data, Game.worldID));
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		if (p.getType() == PacketTypes.CITY || p.getType() == PacketTypes.TRANSFER)
-		{
+		if (p.getType() == PacketTypes.CITY || p.getType() == PacketTypes.TRANSFER) {
 			Game.world.onReceivePacket(p);
 		}
 		
-		if (p.getType() == PacketTypes.ATTRIBUTE)
-		{
-			if (((Packet10Attribute) p).getKey() == Key.loading_complete)
-			{
+		if (p.getType() == PacketTypes.ATTRIBUTE) {
+			if (((Packet10Attribute) p).getKey() == Key.loading_complete) {
 				startGame = true;
 				Game.currentGame.removeLoadingLayer();
 				Game.currentGame.fadeTo(1, 0.05f);

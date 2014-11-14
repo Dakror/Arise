@@ -3,8 +3,7 @@ package de.dakror.arise.settings;
 /**
  * @author Dakror
  */
-public class Const
-{
+public class Const {
 	public static int MARCH_SECONDS;
 	public static int BUILDING_MAX_LEVEL;
 	public static int CITY_TAKEOVERS;

@@ -23,8 +23,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class City extends ClickableComponent
-{
+public class City extends ClickableComponent {
 	public static int SIZE = 96;
 	
 	public static int[][] levels = { { 320, 352, 32, 32 }, { 352, 352, 32, 32 }, { 448, 320, 32, 32 }, { 256, 352, 32, 32 }, { 320, 416, 32, 32 }, { 448, 192, 64, 64 }, { 256, 192, 64, 64 } };
@@ -40,8 +39,7 @@ public class City extends ClickableComponent
 	
 	public Packet05Resources resourcePacket;
 	
-	public City(int x, int y, Packet04City data)
-	{
+	public City(int x, int y, Packet04City data) {
 		super(x, y, SIZE, SIZE);
 		
 		name = data.getCityName();
@@ -50,23 +48,18 @@ public class City extends ClickableComponent
 		id = data.getCityId();
 		level = data.getLevel();
 		
-		addClickEvent(new ClickEvent()
-		{
+		addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				WorldHUDLayer.selectedCity = City.this;
 			}
 		});
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
-		try
-		{
-			if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this)))
-			{
+	public void draw(Graphics2D g) {
+		try {
+			if (state != 0 || (WorldHUDLayer.selectedCity != null && WorldHUDLayer.selectedCity.equals(this))) {
 				Color c = g.getColor();
 				g.setColor(Color.black);
 				g.drawRect(x, y, width, height);
@@ -85,8 +78,7 @@ public class City extends ClickableComponent
 			Helper.drawHorizontallyCenteredString(username, x, width, y1 + 15, g, 17);
 			g.setColor(c);
 			
-			if (timeleft > 0 || takeoverStage > 0)
-			{
+			if (timeleft > 0 || takeoverStage > 0) {
 				int[] i = Helper.drawHorizontallyCenteredString(Assistant.formatSeconds(timeleft), x, width, y + 30, g, 26);
 				int s = 32;
 				Helper.setRenderingHints(g, false);
@@ -97,16 +89,12 @@ public class City extends ClickableComponent
 				Helper.drawImage2(Game.getImage("system/icons.png"), i[0] - s, y + (s - height), s, height, 24, 48 + (24 - sh), 24, sh, g);
 				Helper.setRenderingHints(g, true);
 			}
-		}
-		catch (NullPointerException e)
-		{}
+		} catch (NullPointerException e) {}
 	}
 	
 	@Override
-	public void update(int tick)
-	{
-		if (Game.currentGame.alpha == 1 && resourcePacket != null)
-		{
+	public void update(int tick) {
+		if (Game.currentGame.alpha == 1 && resourcePacket != null) {
 			CityLayer cl = new CityLayer(City.this);
 			CityHUDLayer.cl = cl;
 			Game.currentGame.addLayer(cl);
@@ -114,12 +102,9 @@ public class City extends ClickableComponent
 			Game.currentGame.fadeTo(0, 0.05f);
 			Game.world.gotoCity = null;
 			resourcePacket = null;
-			try
-			{
+			try {
 				Game.client.sendPacket(new Packet06Building(id));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -127,73 +112,58 @@ public class City extends ClickableComponent
 		if (timeleft > 0 && tick % Game.currentGame.getUPS() == 0) timeleft--;
 	}
 	
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 	
-	public void setName(String name)
-	{
+	public void setName(String name) {
 		this.name = name;
 	}
 	
-	public int getLevel()
-	{
+	public int getLevel() {
 		return level;
 	}
 	
-	public void setLevel(int level)
-	{
+	public void setLevel(int level) {
 		this.level = level;
 	}
 	
-	public String getUsername()
-	{
+	public String getUsername() {
 		return username;
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
-	public int getUserId()
-	{
+	public int getUserId() {
 		return userId;
 	}
 	
-	public void setUser(int userId, String username)
-	{
+	public void setUser(int userId, String username) {
 		this.userId = userId;
 		this.username = username;
 	}
 	
-	public boolean isInTakeoverCooldown()
-	{
+	public boolean isInTakeoverCooldown() {
 		return timeleft > 0;
 	}
 	
-	public void updateTakeoverStage(int takeoverStage, int timeleft)
-	{
+	public void updateTakeoverStage(int takeoverStage, int timeleft) {
 		this.takeoverStage = takeoverStage;
 		this.timeleft = timeleft;
 	}
 	
 	@Override
-	public void mousePressed(MouseEvent e)
-	{
+	public void mousePressed(MouseEvent e) {
 		super.mousePressed(e);
 		
-		if (state == 1 && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && userId == Game.userID)
-		{
+		if (state == 1 && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && userId == Game.userID) {
 			Game.world.gotoCity = this;
-			try
-			{
+			try {
 				Game.client.sendPacket(new Packet05Resources(id));
 				Game.client.sendPacket(new Packet10Attribute(Key.city, id));
-			}
-			catch (IOException e1)
-			{
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		}

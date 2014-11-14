@@ -28,14 +28,12 @@ import de.dakror.dakrorbin.DakrorBin;
 /**
  * @author Dakror
  */
-public class AriseServer
-{
+public class AriseServer {
 	public static Server server;
 	public static Properties properties;
 	public static JTextPane trafficLog;
 	
-	public static void main(String[] args) throws Exception
-	{
+	public static void main(String[] args) throws Exception {
 		new Game();
 		
 		new File(CFG.DIR, "/Server/config.properties").createNewFile();
@@ -48,8 +46,7 @@ public class AriseServer
 		DakrorBin.init(null, "Arise-Server");
 		DakrorBin.showDialog = false;
 		
-		if (isLogging())
-		{
+		if (isLogging()) {
 			cleanupLogs();
 			File errors = new File(new File(properties.getProperty("logfile")), "AriseServer " + new SimpleDateFormat("dd.MM.yy, HH-mm-ss").format(new Date()) + ".log");
 			System.setErr(new ErrorOutputStream(System.err, errors));
@@ -59,33 +56,25 @@ public class AriseServer
 		new CommandHandler();
 	}
 	
-	public static void saveProperties()
-	{
-		try
-		{
+	public static void saveProperties() {
+		try {
 			properties.store(new FileOutputStream(new File(CFG.DIR, "/Server/config.properties")), "");
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static boolean isLogging()
-	{
+	public static boolean isLogging() {
 		return properties.containsKey("logfile") && properties.getProperty("logfile").trim().length() > 0;
 	}
 	
-	public static void cleanupLogs()
-	{
-		for (File f : new File(properties.getProperty("logfile")).listFiles())
-		{
+	public static void cleanupLogs() {
+		for (File f : new File(properties.getProperty("logfile")).listFiles()) {
 			if (f.getName().contains("AriseServer") && f.length() == 0) f.delete();
 		}
 	}
 	
-	public static void createTrafficFrame() throws IOException
-	{
+	public static void createTrafficFrame() throws IOException {
 		JFrame frame = new JFrame("Arise Server Traffic Console");
 		
 		frame.setIconImage(ImageIO.read(AriseServer.class.getResource("/img/system/logo.png")));

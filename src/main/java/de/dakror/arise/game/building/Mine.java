@@ -3,10 +3,8 @@ package de.dakror.arise.game.building;
 /**
  * @author Dakror
  */
-public class Mine extends Building
-{
-	public Mine(int x, int y, int level)
-	{
+public class Mine extends Building {
+	public Mine(int x, int y, int level) {
 		super(x, y, 6, 4, level);
 		typeId = 3;
 		

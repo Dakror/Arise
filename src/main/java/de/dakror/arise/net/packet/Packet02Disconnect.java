@@ -3,10 +3,8 @@ package de.dakror.arise.net.packet;
 /**
  * @author Dakror
  */
-public class Packet02Disconnect extends Packet
-{
-	public enum Cause
-	{
+public class Packet02Disconnect extends Packet {
+	public enum Cause {
 		SERVER_CLOSED("Der Server wurde geschlossen. Wir untersuchen dieses Problem bereits und versuchen, den Server schnellstmöglichst wieder zu starten."),
 		SERVER_CONFIRMED("Der Server bestätigt die Anfrage des Clients auf Abmeldung."),
 		USER_DISCONNECT("Spiel beendet."),
@@ -16,13 +14,11 @@ public class Packet02Disconnect extends Packet
 		;
 		private String description;
 		
-		private Cause(String desc)
-		{
+		private Cause(String desc) {
 			description = desc;
 		}
 		
-		public String getDescription()
-		{
+		public String getDescription() {
 			return description;
 		}
 	}
@@ -30,15 +26,13 @@ public class Packet02Disconnect extends Packet
 	int id;
 	Cause cause;
 	
-	public Packet02Disconnect(int id, Cause cause)
-	{
+	public Packet02Disconnect(int id, Cause cause) {
 		super(2);
 		this.id = id;
 		this.cause = cause;
 	}
 	
-	public Packet02Disconnect(byte[] data)
-	{
+	public Packet02Disconnect(byte[] data) {
 		super(2);
 		String[] parts = readData(data).split(":");
 		id = Integer.parseInt(new String(parts[0]));
@@ -46,18 +40,15 @@ public class Packet02Disconnect extends Packet
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		return (id + ":" + cause.ordinal()).getBytes();
 	}
 	
-	public int getUserId()
-	{
+	public int getUserId() {
 		return id;
 	}
 	
-	public Cause getCause()
-	{
+	public Cause getCause() {
 		return cause;
 	}
 }

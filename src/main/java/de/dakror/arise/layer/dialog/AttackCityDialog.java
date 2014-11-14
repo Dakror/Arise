@@ -19,8 +19,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class AttackCityDialog extends MPLayer
-{
+public class AttackCityDialog extends MPLayer {
 	int width, height;
 	
 	int attCityId, defCityId;
@@ -28,8 +27,7 @@ public class AttackCityDialog extends MPLayer
 	
 	TextButton attack;
 	
-	public AttackCityDialog(int attCityId, int defCityId, Resources resources)
-	{
+	public AttackCityDialog(int attCityId, int defCityId, Resources resources) {
 		this.attCityId = attCityId;
 		this.defCityId = defCityId;
 		this.resources = resources;
@@ -40,12 +38,10 @@ public class AttackCityDialog extends MPLayer
 	}
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		components.clear();
 		
-		for (TroopType t : TroopType.values())
-		{
+		for (TroopType t : TroopType.values()) {
 			int v = resources.get(t.getType());
 			Slider slider = new Slider((Game.getWidth() - width) / 2 + 20, (Game.getHeight() - height) / 2 + 90 + t.ordinal() * 50, width - 40, 0, v == 0 ? 1 : v, 0, true);
 			if (v == 0) slider.enabled = false;
@@ -54,27 +50,20 @@ public class AttackCityDialog extends MPLayer
 		}
 		
 		TextButton abort = new TextButton((Game.getWidth() - width) / 2 + 10, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Abbruch");
-		abort.addClickEvent(new ClickEvent()
-		{
+		abort.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				Game.currentGame.removeLayer(AttackCityDialog.this);
 			}
 		});
 		components.add(abort);
 		attack = new TextButton(Game.getWidth() / 2, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Angreifen");
-		attack.addClickEvent(new ClickEvent()
-		{
+		attack.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
+			public void trigger() {
+				try {
 					Game.client.sendPacket(new Packet17CityAttack(attCityId, defCityId, getSelectedResources()));
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				Game.currentGame.removeLayer(AttackCityDialog.this);
@@ -83,17 +72,12 @@ public class AttackCityDialog extends MPLayer
 		components.add(attack);
 	}
 	
-	public Resources getSelectedResources()
-	{
+	public Resources getSelectedResources() {
 		Resources res = new Resources();
-		for (Component c : components)
-		{
-			if (c instanceof Slider)
-			{
-				for (TroopType t : TroopType.values())
-				{
-					if (((Slider) c).getTitle().equals(t.getType().getName()))
-					{
+		for (Component c : components) {
+			if (c instanceof Slider) {
+				for (TroopType t : TroopType.values()) {
+					if (((Slider) c).getTitle().equals(t.getType().getName())) {
 						res.set(t.getType(), ((Slider) c).getValue());
 						break;
 					}
@@ -104,8 +88,7 @@ public class AttackCityDialog extends MPLayer
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		Helper.drawContainer((Game.getWidth() - width) / 2, (Game.getHeight() - height) / 2, width, height, false, false, g);
 		Helper.drawHorizontallyCenteredString("Stadt angreifen", Game.getWidth(), (Game.getHeight() - height) / 2 + 40, g, 35);
 		
@@ -116,19 +99,14 @@ public class AttackCityDialog extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		updateComponents(tick);
 		
 		attack.enabled = false;
-		for (Component c : components)
-		{
-			if (c instanceof Slider)
-			{
-				for (TroopType t : TroopType.values())
-				{
-					if (((Slider) c).getTitle().equals(t.getType().getName()))
-					{
+		for (Component c : components) {
+			if (c instanceof Slider) {
+				for (TroopType t : TroopType.values()) {
+					if (((Slider) c).getTitle().equals(t.getType().getName())) {
 						if (((Slider) c).getValue() > 0) attack.enabled = true;
 						break;
 					}

@@ -3,19 +3,16 @@ package de.dakror.arise.net.packet;
 /**
  * @author Dakror
  */
-public class Packet06Building extends Packet
-{
+public class Packet06Building extends Packet {
 	int cityId, id, type, level, x, y, stage, timeleft;
 	String meta;
 	
-	public Packet06Building(int cityId)
-	{
+	public Packet06Building(int cityId) {
 		super(6);
 		this.cityId = cityId;
 	}
 	
-	public Packet06Building(int cityId, int id, int type, int level, int x, int y, int stage, int timeleft, String meta)
-	{
+	public Packet06Building(int cityId, int id, int type, int level, int x, int y, int stage, int timeleft, String meta) {
 		super(6);
 		
 		this.cityId = cityId;
@@ -29,12 +26,10 @@ public class Packet06Building extends Packet
 		this.meta = meta;
 	}
 	
-	public Packet06Building(byte[] data)
-	{
+	public Packet06Building(byte[] data) {
 		super(6);
 		String s = readData(data);
-		if (s.contains(":"))
-		{
+		if (s.contains(":")) {
 			String[] parts = s.split(":");
 			cityId = Integer.parseInt(new String(parts[0]));
 			id = Integer.parseInt(new String(parts[1]));
@@ -45,59 +40,48 @@ public class Packet06Building extends Packet
 			stage = Integer.parseInt(new String(parts[6]));
 			timeleft = Integer.parseInt(new String(parts[7]));
 			if (parts.length == 9) meta = new String(parts[8]);
-		}
-		else cityId = Integer.parseInt(s.trim());
+		} else cityId = Integer.parseInt(s.trim());
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		if (type != 0) return (cityId + ":" + id + ":" + type + ":" + level + ":" + x + ":" + y + ":" + stage + ":" + timeleft + (meta != null ? ":" + meta : "")).getBytes();
 		else return (cityId + "").getBytes();
 	}
 	
-	public int getCityId()
-	{
+	public int getCityId() {
 		return cityId;
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
-	public int getBuildingType()
-	{
+	public int getBuildingType() {
 		return type;
 	}
 	
-	public int getLevel()
-	{
+	public int getLevel() {
 		return level;
 	}
 	
-	public int getX()
-	{
+	public int getX() {
 		return x;
 	}
 	
-	public int getY()
-	{
+	public int getY() {
 		return y;
 	}
 	
-	public int getStage()
-	{
+	public int getStage() {
 		return stage;
 	}
 	
-	public int getTimeleft()
-	{
+	public int getTimeleft() {
 		return timeleft;
 	}
 	
-	public String getMeta()
-	{
+	public String getMeta() {
 		return meta;
 	}
 }

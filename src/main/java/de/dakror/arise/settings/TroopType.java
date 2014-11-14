@@ -10,8 +10,7 @@ import de.dakror.arise.settings.Resources.Resource;
 /**
  * @author Dakror
  */
-public enum TroopType
-{
+public enum TroopType {
 	SWORDFIGHTER(Resource.SWORDFIGHTER),
 	LANCEBEARER(Resource.LANCEBEARER),
 	
@@ -24,14 +23,11 @@ public enum TroopType
 	private boolean ranged;
 	private int speed, life, buildTime;
 	
-	private TroopType(Resource r)
-	{
+	private TroopType(Resource r) {
 		type = r;
 		
-		try
-		{
-			if (Game.config.getJSONObject("fighters").has(r.name()))
-			{
+		try {
+			if (Game.config.getJSONObject("fighters").has(r.name())) {
 				JSONObject o = Game.config.getJSONObject("fighters").getJSONObject(r.name());
 				
 				ranged = o.getBoolean("ranged");
@@ -42,65 +38,52 @@ public enum TroopType
 				costs = new Resources(o.getJSONObject("costs"));
 				buildTime = o.getInt("time");
 			}
-		}
-		catch (JSONException e)
-		{
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public Resource getType()
-	{
+	public Resource getType() {
 		return type;
 	}
 	
-	public void setType(Resource type)
-	{
+	public void setType(Resource type) {
 		this.type = type;
 	}
 	
-	public Dice getAttack()
-	{
+	public Dice getAttack() {
 		return attack;
 	}
 	
-	public Dice getDefense()
-	{
+	public Dice getDefense() {
 		return defense;
 	}
 	
-	public Dice getEvadeChance()
-	{
+	public Dice getEvadeChance() {
 		return evadeChance;
 	}
 	
-	public Dice getHitChance()
-	{
+	public Dice getHitChance() {
 		return hitChance;
 	}
 	
-	public Resources getCosts()
-	{
+	public Resources getCosts() {
 		return costs;
 	}
 	
-	public boolean isRanged()
-	{
+	public boolean isRanged() {
 		return ranged;
 	}
 	
-	public int getSpeed()
-	{
+	public int getSpeed() {
 		return speed;
 	}
 	
-	public int getLife()
-	{
+	public int getLife() {
 		return life;
 	}
 	
-	public int getBuildTime()
-	{
+	public int getBuildTime() {
 		return buildTime;
 	}
 }

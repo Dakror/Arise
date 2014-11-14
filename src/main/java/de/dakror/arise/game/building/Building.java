@@ -26,8 +26,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public abstract class Building extends ClickableComponent
-{
+public abstract class Building extends ClickableComponent {
 	public static int GRID = 32;
 	protected int tx, ty, tw, th, id, typeId, level, maxLevel, levelFac, minCityLevel;
 	public int bx, by, bw, bh;
@@ -46,8 +45,7 @@ public abstract class Building extends ClickableComponent
 	protected Resources buildingCosts, products, scale;
 	protected Container guiContainer;
 	
-	public Building(int x, int y, int width, int height, int level)
-	{
+	public Building(int x, int y, int width, int height, int level) {
 		super(x * GRID, y * GRID, width * GRID, height * GRID);
 		
 		this.level = level;
@@ -60,11 +58,9 @@ public abstract class Building extends ClickableComponent
 		metadata = "";
 		guiContainer = new Container.DefaultContainer();
 		
-		addClickEvent(new ClickEvent()
-		{
+		addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				CityHUDLayer.selectedBuilding = Building.this;
 				
 				float duration = stageChangeDuration * Const.DECONSTRUCT_FACTOR / Game.world.getSpeed();
@@ -80,22 +76,17 @@ public abstract class Building extends ClickableComponent
 		});
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
-	public void setId(int id)
-	{
+	public void setId(int id) {
 		this.id = id;
 	}
 	
-	public void init()
-	{
-		try
-		{
-			if (Game.config.getJSONObject("buildings").has("" + typeId))
-			{
+	public void init() {
+		try {
+			if (Game.config.getJSONObject("buildings").has("" + typeId)) {
 				JSONObject o = Game.config.getJSONObject("buildings").getJSONObject(typeId + "");
 				
 				buildingCosts = new Resources(o.getJSONObject("costs"));
@@ -106,20 +97,16 @@ public abstract class Building extends ClickableComponent
 				maxLevel = o.has("maxlevel") ? o.getInt("maxlevel") : Const.BUILDING_MAX_LEVEL;
 				levelFac = o.has("levelfac") ? o.getInt("levelfac") : Const.BUILDING_MAX_LEVEL;
 			}
-		}
-		catch (JSONException e)
-		{
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		if (Game.world == null) return;
 		
-		if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this)))
-		{
+		if (state != 0 || (CityHUDLayer.selectedBuilding != null && CityHUDLayer.selectedBuilding.equals(this))) {
 			Color c = g.getColor();
 			g.setColor(Color.black);
 			g.drawRect(x + bx * GRID - 1, y + by * GRID - 1, bw * GRID + 2, bh * GRID + 2);
@@ -128,8 +115,7 @@ public abstract class Building extends ClickableComponent
 		
 		if (stage > 0) drawStage1(g);
 		
-		if (stageChangeSecondsLeft > 0)
-		{
+		if (stageChangeSecondsLeft > 0) {
 			int tx = x + bx * GRID, ty = y + by * GRID, width = 128;
 			
 			if (stage == 0) Assistant.drawBuildingStage(tx, ty, this, g);
@@ -142,18 +128,15 @@ public abstract class Building extends ClickableComponent
 		}
 	}
 	
-	protected void drawStage1(Graphics2D g)
-	{
+	protected void drawStage1(Graphics2D g) {
 		Helper.setRenderingHints(g, false);
 		Helper.drawImage2(Game.getImage("world/structs.png"), x, y, width, height, tx * 32, ty * 32, tw * 32, th * 32, g);
 		Helper.setRenderingHints(g, true);
 	}
 	
 	@Override
-	public void drawTooltip(int x, int y, Graphics2D g)
-	{
-		if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer)
-		{
+	public void drawTooltip(int x, int y, Graphics2D g) {
+		if (Game.currentGame.getActiveLayer() instanceof CityHUDLayer) {
 			String string = getTooltipText();
 			
 			int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(string) + 30;
@@ -170,81 +153,66 @@ public abstract class Building extends ClickableComponent
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		if (stageChangeSecondsLeft > 0 && tick % Game.currentGame.getUPS() == 0) stageChangeSecondsLeft--;
 	}
 	
-	public String getTooltipText()
-	{
+	public String getTooltipText() {
 		return "Lvl. " + (level + 1) + " " + name + (stage == 2 ? " (Abriss)" : (stage == 3 ? " (Ausbau)" : (stage == 0 ? " (Bau)" : "")));
 	}
 	
-	public int getTypeId()
-	{
+	public int getTypeId() {
 		return typeId;
 	}
 	
-	public int getLevel()
-	{
+	public int getLevel() {
 		return level;
 	}
 	
-	public int getStage()
-	{
+	public int getStage() {
 		return stage;
 	}
 	
-	public void setStage(int s)
-	{
+	public void setStage(int s) {
 		stage = s;
 	}
 	
-	public int getStageChangeSeconds()
-	{
+	public int getStageChangeSeconds() {
 		return stageChangeDuration;
 	}
 	
-	public long getStageChangeSecondsLeft()
-	{
+	public long getStageChangeSecondsLeft() {
 		return stageChangeSecondsLeft;
 	}
 	
 	/**
 	 * @param s - time in seconds
 	 */
-	public void setStageChangeSecondsLeft(int s)
-	{
+	public void setStageChangeSecondsLeft(int s) {
 		stageChangeSecondsLeft = s;
 	}
 	
-	protected float getStageChangeDuration()
-	{
+	protected float getStageChangeDuration() {
 		return Math.round(stageChangeDuration * (stage == 0 ? 1f : Const.DECONSTRUCT_FACTOR) / Game.world.getSpeed());
 	}
 	
-	public String getName()
-	{
+	public String getName() {
 		return name;
 	}
 	
-	public String getDescription()
-	{
+	public String getDescription() {
 		return desc;
 	}
 	
-	public String getData()
-	{
+	public String getData() {
 		return typeId + ":" + level + ":" + ((x - 96) / GRID) + ":" + ((y - 96) / GRID) + ":" + stage + ":" + stageChangeSecondsLeft + (metadata.length() > 0 ? ":" + metadata : "");
 	}
 	
-	public Resources getBuildingCosts()
-	{
+	public Resources getBuildingCosts() {
 		return buildingCosts;
 	}
 	
-	public Resources getUpgradeCosts()
-	{
+	public Resources getUpgradeCosts() {
 		Resources res = new Resources();
 		res.add(buildingCosts);
 		
@@ -254,18 +222,15 @@ public abstract class Building extends ClickableComponent
 		return res;
 	}
 	
-	public Resources getProducts()
-	{
+	public Resources getProducts() {
 		return products;
 	}
 	
-	public int getMinCityLevel()
-	{
+	public int getMinCityLevel() {
 		return minCityLevel;
 	}
 	
-	public Resources getScalingProducts()
-	{
+	public Resources getScalingProducts() {
 		Resources p = new Resources();
 		p.add(products);
 		if (level > 0) p.add(Resources.mul(scale, level));
@@ -273,29 +238,24 @@ public abstract class Building extends ClickableComponent
 		return p;
 	}
 	
-	public Resources getScale()
-	{
+	public Resources getScale() {
 		return scale;
 	}
 	
-	public Container getGuiContainer()
-	{
+	public Container getGuiContainer() {
 		return guiContainer;
 	}
 	
-	public int getMaxLevel()
-	{
+	public int getMaxLevel() {
 		return maxLevel;
 	}
 	
-	public void setMetadata(String s)
-	{
+	public void setMetadata(String s) {
 		if (s == null) s = "";
 		metadata = s;
 	}
 	
-	protected void addGuiButton(int x, int y, Image icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action)
-	{
+	protected void addGuiButton(int x, int y, Image icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action) {
 		BuildButton b = new BuildButton(x * 56 + Game.getWidth() - 270, y * 56 + Game.getHeight() - 170, 32, 32, icon);
 		b.addClickEvent(action);
 		b.mode1 = true;
@@ -304,33 +264,26 @@ public abstract class Building extends ClickableComponent
 		guiContainer.components.add(b);
 	}
 	
-	protected void addGuiButton(int x, int y, Point icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action)
-	{
+	protected void addGuiButton(int x, int y, Point icon, String tooltip, String desc, Resources buildingCosts, int minCityLevel, ClickEvent action) {
 		addGuiButton(x, y, Game.getImage("system/icons.png").getSubimage(icon.x * 24, icon.y * 24, 24, 24), tooltip, desc, buildingCosts, minCityLevel, action);
 	}
 	
 	/** Server-side only */
-	public void onSpecificChange(int cityId, User owner, Connection connection)
-	{}
+	public void onSpecificChange(int cityId, User owner, Connection connection) {}
 	
 	@Override
-	public boolean contains(int x, int y)
-	{
+	public boolean contains(int x, int y) {
 		return new Rectangle(this.x + bx * GRID, this.y + by * GRID, bw * GRID, bh * GRID).contains(x, y);
 	}
 	
-	public void setLevel(int newLevel)
-	{
+	public void setLevel(int newLevel) {
 		level = newLevel;
 	}
 	
-	public void updateGuiButtons()
-	{}
+	public void updateGuiButtons() {}
 	
-	public static Building getBuildingByTypeId(int x, int y, int level, int typeId)
-	{
-		switch (typeId)
-		{
+	public static Building getBuildingByTypeId(int x, int y, int level, int typeId) {
+		switch (typeId) {
 			case 1:
 				return new Center(x, y, level);
 			case 2:

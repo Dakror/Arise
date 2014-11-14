@@ -6,8 +6,7 @@ import java.net.InetAddress;
 /**
  * @author Dakror
  */
-public class User
-{
+public class User {
 	private InetAddress ip;
 	private String username;
 	private int port;
@@ -16,8 +15,7 @@ public class User
 	private int city;
 	private long lastInteraction;
 	
-	public User(int id, int world, String username, InetAddress ip, int port)
-	{
+	public User(int id, int world, String username, InetAddress ip, int port) {
 		this.id = id;
 		this.ip = ip;
 		this.username = username;
@@ -27,64 +25,52 @@ public class User
 		interact();
 	}
 	
-	public InetAddress getIP()
-	{
+	public InetAddress getIP() {
 		return ip;
 	}
 	
-	public void setIP(InetAddress ip)
-	{
+	public void setIP(InetAddress ip) {
 		this.ip = ip;
 	}
 	
-	public int getPort()
-	{
+	public int getPort() {
 		return port;
 	}
 	
-	public void setPort(int port)
-	{
+	public void setPort(int port) {
 		this.port = port;
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
-	public int getWorldId()
-	{
+	public int getWorldId() {
 		return world;
 	}
 	
-	public void setCity(int city)
-	{
+	public void setCity(int city) {
 		this.city = city;
 	}
 	
-	public int getCity()
-	{
+	public int getCity() {
 		return city;
 	}
 	
-	public void interact()
-	{
+	public void interact() {
 		lastInteraction = System.currentTimeMillis();
 	}
 	
-	public long getLastInteraction()
-	{
+	public long getLastInteraction() {
 		return lastInteraction;
 	}
 	
-	public String getUsername()
-	{
+	public String getUsername() {
 		return username;
 	}
 	
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return username.trim() + ", " + ip.getHostAddress() + ":" + port + ", UserID=" + id;
 	}
 }

@@ -27,8 +27,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class CityLayer extends MPLayer
-{
+public class CityLayer extends MPLayer {
 	public static Resources resources;
 	public City city;
 	
@@ -36,8 +35,7 @@ public class CityLayer extends MPLayer
 	
 	boolean placedBuildings;
 	
-	public CityLayer(City city)
-	{
+	public CityLayer(City city) {
 		modal = true;
 		this.city = city;
 		resources = city.resourcePacket.getResources();
@@ -45,23 +43,19 @@ public class CityLayer extends MPLayer
 	}
 	
 	@Override
-	public void init()
-	{}
+	public void init() {}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		g.drawImage(Game.getImage("system/city.png"), 0, 0, null);
 		
 		Component hovered = null;
-		for (Component c : components)
-		{
+		for (Component c : components) {
 			c.draw(g);
 			if (c.state == 2) hovered = c;
 		}
 		
-		if (activeBuilding != null)
-		{
+		if (activeBuilding != null) {
 			int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
 			int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 			
@@ -81,10 +75,8 @@ public class CityLayer extends MPLayer
 			
 			boolean free = true;
 			
-			for (int i = activeBuilding.bx * Building.GRID; i < activeBuilding.bx * Building.GRID + activeBuilding.bw * Building.GRID; i += Building.GRID)
-			{
-				for (int j = activeBuilding.by * Building.GRID; j < activeBuilding.by * Building.GRID + activeBuilding.bh * Building.GRID; j += Building.GRID)
-				{
+			for (int i = activeBuilding.bx * Building.GRID; i < activeBuilding.bx * Building.GRID + activeBuilding.bw * Building.GRID; i += Building.GRID) {
+				for (int j = activeBuilding.by * Building.GRID; j < activeBuilding.by * Building.GRID + activeBuilding.bh * Building.GRID; j += Building.GRID) {
 					boolean green = new Rectangle(96, 96, 1088, 544).contains(new Rectangle(i + x, j + y, Building.GRID, Building.GRID)) && !intersectsBuildings(new Rectangle(i + x, j + y, Building.GRID, Building.GRID));
 					g.setColor(green ? Color.decode("#5fff5b") : Color.red);
 					g.fillRect(i + x, j + y, Building.GRID, Building.GRID);
@@ -109,13 +101,11 @@ public class CityLayer extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		updateComponents(tick);
 	}
 	
-	public boolean intersectsBuildings(Rectangle r)
-	{
+	public boolean intersectsBuildings(Rectangle r) {
 		for (Component c : components)
 			if (c instanceof Building && new Rectangle(c.getX() + ((Building) c).bx * Building.GRID, c.getY() + ((Building) c).by * Building.GRID, ((Building) c).bw * Building.GRID, ((Building) c).bh * Building.GRID).intersects(r)) return true;
 		
@@ -123,16 +113,13 @@ public class CityLayer extends MPLayer
 	}
 	
 	@Override
-	public void mousePressed(MouseEvent e)
-	{
+	public void mousePressed(MouseEvent e) {
 		if (CityHUDLayer.anyComponentClicked) return;
 		super.mousePressed(e);
 		
 		boolean anyBuildingActive = false;
-		for (Component c : components)
-		{
-			if (c instanceof Building && c.state == 1)
-			{
+		for (Component c : components) {
+			if (c instanceof Building && c.state == 1) {
 				anyBuildingActive = true;
 				break;
 			}
@@ -140,24 +127,18 @@ public class CityLayer extends MPLayer
 		
 		if (!anyBuildingActive) CityHUDLayer.selectedBuilding = null;
 		
-		if (activeBuilding != null)
-		{
-			if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor()))
-			{
+		if (activeBuilding != null) {
+			if (e.getButton() == MouseEvent.BUTTON1 && Game.applet.getCursor().equals(Cursor.getDefaultCursor())) {
 				int x = Helper.round(Game.currentGame.mouse.x - activeBuilding.getWidth() / 2, Building.GRID);
 				int y = Helper.round(Game.currentGame.mouse.y - activeBuilding.getHeight() / 2, Building.GRID);
 				
-				try
-				{
+				try {
 					Game.client.sendPacket(new Packet08PlaceBuilding(city.getId(), activeBuilding.getTypeId(), x / 32, y / 32));
-				}
-				catch (IOException e1)
-				{
+				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 			}
-			if (e.getButton() == MouseEvent.BUTTON3)
-			{
+			if (e.getButton() == MouseEvent.BUTTON3) {
 				activeBuilding = null;
 				Game.applet.setCursor(Cursor.getDefaultCursor());
 			}
@@ -165,20 +146,16 @@ public class CityLayer extends MPLayer
 	}
 	
 	@Override
-	public void mouseReleased(MouseEvent e)
-	{
+	public void mouseReleased(MouseEvent e) {
 		if (CityHUDLayer.anyComponentClicked) return;
 		super.mouseReleased(e);
 	}
 	
-	public void sortComponents()
-	{
+	public void sortComponents() {
 		ArrayList<Component> c = new ArrayList<>(components);
-		Collections.sort(c, new Comparator<Component>()
-		{
+		Collections.sort(c, new Comparator<Component>() {
 			@Override
-			public int compare(Component o1, Component o2)
-			{
+			public int compare(Component o1, Component o2) {
 				return Integer.compare(o1.getY() + ((Building) o1).by * Building.GRID, o2.getY() + ((Building) o2).by * Building.GRID);
 			}
 		});

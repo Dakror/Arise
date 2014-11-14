@@ -13,14 +13,12 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class ResourceLabel extends Component
-{
+public class ResourceLabel extends Component {
 	Resource r;
 	
 	public int off, perHour;
 	
-	public ResourceLabel(int x, int y, Resource r)
-	{
+	public ResourceLabel(int x, int y, Resource r) {
 		super(x, y, 0, 25);
 		
 		this.r = r;
@@ -29,8 +27,7 @@ public class ResourceLabel extends Component
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		String string = Assistant.formatNumber(CityLayer.resources.get(r), 0) + "" + (off > -1 ? " / " + off : "") + (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + Assistant.formatNumber(perHour, 0) + "/h)" : "");
 		
 		if (width == 0) width = 25 + g.getFontMetrics(g.getFont().deriveFont(25f)).stringWidth(string);
@@ -38,18 +35,15 @@ public class ResourceLabel extends Component
 		Assistant.drawLabelWithIcon(x, y, 25, new Point(r.getIconX(), r.getIconY()), string, 25, g);
 	}
 	
-	public Resource getResource()
-	{
+	public Resource getResource() {
 		return r;
 	}
 	
 	@Override
-	public void update(int tick)
-	{}
+	public void update(int tick) {}
 	
 	@Override
-	public void drawTooltip(int x, int y, Graphics2D g)
-	{
+	public void drawTooltip(int x, int y, Graphics2D g) {
 		int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(r.getName()) + 30;
 		int height = 64;
 		int x1 = x;

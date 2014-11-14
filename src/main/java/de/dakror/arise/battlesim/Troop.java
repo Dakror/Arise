@@ -5,82 +5,67 @@ import de.dakror.arise.settings.TroopType;
 /**
  * @author Dakror
  */
-public class Troop
-{
+public class Troop {
 	private TroopType type;
 	private int life;
 	private int y, cooldown, size, initialSize;
 	
-	protected Troop(TroopType r, int y)
-	{
+	protected Troop(TroopType r, int y) {
 		type = r;
 		this.y = y;
 		cooldown = 0;
 	}
 	
-	public Troop(TroopType r, int initialSize, int y)
-	{
+	public Troop(TroopType r, int initialSize, int y) {
 		this(r, y);
 		size = initialSize;
 		this.initialSize = initialSize;
 		setFighters(initialSize);
 	}
 	
-	public TroopType getType()
-	{
+	public TroopType getType() {
 		return type;
 	}
 	
-	public int getY()
-	{
+	public int getY() {
 		return y;
 	}
 	
-	public void negateY()
-	{
+	public void negateY() {
 		y = -y;
 	}
 	
-	public void setFighters(int f)
-	{
+	public void setFighters(int f) {
 		life = 0;
 		for (int i = 0; i < f; i++)
 			life += type.getLife();
 	}
 	
-	public int size()
-	{
+	public int size() {
 		return size;
 	}
 	
-	public int getInitialSize()
-	{
+	public int getInitialSize() {
 		return initialSize;
 	}
 	
-	public void translateY(int y)
-	{
+	public void translateY(int y) {
 		this.y += y;
 	}
 	
-	public boolean isDead()
-	{
+	public boolean isDead() {
 		return life <= 0;
 	}
 	
-	public int getTroopMaxLife()
-	{
+	public int getTroopMaxLife() {
 		return type.getLife() * initialSize;
 	}
 	
-	public void tick(Army enemy)
-	{
+	public void tick(Army enemy) {
 		if (cooldown > 0) cooldown--;
-		else
-		{
+		else {
 			long dmg = 0;
-			for (int i = 0; i < size; i++)
-			{
+			for (int i = 0; i < size; i++) {
 				int att = type.getAttack().roll();
 				int def = enemy.getTroops()[0].getType().getDefense().roll();
 				if (def < att) dmg += att - def;
@@ -93,8 +78,7 @@ public class Troop
 	}
 	
 	
-	public void attack(long dmg)
-	{
+	public void attack(long dmg) {
 		life -= dmg;
 		if (life < 0) life = 0;
 		
@@ -102,8 +86,7 @@ public class Troop
 		if (size < 0) size = 0;
 	}
 	
-	public int getLife()
-	{
+	public int getLife() {
 		return life;
 	}
 }

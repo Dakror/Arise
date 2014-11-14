@@ -23,8 +23,7 @@ import de.dakror.dakrorbin.Launch;
 /**
  * @author Dakror
  */
-public class Arise extends JApplet
-{
+public class Arise extends JApplet {
 	private static final long serialVersionUID = 1L;
 	
 	public static boolean wrapper = false;
@@ -34,15 +33,11 @@ public class Arise extends JApplet
 	public static boolean running;
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		if (!wrapper) DakrorBin.init(null, "Arise");
-		try
-		{
+		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -54,13 +49,10 @@ public class Arise extends JApplet
 		
 		setIgnoreRepaint(true);
 		
-		new Thread()
-		{
+		new Thread() {
 			@Override
-			public void run()
-			{
-				while (running)
-				{
+			public void run() {
+				while (running) {
 					Game.currentApplet.main();
 				}
 			}
@@ -68,35 +60,24 @@ public class Arise extends JApplet
 	}
 	
 	@Override
-	public void stop()
-	{
-		try
-		{
-			if (Game.userID != 0)
-			{
+	public void stop() {
+		try {
+			if (Game.userID != 0) {
 				Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
 				Game.currentGame.addLayer(new LoadingLayer());
-			}
-			else Game.exit();
-		}
-		catch (IOException e1)
-		{
+			} else Game.exit();
+		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
 	
-	public static void main(String[] args)
-	{
-		try
-		{
+	public static void main(String[] args) {
+		try {
 			Launch.init(args);
 			
-			if (args.length > 0)
-			{
-				for (String s : args)
-				{
-					if (s.equals("-local"))
-					{
+			if (args.length > 0) {
+				for (String s : args) {
+					if (s.equals("-local")) {
 						localServer = true;
 						break;
 					}
@@ -109,23 +90,16 @@ public class Arise extends JApplet
 			frame.setIconImage(ImageIO.read(Arise.class.getResource("/img/system/logo.png")));
 			frame.setSize(1280, 720);
 			frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-			frame.addWindowListener(new WindowAdapter()
-			{
+			frame.addWindowListener(new WindowAdapter() {
 				@Override
-				public void windowClosing(WindowEvent e)
-				{
-					try
-					{
-						if (Game.userID != 0)
-						{
+				public void windowClosing(WindowEvent e) {
+					try {
+						if (Game.userID != 0) {
 							if (!(Game.currentGame.getActiveLayer() instanceof PauseLayer) && !(Game.currentGame.getActiveLayer() instanceof LoadingLayer)) Game.currentGame.addLayer(new PauseLayer());
 							Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
 							if (!(Game.currentGame.getActiveLayer() instanceof LoadingLayer)) Game.currentGame.addLayer(new LoadingLayer());
-						}
-						else Game.exit();
-					}
-					catch (IOException e1)
-					{
+						} else Game.exit();
+					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 				}
@@ -144,9 +118,7 @@ public class Arise extends JApplet
 			frame.setTitle(frame.getTitle() + new SimpleDateFormat("dd.MM.yy HH:mm:ss").format(DakrorBin.buildTimestamp));
 			
 			arise.init();
-		}
-		catch (Exception e1)
-		{
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 	}

@@ -17,10 +17,8 @@ import de.dakror.gamesetup.ui.ClickEvent;
 /**
  * @author Dakror
  */
-public class Barracks extends Building
-{
-	public Barracks(int x, int y, int level)
-	{
+public class Barracks extends Building {
+	public Barracks(int x, int y, int level) {
 		super(x, y, 8, 7, level);
 		
 		typeId = 5;
@@ -35,22 +33,17 @@ public class Barracks extends Building
 		by = 4;
 		bh -= 4;
 		
-		if (Game.client != null)
-		{
-			addGuiButton(0, 1, new Point(4, 0), TroopType.SWORDFIGHTER.getType().getName(), "Starke und gut gepanzerte, jedoch langsame Nahkämpfer.", TroopType.SWORDFIGHTER.getCosts(), 0, new ClickEvent()
-			{
+		if (Game.client != null) {
+			addGuiButton(0, 1, new Point(4, 0), TroopType.SWORDFIGHTER.getType().getName(), "Starke und gut gepanzerte, jedoch langsame Nahkämpfer.", TroopType.SWORDFIGHTER.getCosts(), 0, new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					Game.currentGame.addLayer(new BuildTroopsDialog(Barracks.this, TroopType.SWORDFIGHTER));
 				}
 			});
 			
-			addGuiButton(1, 1, new Point(4, 1), TroopType.LANCEBEARER.getType().getName(), "Mäßig starke und gepanzerte, jedoch schnelle Nahkämpfer.", TroopType.LANCEBEARER.getCosts(), 0, new ClickEvent()
-			{
+			addGuiButton(1, 1, new Point(4, 1), TroopType.LANCEBEARER.getType().getName(), "Mäßig starke und gepanzerte, jedoch schnelle Nahkämpfer.", TroopType.LANCEBEARER.getCosts(), 0, new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					Game.currentGame.addLayer(new BuildTroopsDialog(Barracks.this, TroopType.LANCEBEARER));
 				}
 			});
@@ -60,36 +53,28 @@ public class Barracks extends Building
 	}
 	
 	@Override
-	public void onSpecificChange(int cityId, User owner, Connection connection)
-	{
-		if (metadata.length() > 0)
-		{
+	public void onSpecificChange(int cityId, User owner, Connection connection) {
+		if (metadata.length() > 0) {
 			String[] parts = metadata.split(":");
 			if (parts.length != 2) return;
 			
-			if (DBManager.addCityTroops(cityId, TroopType.values()[Integer.parseInt(new String(parts[0]))], Integer.parseInt(new String(parts[1])), true))
-			{
-				try
-				{
+			if (DBManager.addCityTroops(cityId, TroopType.values()[Integer.parseInt(new String(parts[0]))], Integer.parseInt(new String(parts[1])), true)) {
+				try {
 					DBManager.execUpdate("UPDATE BUILDINGS SET META = '' WHERE ID = " + id);
 					if (owner != null) Server.currentServer.sendPacket(new Packet16BuildingMeta(id, ""), owner);
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
 	}
 	
-	protected String getFirstPlaceInQueue()
-	{
+	protected String getFirstPlaceInQueue() {
 		if (metadata.length() == 0) return "";
 		else return metadata.substring(0, 1);
 	}
 	
-	protected Resource getResourceNameForTroop(String troop)
-	{
+	protected Resource getResourceNameForTroop(String troop) {
 		if (troop.equals("S")) return Resource.SWORDFIGHTER;
 		if (troop.equals("L")) return Resource.LANCEBEARER;
 		
@@ -97,23 +82,19 @@ public class Barracks extends Building
 	}
 	
 	@Override
-	public void setMetadata(String s)
-	{
+	public void setMetadata(String s) {
 		super.setMetadata(s);
 		if (Game.client != null) updateQueueDisplay();
 	}
 	
-	protected void updateQueueDisplay()
-	{
+	protected void updateQueueDisplay() {
 		for (int i = 0; i < guiContainer.components.size(); i++)
 			guiContainer.components.get(i).enabled = metadata.length() == 0;
 	}
 	
 	@Override
-	public void updateGuiButtons()
-	{
-		if (metadata.length() == 0)
-		{
+	public void updateGuiButtons() {
+		if (metadata.length() == 0) {
 			for (int i = 0; i < guiContainer.components.size(); i++)
 				guiContainer.components.get(i).enabled = ((BuildButton) guiContainer.components.get(i)).canEffort;
 		}

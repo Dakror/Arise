@@ -16,18 +16,15 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class PauseLayer extends MPLayer
-{
+public class PauseLayer extends MPLayer {
 	boolean gotoMenu;
 	
-	public PauseLayer()
-	{
+	public PauseLayer() {
 		modal = true;
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		drawModality(g);
 		Helper.drawContainer((Game.getWidth() - TextButton.WIDTH - 40) / 2, (Game.getHeight() - TextButton.HEIGHT * 3 - 40) / 2, TextButton.WIDTH + 40, TextButton.HEIGHT * 3 + 40, true, false, g);
 		
@@ -35,10 +32,8 @@ public class PauseLayer extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
-		if (Game.currentGame.alpha == 1 && gotoMenu && Game.userID == 0)
-		{
+	public void update(int tick) {
+		if (Game.currentGame.alpha == 1 && gotoMenu && Game.userID == 0) {
 			Game.currentGame.removeLayer(Game.world);
 			Game.world = null;
 			Game.worldID = 1;
@@ -50,32 +45,24 @@ public class PauseLayer extends MPLayer
 	}
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		TextButton back = new TextButton((Game.getWidth() - TextButton.WIDTH - 40) / 2 + 20, (Game.getHeight() - TextButton.HEIGHT * 3 - 40) / 2 + 20, "Weiter");
-		back.addClickEvent(new ClickEvent()
-		{
+		back.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				Game.currentGame.removeLayer(PauseLayer.this);
 			}
 		});
 		components.add(back);
 		TextButton logout = new TextButton(back.getX(), back.getY() + TextButton.HEIGHT, "Abmelden");
-		logout.addClickEvent(new ClickEvent()
-		{
+		logout.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
+			public void trigger() {
+				try {
 					gotoMenu = true;
 					Game.currentGame.addLayer(new LoadingLayer());
 					Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -84,22 +71,15 @@ public class PauseLayer extends MPLayer
 		if (Game.userID != 0 && !Arise.wrapper) components.add(logout);
 		
 		TextButton exit = new TextButton(back.getX(), back.getY() + TextButton.HEIGHT * 2, "Beenden");
-		exit.addClickEvent(new ClickEvent()
-		{
+		exit.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
-					if (Game.userID != 0)
-					{
+			public void trigger() {
+				try {
+					if (Game.userID != 0) {
 						Game.currentGame.addLayer(new LoadingLayer());
 						Game.client.sendPacket(new Packet02Disconnect(Game.userID, Cause.USER_DISCONNECT));
-					}
-					else Game.exit();
-				}
-				catch (IOException e)
-				{
+					} else Game.exit();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -108,16 +88,12 @@ public class PauseLayer extends MPLayer
 	}
 	
 	@Override
-	public void onReceivePacket(Packet p)
-	{
-		if (p.getType() == PacketTypes.DISCONNECT && ((Packet02Disconnect) p).getCause() == Cause.SERVER_CONFIRMED)
-		{
-			if (gotoMenu)
-			{
+	public void onReceivePacket(Packet p) {
+		if (p.getType() == PacketTypes.DISCONNECT && ((Packet02Disconnect) p).getCause() == Cause.SERVER_CONFIRMED) {
+			if (gotoMenu) {
 				Game.userID = 0;
 				Game.currentGame.fadeTo(1, 0.05f);
-			}
-			else Game.exit();
+			} else Game.exit();
 		}
 	}
 }

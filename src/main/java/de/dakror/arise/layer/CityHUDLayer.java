@@ -47,8 +47,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class CityHUDLayer extends MPLayer
-{
+public class CityHUDLayer extends MPLayer {
 	public static Building selectedBuilding;
 	public static BuildButton upgrade, deconstruct;
 	public static CityLayer cl;
@@ -60,16 +59,12 @@ public class CityHUDLayer extends MPLayer
 	boolean goBackToWorld;
 	
 	@Override
-	public void init()
-	{
-		try
-		{
+	public void init() {
+		try {
 			IconButton map = new IconButton((Game.getWidth() - 64) / 2, 20, 64, 64, "system/map.png");
-			map.addClickEvent(new ClickEvent()
-			{
+			map.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					goBackToWorld = true;
 					Game.currentGame.fadeTo(1, 0.05f);
 				}
@@ -83,19 +78,13 @@ public class CityHUDLayer extends MPLayer
 			name.setAllowed(name.getAllowed() + " '.#~-");
 			name.setText(cl.city.getName());
 			name.drawBG = false;
-			name.onEnter = new ClickEvent()
-			{
+			name.onEnter = new ClickEvent() {
 				@Override
-				public void trigger()
-				{
-					if (name.getText().trim().length() > 0)
-					{
-						try
-						{
+				public void trigger() {
+					if (name.getText().trim().length() > 0) {
+						try {
 							Game.client.sendPacket(new Packet07RenameCity(cl.city.getId(), name.getText().trim()));
-						}
-						catch (IOException e)
-						{
+						} catch (IOException e) {
 							e.printStackTrace();
 						}
 					}
@@ -104,55 +93,45 @@ public class CityHUDLayer extends MPLayer
 			components.add(name);
 			
 			BuildButton lumberjack = new BuildButton(15, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(72, 0, 24, 24), new Lumberjack(0, 0, 0));
-			lumberjack.addClickEvent(new ClickEvent()
-			{
+			lumberjack.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					cl.activeBuilding = new Lumberjack(0, 0, 0);
 				}
 			});
 			components.add(lumberjack);
 			
 			BuildButton mine = new BuildButton(15 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(50, 24, 24, 24), new Mine(0, 0, 0));
-			mine.addClickEvent(new ClickEvent()
-			{
+			mine.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					cl.activeBuilding = new Mine(0, 0, 0);
 				}
 			});
 			components.add(mine);
 			
 			BuildButton quarry = new BuildButton(15 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 24, 24, 24), new Quarry(0, 0, 0));
-			quarry.addClickEvent(new ClickEvent()
-			{
+			quarry.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					cl.activeBuilding = new Quarry(0, 0, 0);
 				}
 			});
 			components.add(quarry);
 			
 			BuildButton barracks = new BuildButton(15 + 144 + 72, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(0, 96, 24, 24), new Barracks(0, 0, 0));
-			barracks.addClickEvent(new ClickEvent()
-			{
+			barracks.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					cl.activeBuilding = new Barracks(0, 0, 0);
 				}
 			});
 			components.add(barracks);
 			
 			BuildButton barn = new BuildButton(15 + 144 + 144, Game.getHeight() - 64, 48, 48, Game.getImage("system/icons.png").getSubimage(24, 96, 24, 24), new Barn(0, 0, 0));
-			barn.addClickEvent(new ClickEvent()
-			{
+			barn.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					cl.activeBuilding = new Barn(0, 0, 0);
 				}
 			});
@@ -181,17 +160,12 @@ public class CityHUDLayer extends MPLayer
 			updateBuildingbar();
 			
 			upgrade = new BuildButton(-1000, -1000, 32, 32, Game.getImage("system/upgrade.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
-			upgrade.addClickEvent(new ClickEvent()
-			{
+			upgrade.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
-					try
-					{
+				public void trigger() {
+					try {
 						Game.client.sendPacket(new Packet12UpgradeBuilding(selectedBuilding.getId(), cl.city.getId()));
-					}
-					catch (IOException e)
-					{
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
@@ -200,31 +174,22 @@ public class CityHUDLayer extends MPLayer
 			components.add(upgrade);
 			
 			deconstruct = new BuildButton(-1000, -1000, 32, 32, Game.getImage("system/bomb.png").getScaledInstance(32, 32, Image.SCALE_SMOOTH));
-			deconstruct.addClickEvent(new ClickEvent()
-			{
+			deconstruct.addClickEvent(new ClickEvent() {
 				@Override
-				public void trigger()
-				{
+				public void trigger() {
 					deconstruct.state = 0;
-					Game.currentGame.addLayer(new Confirm("Bist du sicher, dass du diese Gebäude entgültig entfernen möchtest?", new ClickEvent()
-					{
+					Game.currentGame.addLayer(new Confirm("Bist du sicher, dass du diese Gebäude entgültig entfernen möchtest?", new ClickEvent() {
 						@Override
-						public void trigger()
-						{
-							try
-							{
+						public void trigger() {
+							try {
 								Game.client.sendPacket(new Packet11DeconstructBuilding(selectedBuilding.getId(), cl.city.getId()));
-							}
-							catch (IOException e)
-							{
+							} catch (IOException e) {
 								e.printStackTrace();
 							}
 						}
-					}, new ClickEvent()
-					{
+					}, new ClickEvent() {
 						@Override
-						public void trigger()
-						{
+						public void trigger() {
 							deconstruct.state = 0;
 						}
 					}));
@@ -239,27 +204,22 @@ public class CityHUDLayer extends MPLayer
 			
 			Helper.drawShadow(0, 5, Game.getWidth(), 96, g);
 			Helper.drawOutline(0, 5, Game.getWidth(), 96, false, g);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		g.drawImage(cache, 0, 0, null);
 		
-		if (selectedBuilding != null)
-		{
+		if (selectedBuilding != null) {
 			int width = 300, height = 200;
 			Helper.drawContainer(Game.getWidth() - width, Game.getHeight() - height, width, height, true, false, g);
 		}
 		
 		Component hovered = null;
-		for (Component c : components)
-		{
+		for (Component c : components) {
 			c.draw(g);
 			if (c.state == 2) hovered = c;
 		}
@@ -268,18 +228,13 @@ public class CityHUDLayer extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		if (Game.world == null) return;
 		
-		if (Game.currentGame.alpha == 1 && goBackToWorld)
-		{
-			try
-			{
+		if (Game.currentGame.alpha == 1 && goBackToWorld) {
+			try {
 				Game.client.sendPacket(new Packet10Attribute(Key.city, -1));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			Game.currentGame.removeLayer(CityHUDLayer.this);
@@ -294,8 +249,7 @@ public class CityHUDLayer extends MPLayer
 		upgrade.setY(selectedBuilding == null ? -1000 : Game.getHeight() - 170);
 		deconstruct.setX(selectedBuilding == null ? -1000 : Game.getWidth() - 270 + 56);
 		deconstruct.setY(selectedBuilding == null ? -1000 : Game.getHeight() - 170);
-		if (selectedBuilding != null)
-		{
+		if (selectedBuilding != null) {
 			if (selectedBuilding.getStage() == 1) selectedBuilding.getGuiContainer().update(tick);
 			selectedBuilding.updateGuiButtons();
 			
@@ -306,18 +260,15 @@ public class CityHUDLayer extends MPLayer
 		}
 	}
 	
-	public void updateBuildingbar()
-	{
+	public void updateBuildingbar() {
 		Resources products = new Resources();
 		for (Component c : cl.components)
 			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Center always active */)) products.add(((Building) c).getScalingProducts());
 		
 		products = Resources.mul(products, Game.world.getSpeed());
 		
-		for (Component c : components)
-		{
-			if (c instanceof ResourceLabel)
-			{
+		for (Component c : components) {
+			if (c instanceof ResourceLabel) {
 				if (((ResourceLabel) c).getResource().isUsable()) ((ResourceLabel) c).perHour = products.get(((ResourceLabel) c).getResource());
 				else ((ResourceLabel) c).off = products.get(((ResourceLabel) c).getResource()) / Game.world.getSpeed();
 			}
@@ -327,16 +278,12 @@ public class CityHUDLayer extends MPLayer
 	}
 	
 	@Override
-	public void mousePressed(MouseEvent e)
-	{
+	public void mousePressed(MouseEvent e) {
 		anyComponentClicked = false;
-		if (selectedBuilding != null)
-		{
+		if (selectedBuilding != null) {
 			selectedBuilding.getGuiContainer().mousePressed(e);
-			for (Component c : selectedBuilding.getGuiContainer().components)
-			{
-				if (c.state != 0)
-				{
+			for (Component c : selectedBuilding.getGuiContainer().components) {
+				if (c.state != 0) {
 					anyComponentClicked = true;
 					break;
 				}
@@ -345,10 +292,8 @@ public class CityHUDLayer extends MPLayer
 		}
 		super.mousePressed(e);
 		
-		for (Component c : components)
-		{
-			if (c.state != 0)
-			{
+		for (Component c : components) {
+			if (c.state != 0) {
 				anyComponentClicked = true;
 				break;
 			}
@@ -356,36 +301,30 @@ public class CityHUDLayer extends MPLayer
 	}
 	
 	@Override
-	public void mouseReleased(MouseEvent e)
-	{
+	public void mouseReleased(MouseEvent e) {
 		if (selectedBuilding != null) selectedBuilding.getGuiContainer().mouseReleased(e);
 		super.mouseReleased(e);
 	}
 	
 	@Override
-	public void mouseMoved(MouseEvent e)
-	{
+	public void mouseMoved(MouseEvent e) {
 		if (selectedBuilding != null) selectedBuilding.getGuiContainer().mouseMoved(e);
 		super.mouseMoved(e);
 	}
 	
 	@Override
-	public void onReceivePacket(Packet p)
-	{
+	public void onReceivePacket(Packet p) {
 		super.onReceivePacket(p);
 		
-		if (p.getType() == PacketTypes.RENAMECITY)
-		{
+		if (p.getType() == PacketTypes.RENAMECITY) {
 			Packet07RenameCity packet = (Packet07RenameCity) p;
-			if (packet.getCityId() == cl.city.getId())
-			{
+			if (packet.getCityId() == cl.city.getId()) {
 				if (packet.getNewName().equals("#false#")) Game.currentGame.addLayer(new Alert("Ein Fehler ist aufgetreten. Die Stadt konnte nicht umbennant werden. Bitte probiere es erneut.", null));
 				else cl.city.setName(packet.getNewName());
 			}
 		}
 		
-		if (p.getType() == PacketTypes.BUILDING)
-		{
+		if (p.getType() == PacketTypes.BUILDING) {
 			cl.activeBuilding = null;
 			
 			Packet06Building packet = (Packet06Building) p;
@@ -401,27 +340,20 @@ public class CityHUDLayer extends MPLayer
 			updateBuildingbar();
 		}
 		
-		if (p.getType() == PacketTypes.RESOURCES)
-		{
+		if (p.getType() == PacketTypes.RESOURCES) {
 			Packet05Resources packet = (Packet05Resources) p;
 			CityLayer.resources = packet.getResources();
 		}
 		
-		if (p.getType() == PacketTypes.BUILDINGSTAGE)
-		{
+		if (p.getType() == PacketTypes.BUILDINGSTAGE) {
 			Packet09BuildingStage packet = (Packet09BuildingStage) p;
 			
-			for (Component c : cl.components)
-			{
-				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
-				{
-					if (packet.getNewStage() == -1)
-					{
+			for (Component c : cl.components) {
+				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId()) {
+					if (packet.getNewStage() == -1) {
 						if (selectedBuilding != null && selectedBuilding.equals(c)) selectedBuilding = null;
 						cl.components.remove(c);
-					}
-					else
-					{
+					} else {
 						((Building) c).setStage(packet.getNewStage());
 						((Building) c).setStageChangeSecondsLeft(packet.getTimeLeft());
 					}
@@ -429,73 +361,56 @@ public class CityHUDLayer extends MPLayer
 				}
 			}
 			
-			try
-			{
+			try {
 				Game.client.sendPacket(new Packet05Resources(cl.city.getId()));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 			updateBuildingbar();
 		}
 		
-		if (p.getType() == PacketTypes.BUILDINGLEVEL)
-		{
+		if (p.getType() == PacketTypes.BUILDINGLEVEL) {
 			Packet13BuildingLevel packet = (Packet13BuildingLevel) p;
 			
-			for (Component c : cl.components)
-			{
-				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
-				{
+			for (Component c : cl.components) {
+				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId()) {
 					((Building) c).setLevel(packet.getNewLevel());
 					break;
 				}
 			}
 			
-			try
-			{
+			try {
 				Game.client.sendPacket(new Packet05Resources(cl.city.getId()));
-			}
-			catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 			updateBuildingbar();
 		}
 		
-		if (p.getType() == PacketTypes.CITYLEVEL)
-		{
+		if (p.getType() == PacketTypes.CITYLEVEL) {
 			Packet14CityLevel packet = (Packet14CityLevel) p;
 			if (packet.getCityId() == cl.city.getId()) cl.city.setLevel(packet.getNewLevel());
 		}
 		
-		if (p.getType() == PacketTypes.BUILDINGMETA)
-		{
+		if (p.getType() == PacketTypes.BUILDINGMETA) {
 			Packet16BuildingMeta packet = (Packet16BuildingMeta) p;
 			
-			for (Component c : cl.components)
-			{
-				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId())
-				{
+			for (Component c : cl.components) {
+				if (c instanceof Building && packet.getBuildingId() == ((Building) c).getId()) {
 					((Building) c).setMetadata(packet.getMeta());
 					break;
 				}
 			}
 		}
 		
-		if (p.getType() == PacketTypes.TAKEOVER)
-		{
+		if (p.getType() == PacketTypes.TAKEOVER) {
 			Packet20Takeover packet = (Packet20Takeover) p;
-			if (packet.getCityTakenOverId() == cl.city.getId() && packet.getNewUserId() != Game.userID && packet.getNewUserId() > 0)
-			{
-				Game.currentGame.addLayer(new Alert("Du hast diese Stadt an " + packet.getNewUsername() + " verloren!", new ClickEvent()
-				{
+			if (packet.getCityTakenOverId() == cl.city.getId() && packet.getNewUserId() != Game.userID && packet.getNewUserId() > 0) {
+				Game.currentGame.addLayer(new Alert("Du hast diese Stadt an " + packet.getNewUsername() + " verloren!", new ClickEvent() {
 					@Override
-					public void trigger()
-					{
+					public void trigger() {
 						goBackToWorld = true;
 						Game.currentGame.fadeTo(1, 0.05f);
 					}

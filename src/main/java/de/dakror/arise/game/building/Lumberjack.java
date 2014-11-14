@@ -4,10 +4,8 @@ package de.dakror.arise.game.building;
 /**
  * @author Dakror
  */
-public class Lumberjack extends Building
-{
-	public Lumberjack(int x, int y, int level)
-	{
+public class Lumberjack extends Building {
+	public Lumberjack(int x, int y, int level) {
 		super(x, y, 5, 6, level);
 		
 		typeId = 2;

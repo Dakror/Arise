@@ -11,31 +11,25 @@ import de.dakror.arise.net.packet.Packet02Disconnect.Cause;
 /**
  * @author Dakror
  */
-public class ServerUpdater extends Thread
-{
+public class ServerUpdater extends Thread {
 	boolean running;
 	long lastCheck;
 	
-	public ServerUpdater()
-	{
+	public ServerUpdater() {
 		running = true;
 		setName("ServerUpdater Thread");
 		start();
 	}
 	
 	@Override
-	public void run()
-	{
-		try
-		{
-			while (running)
-			{
+	public void run() {
+		try {
+			while (running) {
 				DBManager.updateTimers();
 				DBManager.updateBuildingStage();
 				DBManager.updateTransfers();
 				
-				if (System.currentTimeMillis() - lastCheck >= 60000)
-				{
+				if (System.currentTimeMillis() - lastCheck >= 60000) {
 					DBManager.updateCityResources();
 					DBManager.dispatchCityResources();
 					kickInactiveUsers();
@@ -47,19 +41,14 @@ public class ServerUpdater extends Thread
 				}
 				Thread.sleep(1000);
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void kickInactiveUsers() throws Exception
-	{
-		for (User u : Server.currentServer.clients)
-		{
-			if (System.currentTimeMillis() - u.getLastInteraction() > 2000)
-			{
+	public void kickInactiveUsers() throws Exception {
+		for (User u : Server.currentServer.clients) {
+			if (System.currentTimeMillis() - u.getLastInteraction() > 2000) {
 				Server.currentServer.sendPacket(new Packet02Disconnect(0, Cause.INACTIVE), u);
 				Server.out("Kicked user: #" + u.getId() + " (" + Cause.INACTIVE + ")");
 				Server.currentServer.clients.remove(u);

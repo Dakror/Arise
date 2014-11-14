@@ -24,8 +24,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class BuildTroopsDialog extends MPLayer
-{
+public class BuildTroopsDialog extends MPLayer {
 	Barracks barracks;
 	TroopType type;
 	
@@ -33,8 +32,7 @@ public class BuildTroopsDialog extends MPLayer
 	
 	int width, height;
 	
-	public BuildTroopsDialog(Barracks barracks, TroopType troopType)
-	{
+	public BuildTroopsDialog(Barracks barracks, TroopType troopType) {
 		this.barracks = barracks;
 		type = troopType;
 		modal = true;
@@ -44,8 +42,7 @@ public class BuildTroopsDialog extends MPLayer
 	}
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		int div = (int) Math.floor(Resources.div(CityLayer.resources, type.getCosts()));
 		slider = new Slider((Game.getWidth() - width) / 2 + 20, (Game.getHeight() + height) / 2 - 40 - TextButton.HEIGHT, width - 40, 0, div, 0, true);
 		
@@ -53,28 +50,21 @@ public class BuildTroopsDialog extends MPLayer
 		components.add(slider);
 		
 		TextButton abort = new TextButton((Game.getWidth() - width) / 2 + 10, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Abbruch");
-		abort.addClickEvent(new ClickEvent()
-		{
+		abort.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
+			public void trigger() {
 				Game.currentGame.removeLayer(BuildTroopsDialog.this);
 			}
 		});
 		components.add(abort);
 		TextButton build = new TextButton(Game.getWidth() / 2, (Game.getHeight() + height) / 2 - TextButton.HEIGHT - 10, "Bauen");
-		build.addClickEvent(new ClickEvent()
-		{
+		build.addClickEvent(new ClickEvent() {
 			@Override
-			public void trigger()
-			{
-				try
-				{
+			public void trigger() {
+				try {
 					Game.client.sendPacket(new Packet15BarracksBuildTroop(CityHUDLayer.cl.city.getId(), barracks.getId(), type, (int) slider.getValue()));
 					Game.currentGame.removeLayer(BuildTroopsDialog.this);
-				}
-				catch (IOException e)
-				{
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -83,8 +73,7 @@ public class BuildTroopsDialog extends MPLayer
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		Helper.drawContainer((Game.getWidth() - width) / 2, (Game.getHeight() - height) / 2, width, height, false, false, g);
 		Helper.drawHorizontallyCenteredString(type.getType().getName(), Game.getWidth(), (Game.getHeight() - height) / 2 + 40, g, 35);
 		
@@ -99,8 +88,7 @@ public class BuildTroopsDialog extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		components.get(2).enabled = slider.getValue() > 0;
 		for (Component c : barracks.getGuiContainer().components)
 			c.state = 0; // to remove tooltips

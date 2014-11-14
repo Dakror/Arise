@@ -17,19 +17,14 @@ import de.dakror.arise.settings.TroopType;
 /**
  * @author Dakror
  */
-public class TransferExecutor
-{
-	public static void execute(TransferData data) throws Exception
-	{
-		switch (data.type)
-		{
-			case TROOPS_ATTACK:
-			{
+public class TransferExecutor {
+	public static void execute(TransferData data) throws Exception {
+		switch (data.type) {
+			case TROOPS_ATTACK: {
 				executeTroopAttack(data);
 				break;
 			}
-			case TROOPS_FRIEND:
-			{
+			case TROOPS_FRIEND: {
 				for (TroopType type : TroopType.values())
 					DBManager.addCityTroops(data.cityToId, type, data.value.get(type.getType()), false);
 				
@@ -43,13 +38,10 @@ public class TransferExecutor
 		}
 	}
 	
-	public static void executeTroopAttack(final TransferData transferData)
-	{
-		new Thread()
-		{
+	public static void executeTroopAttack(final TransferData transferData) {
+		new Thread() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				Army att = new Army(true, transferData.value);
 				Army def = new Army(false, DBManager.getCityResources(transferData.cityToId));
 				BattleResult br = BattleSimulator.simulateBattle(att, def);
@@ -58,22 +50,18 @@ public class TransferExecutor
 				
 				Packet19Transfer transferBack = null;
 				
-				if (br.isAttackers())
-				{
+				if (br.isAttackers()) {
 					DBManager.resetCityArmy(transferData.cityToId); // losers lose everything
 					
 					Resources alive = new Resources(transferData.value.getBinaryData());
 					alive.add(Resources.mul(br.getDead(), -1));
 					transferBack = DBManager.transferAttackTroopsBackHome(transferData.cityToId, transferData.cityFromId, alive); // winning attackers get sent back home
-				}
-				else
-				{
+				} else {
 					for (TroopType t : TroopType.values())
 						DBManager.addCityTroops(transferData.cityToId, t, -br.getDead().get(t.getType()), false); // winner is defending city, their deads get subtracted here
 				}
 				
-				try
-				{
+				try {
 					String ac = DBManager.getCityNameForId(transferData.cityFromId);
 					String dc = DBManager.getCityNameForId(transferData.cityToId);
 					
@@ -81,16 +69,13 @@ public class TransferExecutor
 					User attOwner = Server.currentServer.getUserForId(attUserId);
 					User defOwner = Server.currentServer.getUserForId(DBManager.getUserIdForCityId(transferData.cityToId));
 					
-					if (br.isAttackers())
-					{
+					if (br.isAttackers()) {
 						Packet20Takeover p20 = DBManager.handleTakeover(transferData.cityToId, transferData.cityFromId, attUserId, new Army(true, transferData.value));
-						if (attOwner != null)
-						{
+						if (attOwner != null) {
 							if (!p20.isCityTakenOver()) Server.currentServer.sendPacket(p20, attOwner);
 							if (transferBack != null) Server.currentServer.sendPacket(transferBack, attOwner);
 						}
-						if (defOwner != null)
-						{
+						if (defOwner != null) {
 							if (!p20.isCityTakenOver()) Server.currentServer.sendPacket(p20, defOwner);
 							if (transferBack != null) Server.currentServer.sendPacket(transferBack, defOwner);
 						}
@@ -98,11 +83,11 @@ public class TransferExecutor
 						if (p20.isCityTakenOver()) Server.currentServer.sendPacketToAllClientsOnWorld(p20, DBManager.getWorldIdForCityId(transferData.cityFromId));
 					}
 					
-					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), attOwner.getUsername()), attOwner); // to attacker
-					if (defOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), defOwner.getUsername()), defOwner); // to defender
-				}
-				catch (Exception e)
-				{
+					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), attOwner.getUsername()), attOwner); // to
+																																																																																																																							// attacker
+					if (defOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), defOwner.getUsername()), defOwner); // to
+																																																																																																																							// defender
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

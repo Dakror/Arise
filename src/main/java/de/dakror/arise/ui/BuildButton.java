@@ -22,8 +22,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class BuildButton extends IconButton
-{
+public class BuildButton extends IconButton {
 	Resources products, scale, buildingCosts;
 	String desc;
 	BufferedImage tooltipCache;
@@ -32,22 +31,19 @@ public class BuildButton extends IconButton
 	boolean upgradeMode;
 	public boolean canEffort;
 	
-	public BuildButton(int x, int y, int width, int height, Image img)
-	{
+	public BuildButton(int x, int y, int width, int height, Image img) {
 		super(x, y, width, height, img);
 		mode1 = true;
 		
 		level = 0;
 	}
 	
-	public BuildButton(int x, int y, int width, int height, Image img, Building b)
-	{
+	public BuildButton(int x, int y, int width, int height, Image img, Building b) {
 		this(x, y, width, height, img);
 		setBuildingMode(b);
 	}
 	
-	public void setBuildingMode(Building b)
-	{
+	public void setBuildingMode(Building b) {
 		upgradeMode = false;
 		tooltip = b.getName();
 		desc = b.getDescription();
@@ -60,8 +56,7 @@ public class BuildButton extends IconButton
 		tooltipCache = null;
 	}
 	
-	public void setUpgradeMode(String text, String desc, Resources buildingCosts, int minCityLevel)
-	{
+	public void setUpgradeMode(String text, String desc, Resources buildingCosts, int minCityLevel) {
 		upgradeMode = true;
 		products = new Resources();
 		scale = new Resources();
@@ -73,58 +68,47 @@ public class BuildButton extends IconButton
 		tooltipCache = null;
 	}
 	
-	public void setProducts(Resources p)
-	{
+	public void setProducts(Resources p) {
 		products = p;
 	}
 	
-	public void setScale(Resources s)
-	{
+	public void setScale(Resources s) {
 		scale = s;
 	}
 	
-	public void setLevel(int l)
-	{
+	public void setLevel(int l) {
 		level = l;
 	}
 	
-	public void setMaxLevel(int l)
-	{
+	public void setMaxLevel(int l) {
 		maxLevel = l;
 	}
 	
-	public Resources getBuildingCosts()
-	{
+	public Resources getBuildingCosts() {
 		return buildingCosts;
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		super.draw(g);
 		
 		if (number > 0) Helper.drawRightAlignedString(number + "", x + width + 7, y + height + 5, g, 35);
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		if (buildingCosts != null) checkIfCanEffort();
 	}
 	
 	@Override
-	public void drawTooltip(int x, int y, Graphics2D g)
-	{
-		try
-		{
-			if (level < maxLevel - 1 || maxLevel == 0)
-			{
+	public void drawTooltip(int x, int y, Graphics2D g) {
+		try {
+			if (level < maxLevel - 1 || maxLevel == 0) {
 				Color c = g.getColor();
 				ArrayList<Resource> resources = buildingCosts.getFilled();
 				ArrayList<Resource> products = this.products.getFilled();
 				
-				if (tooltipCache == null)
-				{
+				if (tooltipCache == null) {
 					int hW = g.getFontMetrics(g.getFont().deriveFont(40f)).stringWidth(tooltip) + 40;
 					int width = hW > 250 ? hW : 250;
 					tooltipRows = Helper.getLineCount(desc, width - 40, g, 25);
@@ -142,8 +126,7 @@ public class BuildButton extends IconButton
 					Helper.drawStringWrapped(desc, 30, 80, width - 40, g2, 25);
 					if (resources.size() > 0) Helper.drawString("Kosten", 25, 50 + tooltipRows * 25 + 35, g2, 30);
 					if (products.size() > 0) Helper.drawString("Produktion", 25, 80 + tooltipRows * 25 + 35 + resources.size() * 30, g2, 30);
-					for (int i = 0; i < products.size(); i++)
-					{
+					for (int i = 0; i < products.size(); i++) {
 						Resource r = products.get(i);
 						float sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
 						float f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
@@ -165,32 +148,25 @@ public class BuildButton extends IconButton
 				
 				g.drawImage(tooltipCache, x1, y1, null);
 				
-				for (int i = 0; i < resources.size(); i++)
-				{
+				for (int i = 0; i < resources.size(); i++) {
 					Resource r = resources.get(i);
-					if (r.isUsable())
-					{
+					if (r.isUsable()) {
 						boolean en = CityLayer.resources.get(r) >= buildingCosts.get(r);
 						g.setColor(en ? Color.white : Color.red);
-					}
-					else
-					{
+					} else {
 						boolean en = CityLayer.resources.get(r) < buildingCosts.get(r);
 						g.setColor(en ? Color.decode("#18acf1") : Color.red);
 					}
 					Assistant.drawResource(buildingCosts, r, x1 + 30, y1 + 100 + tooltipRows * 25 + i * 30, 25, 30, g);
 				}
 				
-				if (minCityLevel > 0)
-				{
+				if (minCityLevel > 0) {
 					g.setColor(CityHUDLayer.cl.city.getLevel() >= minCityLevel ? Color.white : Color.red);
 					Helper.drawString("min. Stadtlevel: " + (minCityLevel + 1), x1 + 25, y1 + 80 + tooltipRows * 25 + 40 + resources.size() * 30 + products.size() * 30, g, 25);
 				}
 				
 				g.setColor(c);
-			}
-			else
-			{
+			} else {
 				String tooltip = "Bereits maximiert.";
 				int width = g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30;
 				int height = 64;
@@ -203,27 +179,20 @@ public class BuildButton extends IconButton
 				Helper.drawShadow(x1, y1, g.getFontMetrics(g.getFont().deriveFont(30f)).stringWidth(tooltip) + 30, height, g);
 				Helper.drawString(tooltip, x1 + 15, y1 + 40, g, 30);
 			}
-		}
-		catch (Exception e)
-		{}
+		} catch (Exception e) {}
 	}
 	
-	public void checkIfCanEffort()
-	{
+	public void checkIfCanEffort() {
 		ArrayList<Resource> resources = buildingCosts.getFilled();
 		
 		canEffort = true;
 		
-		for (int i = 0; i < resources.size(); i++)
-		{
+		for (int i = 0; i < resources.size(); i++) {
 			Resource r = resources.get(i);
-			if (r.isUsable())
-			{
+			if (r.isUsable()) {
 				boolean en = CityLayer.resources.get(r) >= buildingCosts.get(r);
 				if (!en) canEffort = false;
-			}
-			else
-			{
+			} else {
 				boolean en = CityLayer.resources.get(r) < buildingCosts.get(r);
 				if (!en) canEffort = false;
 			}

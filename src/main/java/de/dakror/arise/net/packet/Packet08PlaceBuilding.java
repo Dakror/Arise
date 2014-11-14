@@ -3,12 +3,10 @@ package de.dakror.arise.net.packet;
 /**
  * @author Dakror
  */
-public class Packet08PlaceBuilding extends Packet
-{
+public class Packet08PlaceBuilding extends Packet {
 	int cityId, type, x, y;
 	
-	public Packet08PlaceBuilding(int cityId, int type, int x, int y)
-	{
+	public Packet08PlaceBuilding(int cityId, int type, int x, int y) {
 		super(8);
 		this.cityId = cityId;
 		this.type = type;
@@ -16,8 +14,7 @@ public class Packet08PlaceBuilding extends Packet
 		this.y = y;
 	}
 	
-	public Packet08PlaceBuilding(byte[] data)
-	{
+	public Packet08PlaceBuilding(byte[] data) {
 		super(8);
 		String[] parts = readData(data).split(":");
 		
@@ -28,28 +25,23 @@ public class Packet08PlaceBuilding extends Packet
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		return (cityId + ":" + type + ":" + x + ":" + y).getBytes();
 	}
 	
-	public int getCityId()
-	{
+	public int getCityId() {
 		return cityId;
 	}
 	
-	public int getBuildingType()
-	{
+	public int getBuildingType() {
 		return type;
 	}
 	
-	public int getX()
-	{
+	public int getX() {
 		return x;
 	}
 	
-	public int getY()
-	{
+	public int getY() {
 		return y;
 	}
 }

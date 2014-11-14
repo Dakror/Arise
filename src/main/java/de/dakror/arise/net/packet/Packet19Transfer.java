@@ -8,8 +8,7 @@ import de.dakror.arise.settings.TransferType;
 /**
  * @author Dakror
  */
-public class Packet19Transfer extends Packet
-{
+public class Packet19Transfer extends Packet {
 	int cityFrom, cityTo, timeleft, id;
 	/**
 	 * Type of the transfer
@@ -20,14 +19,12 @@ public class Packet19Transfer extends Packet
 	 */
 	Resources value;
 	
-	public Packet19Transfer(int id)
-	{
+	public Packet19Transfer(int id) {
 		super(19);
 		this.id = id;
 	}
 	
-	public Packet19Transfer(int id, int cityFrom, int cityTo, TransferType type, Resources value, int timeleft)
-	{
+	public Packet19Transfer(int id, int cityFrom, int cityTo, TransferType type, Resources value, int timeleft) {
 		super(19);
 		this.id = id;
 		this.cityFrom = cityFrom;
@@ -37,14 +34,12 @@ public class Packet19Transfer extends Packet
 		this.timeleft = timeleft;
 	}
 	
-	public Packet19Transfer(byte[] data)
-	{
+	public Packet19Transfer(byte[] data) {
 		super(19);
 		
 		String str = readData(data);
 		
-		if (str.startsWith("::"))
-		{
+		if (str.startsWith("::")) {
 			id = Integer.parseInt(new String(str.trim().replace("::", "")));
 			return;
 		}
@@ -63,8 +58,7 @@ public class Packet19Transfer extends Packet
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		if (value == null) return ("::" + id).getBytes();
 		
 		byte[] val = value.getBinaryData();
@@ -81,38 +75,31 @@ public class Packet19Transfer extends Packet
 		return bb.array();
 	}
 	
-	public boolean isMarkedForRemoval()
-	{
+	public boolean isMarkedForRemoval() {
 		return value == null;
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
-	public int getCityFrom()
-	{
+	public int getCityFrom() {
 		return cityFrom;
 	}
 	
-	public int getCityTo()
-	{
+	public int getCityTo() {
 		return cityTo;
 	}
 	
-	public int getTimeleft()
-	{
+	public int getTimeleft() {
 		return timeleft;
 	}
 	
-	public TransferType getTransferType()
-	{
+	public TransferType getTransferType() {
 		return type;
 	}
 	
-	public Resources getValue()
-	{
+	public Resources getValue() {
 		return value;
 	}
 	

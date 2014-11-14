@@ -5,13 +5,11 @@ import de.dakror.arise.settings.TroopType;
 /**
  * @author Dakror
  */
-public class Packet15BarracksBuildTroop extends Packet
-{
+public class Packet15BarracksBuildTroop extends Packet {
 	int cityId, buildingId, amount;
 	TroopType type;
 	
-	public Packet15BarracksBuildTroop(int cityId, int buildingId, TroopType type, int amount)
-	{
+	public Packet15BarracksBuildTroop(int cityId, int buildingId, TroopType type, int amount) {
 		super(15);
 		this.cityId = cityId;
 		this.buildingId = buildingId;
@@ -19,8 +17,7 @@ public class Packet15BarracksBuildTroop extends Packet
 		this.amount = amount;
 	}
 	
-	public Packet15BarracksBuildTroop(byte[] data)
-	{
+	public Packet15BarracksBuildTroop(byte[] data) {
 		super(15);
 		
 		String[] parts = readData(data).split(":");
@@ -31,28 +28,23 @@ public class Packet15BarracksBuildTroop extends Packet
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		return (cityId + ":" + buildingId + ":" + type.ordinal() + ":" + amount).getBytes();
 	}
 	
-	public int getCityId()
-	{
+	public int getCityId() {
 		return cityId;
 	}
 	
-	public int getBuildingId()
-	{
+	public int getBuildingId() {
 		return buildingId;
 	}
 	
-	public int getAmount()
-	{
+	public int getAmount() {
 		return amount;
 	}
 	
-	public TroopType getTroopType()
-	{
+	public TroopType getTroopType() {
 		return type;
 	}
 }

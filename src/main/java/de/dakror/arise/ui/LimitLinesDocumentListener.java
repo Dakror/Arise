@@ -8,18 +8,15 @@ import javax.swing.text.Document;
 import javax.swing.text.Element;
 
 /*
- *  A class to control the maximum number of lines to be stored in a Document
- *
- *  Excess lines can be removed from the start or end of the Document
- *  depending on your requirement.
- *
- *  a) if you append text to the Document, then you would want to remove lines
- *     from the start.
- *  b) if you insert text at the beginning of the Document, then you would
- *     want to remove lines from the end.
+ * A class to control the maximum number of lines to be stored in a Document
+ * Excess lines can be removed from the start or end of the Document
+ * depending on your requirement.
+ * a) if you append text to the Document, then you would want to remove lines
+ * from the start.
+ * b) if you insert text at the beginning of the Document, then you would
+ * want to remove lines from the end.
  */
-public class LimitLinesDocumentListener implements DocumentListener
-{
+public class LimitLinesDocumentListener implements DocumentListener {
 	private int maximumLines;
 	private boolean isRemoveFromStart;
 	
@@ -27,8 +24,7 @@ public class LimitLinesDocumentListener implements DocumentListener
 	 * Specify the number of lines to be stored in the Document.
 	 * Extra lines will be removed from the start of the Document.
 	 */
-	public LimitLinesDocumentListener(int maximumLines)
-	{
+	public LimitLinesDocumentListener(int maximumLines) {
 		this(maximumLines, true);
 	}
 	
@@ -37,8 +33,7 @@ public class LimitLinesDocumentListener implements DocumentListener
 	 * Extra lines will be removed from the start or end of the Document,
 	 * depending on the boolean value specified.
 	 */
-	public LimitLinesDocumentListener(int maximumLines, boolean isRemoveFromStart)
-	{
+	public LimitLinesDocumentListener(int maximumLines, boolean isRemoveFromStart) {
 		setLimitLines(maximumLines);
 		this.isRemoveFromStart = isRemoveFromStart;
 	}
@@ -46,18 +41,15 @@ public class LimitLinesDocumentListener implements DocumentListener
 	/*
 	 * Return the maximum number of lines to be stored in the Document
 	 */
-	public int getLimitLines()
-	{
+	public int getLimitLines() {
 		return maximumLines;
 	}
 	
 	/*
 	 * Set the maximum number of lines to be stored in the Document
 	 */
-	public void setLimitLines(int maximumLines)
-	{
-		if (maximumLines < 1)
-		{
+	public void setLimitLines(int maximumLines) {
+		if (maximumLines < 1) {
 			String message = "Maximum lines must be greater than 0";
 			throw new IllegalArgumentException(message);
 		}
@@ -68,48 +60,38 @@ public class LimitLinesDocumentListener implements DocumentListener
 	// Handle insertion of new text into the Document
 	
 	@Override
-	public void insertUpdate(final DocumentEvent e)
-	{
+	public void insertUpdate(final DocumentEvent e) {
 		// Changes to the Document can not be done within the listener
 		// so we need to add the processing to the end of the EDT
 		
-		SwingUtilities.invokeLater(new Runnable()
-		{
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				removeLines(e);
 			}
 		});
 	}
 	
 	@Override
-	public void removeUpdate(DocumentEvent e)
-	{}
+	public void removeUpdate(DocumentEvent e) {}
 	
 	@Override
-	public void changedUpdate(DocumentEvent e)
-	{}
+	public void changedUpdate(DocumentEvent e) {}
 	
 	/*
 	 * Remove lines from the Document when necessary
 	 */
-	private void removeLines(DocumentEvent e)
-	{
+	private void removeLines(DocumentEvent e) {
 		// The root Element of the Document will tell us the total number
 		// of line in the Document.
 		
 		Document document = e.getDocument();
 		Element root = document.getDefaultRootElement();
 		
-		while (root.getElementCount() > maximumLines)
-		{
-			if (isRemoveFromStart)
-			{
+		while (root.getElementCount() > maximumLines) {
+			if (isRemoveFromStart) {
 				removeFromStart(document, root);
-			}
-			else
-			{
+			} else {
 				removeFromEnd(document, root);
 			}
 		}
@@ -118,17 +100,13 @@ public class LimitLinesDocumentListener implements DocumentListener
 	/*
 	 * Remove lines from the start of the Document
 	 */
-	private void removeFromStart(Document document, Element root)
-	{
+	private void removeFromStart(Document document, Element root) {
 		Element line = root.getElement(0);
 		int end = line.getEndOffset();
 		
-		try
-		{
+		try {
 			document.remove(0, end);
-		}
-		catch (BadLocationException ble)
-		{
+		} catch (BadLocationException ble) {
 			System.out.println(ble);
 		}
 	}
@@ -136,8 +114,7 @@ public class LimitLinesDocumentListener implements DocumentListener
 	/*
 	 * Remove lines from the end of the Document
 	 */
-	private void removeFromEnd(Document document, Element root)
-	{
+	private void removeFromEnd(Document document, Element root) {
 		// We use start minus 1 to make sure we remove the newline
 		// character of the previous line
 		
@@ -145,12 +122,9 @@ public class LimitLinesDocumentListener implements DocumentListener
 		int start = line.getStartOffset();
 		int end = line.getEndOffset();
 		
-		try
-		{
+		try {
 			document.remove(start - 1, end - start);
-		}
-		catch (BadLocationException ble)
-		{
+		} catch (BadLocationException ble) {
 			System.out.println(ble);
 		}
 	}

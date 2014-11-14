@@ -48,8 +48,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class Server extends Thread
-{
+public class Server extends Thread {
 	public static Server currentServer;
 	
 	public static final int PORT = 14744;
@@ -66,11 +65,9 @@ public class Server extends Thread
 	
 	public BufferedWriter logWriter;
 	
-	public Server(InetAddress ip)
-	{
+	public Server(InetAddress ip) {
 		currentServer = this;
-		try
-		{
+		try {
 			dir = new File(CFG.DIR, "Server");
 			dir.mkdir();
 			socket = new DatagramSocket(new InetSocketAddress(ip, Server.PORT));
@@ -80,20 +77,14 @@ public class Server extends Thread
 			DBManager.init();
 			out("Fetching configuration");
 			Game.loadConfig();
-			if (AriseServer.isLogging())
-			{
+			if (AriseServer.isLogging()) {
 				logWriter = new BufferedWriter(new FileWriter(new File(new File(AriseServer.properties.getProperty("logfile")), "status.log")));
-				Runtime.getRuntime().addShutdownHook(new Thread()
-				{
+				Runtime.getRuntime().addShutdownHook(new Thread() {
 					@Override
-					public void run()
-					{
-						try
-						{
+					public void run() {
+						try {
 							logWriter.close();
-						}
-						catch (IOException e)
-						{
+						} catch (IOException e) {
 							e.printStackTrace();
 						}
 					}
@@ -104,238 +95,171 @@ public class Server extends Thread
 			out("Starting server at " + socket.getLocalAddress().getHostAddress() + ":" + socket.getLocalPort());
 			
 			start();
-		}
-		catch (BindException e)
-		{
+		} catch (BindException e) {
 			err("There is a server already running on this machine!");
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void run()
-	{
+	public void run() {
 		running = true;
-		while (running)
-		{
+		while (running) {
 			byte[] data = new byte[PACKETSIZE];
 			
 			DatagramPacket packet = new DatagramPacket(data, data.length);
-			try
-			{
+			try {
 				socket.receive(packet);
 				parsePacket(data, packet.getAddress(), packet.getPort());
-			}
-			catch (SocketException e)
-			{}
-			catch (Exception e)
-			{
+			} catch (SocketException e) {} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public void parsePacket(byte[] data, InetAddress address, int port)
-	{
+	public void parsePacket(byte[] data, InetAddress address, int port) {
 		PacketTypes type = Packet.lookupPacket(data[0]);
 		final User user = getUserForIP(address, port);
 		if (user != null) user.interact();
 		
-		if (AriseServer.trafficLog != null)
-		{
+		if (AriseServer.trafficLog != null) {
 			AriseServer.trafficLog.setText(AriseServer.trafficLog.getText() + new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "< " + address.getHostAddress() + ":" + port + " " + type.name() + "\n");
 			AriseServer.trafficLog.setCaretPosition(AriseServer.trafficLog.getDocument().getLength());
 		}
 		
-		switch (type)
-		{
-			case INVALID:
-			{
+		switch (type) {
+			case INVALID: {
 				err("Received invalid packet: " + new String(data));
 				break;
 			}
-			case HANDSHAKE:
-			{
-				try
-				{
+			case HANDSHAKE: {
+				try {
 					sendPacket(new Packet00Handshake(), user == null ? new User(0, 0, "", address, port) : user);
 					if (user == null) out("Shook hands with: " + address.getHostAddress() + ":" + port);
 					break;
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			case LOGIN:
-			{
-				try
-				{
+			case LOGIN: {
+				try {
 					Packet01Login p = new Packet01Login(data);
 					String s = Helper.getURLContent(new URL("http://dakror.de/mp-api/login_noip.php?username=" + p.getUsername() + "&password=" + p.getPwdMd5()));
 					boolean loggedIn = s.contains("true");
 					boolean worldExists = DBManager.getWorldForId(p.getWorldId()).getId() != -1;
-					if (loggedIn && worldExists)
-					{
+					if (loggedIn && worldExists) {
 						String[] parts = s.split(":");
 						User u = new User(Integer.parseInt(new String(parts[1]).trim()), p.getWorldId(), new String(parts[2]), address, port);
 						boolean alreadyLoggedIn = getUserForId(u.getId()) != null;
 						
-						if (alreadyLoggedIn)
-						{
+						if (alreadyLoggedIn) {
 							out("Refused login of " + address.getHostAddress() + ":" + port + " (" + Response.ALREADY_LOGGED_IN.name() + ")");
 							sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), Response.ALREADY_LOGGED_IN), u);
-						}
-						else
-						{
+						} else {
 							out("User " + new String(parts[2]).trim() + " (#" + u.getId() + ")" + " logged in on world #" + p.getWorldId() + ".");
 							sendPacket(new Packet01Login(new String(parts[2]), u.getId(), p.getWorldId(), Response.LOGIN_OK), u);
 							clients.add(u);
 						}
-					}
-					else
-					{
+					} else {
 						out("Refused login of " + address.getHostAddress() + ":" + port + " (" + (!loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID).name() + ")");
 						sendPacket(new Packet01Login(p.getUsername(), 0, p.getWorldId(), !loggedIn ? Response.BAD_LOGIN : Response.BAD_WORLD_ID), new User(0, 0, "", address, port));
 					}
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				break;
 			}
-			case DISCONNECT:
-			{
+			case DISCONNECT: {
 				Packet02Disconnect p = new Packet02Disconnect(data);
-				for (User u : clients)
-				{
-					if (u.getId() == p.getUserId() && address.equals(u.getIP()))
-					{
-						try
-						{
+				for (User u : clients) {
+					if (u.getId() == p.getUserId() && address.equals(u.getIP())) {
+						try {
 							sendPacket(new Packet02Disconnect(0, Cause.SERVER_CONFIRMED), u);
 							out("User disconnected: #" + u.getId() + " (" + p.getCause().name() + ")");
 							clients.remove(u);
-						}
-						catch (Exception e)
-						{
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 				}
 				break;
 			}
-			case WORLD:
-			{
-				try
-				{
+			case WORLD: {
+				try {
 					Packet03World p = new Packet03World(data);
 					boolean spawn = DBManager.spawnPlayer(p.getId(), user);
 					out("Player's first visit on world? " + spawn);
 					sendPacket(DBManager.getWorldForId(p.getId()), user);
-					for (User u : clients)
-					{
-						if (u.getWorldId() == user.getWorldId() && !(user.getIP().equals(u.getIP()) && user.getPort() == u.getPort()))
-						{
+					for (User u : clients) {
+						if (u.getWorldId() == user.getWorldId() && !(user.getIP().equals(u.getIP()) && user.getPort() == u.getPort())) {
 							sendPacket(DBManager.getSpawnCity(p.getId(), user.getId()), u);
 						}
 					}
 					break;
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			case RESOURCES:
-			{
-				try
-				{
+			case RESOURCES: {
+				try {
 					Packet05Resources p = new Packet05Resources(data);
 					if (DBManager.isCityFromUser(p.getCityId(), user)) sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 					
 					break;
-				}
-				catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			case BUILDING:
-			{
+			case BUILDING: {
 				Packet06Building p = new Packet06Building(data);
-				if (p.getBuildingType() == 0 && DBManager.isCityFromUser(p.getCityId(), user))
-				{
-					try
-					{
+				if (p.getBuildingType() == 0 && DBManager.isCityFromUser(p.getCityId(), user)) {
+					try {
 						for (Packet06Building packet : DBManager.getCityBuildings(p.getCityId()))
 							sendPacket(packet, user);
-					}
-					catch (Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				break;
 			}
-			case RENAMECITY:
-			{
+			case RENAMECITY: {
 				Packet07RenameCity p = new Packet07RenameCity(data);
-				if (DBManager.isCityFromUser(p.getCityId(), user))
-				{
+				if (DBManager.isCityFromUser(p.getCityId(), user)) {
 					boolean worked = DBManager.renameCity(p.getCityId(), p.getNewName(), user);
-					try
-					{
+					try {
 						sendPacketToAllClients(new Packet07RenameCity(p.getCityId(), worked ? p.getNewName() : "#false#"));
-					}
-					catch (Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				break;
 			}
-			case PLACEBUILDING:
-			{
+			case PLACEBUILDING: {
 				Packet08PlaceBuilding p = new Packet08PlaceBuilding(data);
-				if (DBManager.isCityFromUser(p.getCityId(), user))
-				{
+				if (DBManager.isCityFromUser(p.getCityId(), user)) {
 					int id = DBManager.placeBuilding(p.getCityId(), p.getBuildingType(), p.getX(), p.getY());
-					if (id != 0)
-					{
-						try
-						{
+					if (id != 0) {
+						try {
 							sendPacket(DBManager.getCityBuilding(p.getCityId(), id), user);
 							sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
-						}
-						catch (Exception e)
-						{
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
 				}
 				break;
 			}
-			case ATTRIBUTE:
-			{
+			case ATTRIBUTE: {
 				Packet10Attribute p = new Packet10Attribute(data);
-				if (user != null)
-				{
-					switch (p.getKey())
-					{
-						case city:
-						{
+				if (user != null) {
+					switch (p.getKey()) {
+						case city: {
 							user.setCity(Integer.parseInt(p.getValue()));
 							break;
 						}
-						case world_data:
-						{
-							try
-							{
+						case world_data: {
+							try {
 								// -- cities -- //
 								for (Packet04City packet : DBManager.getCities(Integer.parseInt(p.getValue())))
 									sendPacket(packet, user);
@@ -345,9 +269,7 @@ public class Server extends Thread
 									sendPacket(packet, user);
 								
 								sendPacket(new Packet10Attribute(Key.loading_complete), user);
-							}
-							catch (Exception e)
-							{
+							} catch (Exception e) {
 								e.printStackTrace();
 							}
 							break;
@@ -359,20 +281,14 @@ public class Server extends Thread
 				
 				break;
 			}
-			case DECONSTRUCTBUILDING:
-			{
+			case DECONSTRUCTBUILDING: {
 				Packet11DeconstructBuilding p = new Packet11DeconstructBuilding(data);
-				if (DBManager.isCityFromUser(p.getCityId(), user))
-				{
+				if (DBManager.isCityFromUser(p.getCityId(), user)) {
 					int timeleft = 0;
-					if ((timeleft = DBManager.deconstructBuilding(p.getCityId(), p.getBuildingId())) > -1)
-					{
-						try
-						{
+					if ((timeleft = DBManager.deconstructBuilding(p.getCityId(), p.getBuildingId())) > -1) {
+						try {
 							sendPacket(new Packet09BuildingStage(p.getBuildingId(), 2, timeleft), user);
-						}
-						catch (Exception e)
-						{
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -380,20 +296,14 @@ public class Server extends Thread
 				
 				break;
 			}
-			case UPGRADEBUILDING:
-			{
+			case UPGRADEBUILDING: {
 				Packet12UpgradeBuilding p = new Packet12UpgradeBuilding(data);
-				if (DBManager.isCityFromUser(p.getCityId(), user))
-				{
+				if (DBManager.isCityFromUser(p.getCityId(), user)) {
 					int timeleft = 0;
-					if ((timeleft = DBManager.upgradeBuilding(p.getCityId(), p.getBuildingId())) > -1)
-					{
-						try
-						{
+					if ((timeleft = DBManager.upgradeBuilding(p.getCityId(), p.getBuildingId())) > -1) {
+						try {
 							sendPacket(new Packet09BuildingStage(p.getBuildingId(), 3, timeleft), user);
-						}
-						catch (Exception e)
-						{
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -401,43 +311,32 @@ public class Server extends Thread
 				
 				break;
 			}
-			case BARRACKSBUILDTROOP:
-			{
+			case BARRACKSBUILDTROOP: {
 				Packet15BarracksBuildTroop p = new Packet15BarracksBuildTroop(data);
 				
-				if (DBManager.isCityFromUser(p.getCityId(), user))
-				{
-					try
-					{
+				if (DBManager.isCityFromUser(p.getCityId(), user)) {
+					try {
 						int timeleft = DBManager.barracksBuildTroops(p);
-						if (timeleft > -1)
-						{
+						if (timeleft > -1) {
 							sendPacket(new Packet09BuildingStage(p.getBuildingId(), 1, timeleft), user);
 							sendPacket(new Packet16BuildingMeta(p.getBuildingId(), p.getTroopType().ordinal() + ":" + p.getAmount()), user);
 							sendPacket(new Packet05Resources(p.getCityId(), DBManager.getCityResources(p.getCityId())), user);
 						}
-					}
-					catch (Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				
 				break;
 			}
-			case CITYATTACK:
-			{
+			case CITYATTACK: {
 				final Packet17CityAttack p = new Packet17CityAttack(data);
 				
-				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user) && p.getAttArmy().getLength() > 0)
-				{
-					try
-					{
+				if (DBManager.isCityFromUser(p.getAttCityId(), user) && !DBManager.isCityFromUser(p.getDefCityId(), user) && p.getAttArmy().getLength() > 0) {
+					try {
 						sendPacket(DBManager.transferAttackTroops(p), user);
 						sendPacket(new Packet05Resources(p.getAttCityId(), DBManager.getCityResources(p.getAttCityId())), user);
-					}
-					catch (Exception e)
-					{
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -449,85 +348,69 @@ public class Server extends Thread
 		}
 	}
 	
-	public void sendPacketToAllClients(Packet p) throws Exception
-	{
+	public void sendPacketToAllClients(Packet p) throws Exception {
 		for (User u : clients)
 			sendPacket(p, u);
 	}
 	
-	public void sendPacketToAllClientsExceptOne(Packet p, User exception) throws Exception
-	{
-		for (User u : clients)
-		{
-			if (exception.getId() == 0)
-			{
+	public void sendPacketToAllClientsExceptOne(Packet p, User exception) throws Exception {
+		for (User u : clients) {
+			if (exception.getId() == 0) {
 				if (exception.getIP().equals(u.getIP()) && exception.getPort() == u.getPort()) continue;
-			}
-			else if (exception.getId() == u.getId()) continue;
+			} else if (exception.getId() == u.getId()) continue;
 			sendPacket(p, u);
 		}
 	}
 	
-	public void sendPacketToAllClientsOnWorld(Packet p, int worldId) throws Exception
-	{
+	public void sendPacketToAllClientsOnWorld(Packet p, int worldId) throws Exception {
 		for (User u : clients)
 			if (u.getWorldId() == worldId) sendPacket(p, u);
 	}
 	
-	public void sendPacket(Packet p, User u) throws Exception
-	{
+	public void sendPacket(Packet p, User u) throws Exception {
 		if (u == null) throw new NullPointerException("user = null");
 		
 		byte[] data = p.getData();
 		DatagramPacket packet = new DatagramPacket(data, data.length, u.getIP(), u.getPort());
 		
 		socket.send(packet);
-		if (AriseServer.trafficLog != null)
-		{
+		if (AriseServer.trafficLog != null) {
 			AriseServer.trafficLog.setText(AriseServer.trafficLog.getText() + new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date()) + "> " + u.getIP().getHostAddress() + ":" + u.getPort() + " " + p.getType().name() + "\n");
 			AriseServer.trafficLog.setCaretPosition(AriseServer.trafficLog.getDocument().getLength());
 		}
 	}
 	
-	public User getUserForIP(InetAddress address, int port)
-	{
+	public User getUserForIP(InetAddress address, int port) {
 		for (User u : clients)
 			if (u.getIP().equals(address) && u.getPort() == port) return u;
 		
 		return null;
 	}
 	
-	public User getUserForId(int id)
-	{
+	public User getUserForId(int id) {
 		for (User u : clients)
 			if (u.getId() == id) return u;
 		
 		return null;
 	}
 	
-	public void shutdown()
-	{
-		try
-		{
+	public void shutdown() {
+		try {
 			sendPacketToAllClients(new Packet02Disconnect(0, Packet02Disconnect.Cause.SERVER_CLOSED));
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		running = false;
 		socket.close();
 	}
 	
-	public static void out(Object... p)
-	{
+	public static void out(Object... p) {
 		String timestamp = new SimpleDateFormat("'['HH:mm:ss']: '").format(new Date());
 		if (p.length == 1) System.out.println(timestamp + p[0]);
 		else System.out.println(timestamp + Arrays.toString(p));
 	}
 	
-	public static void err(Object... p)
-	{
+	public static void err(Object... p) {
 		String timestamp = new SimpleDateFormat("'['HH:mm:ss'] [ERROR]: '").format(new Date());
 		if (p.length == 1) System.err.print(timestamp + p[0]);
 		else System.err.print(timestamp + Arrays.toString(p));

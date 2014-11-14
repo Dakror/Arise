@@ -29,8 +29,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class Game extends GameApplet
-{
+public class Game extends GameApplet {
 	public static Client client;
 	public static Game currentGame;
 	public static JSONObject config;
@@ -46,15 +45,12 @@ public class Game extends GameApplet
 	
 	boolean debug;
 	
-	public Game()
-	{
+	public Game() {
 		currentGame = this;
 	}
 	
-	public static void loadConfig()
-	{
-		try
-		{
+	public static void loadConfig() {
+		try {
 			config = new JSONObject(Helper.getURLContent(Game.class.getResource("/config.json")));
 			
 			Const.DECONSTRUCT_FACTOR = (float) config.getDouble("deconstruct");
@@ -63,20 +59,16 @@ public class Game extends GameApplet
 			Const.CITY_TAKEOVERS = config.getInt("takeovers");
 			Const.TAKEOVER_FACTOR = (float) config.getDouble("takeover_factor");
 			Const.MARCH_SECONDS = config.getInt("troops");
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void initGame()
-	{
+	public void initGame() {
 		debug = false;
 		InputField.h = 14;
-		try
-		{
+		try {
 			canvas.setFont(Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/MorrisRomanBlack.ttf")));
 			
 			if (!Arise.wrapper) addLayer(new LoginLayer());
@@ -85,52 +77,39 @@ public class Game extends GameApplet
 			loadConfig();
 			
 			client = new Client();
-			if (!client.connectToServer())
-			{
-				addLayer(new Alert("Anscheinend ist der Server aktuell nicht erreichbar. Wir untersuchen dieses Problem bereits, um es so schnell wie möglich zu beheben.", new ClickEvent()
-				{
+			if (!client.connectToServer()) {
+				addLayer(new Alert("Anscheinend ist der Server aktuell nicht erreichbar. Wir untersuchen dieses Problem bereits, um es so schnell wie möglich zu beheben.", new ClickEvent() {
 					@Override
-					public void trigger()
-					{
-						try
-						{
+					public void trigger() {
+						try {
 							if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
 							else System.exit(0);
-						}
-						catch (MalformedURLException e)
-						{
+						} catch (MalformedURLException e) {
 							e.printStackTrace();
 						}
 					}
 				}));
-			}
-			else
-			{
+			} else {
 				removeLoadingLayer();
 				client.start();
 				
 				if (Arise.wrapper) addLayer(new LoginLayerDakrorLauncher());
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void removeLoadingLayer()
-	{
+	public void removeLoadingLayer() {
 		for (Layer l : layers)
 			if (l instanceof LoadingLayer) layers.remove(l);
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		drawLayers(g);
 		
-		if (debug)
-		{
+		if (debug) {
 			Layer.drawModality(g);
 			g.setColor(Color.white);
 			Helper.drawString("Build " + DakrorBin.buildDate, 10, 26, g, 18);
@@ -142,8 +121,7 @@ public class Game extends GameApplet
 		}
 	}
 	
-	public void startGame()
-	{
+	public void startGame() {
 		setLayer(world);
 		addLayer(new WorldHUDLayer());
 		
@@ -153,25 +131,20 @@ public class Game extends GameApplet
 	}
 	
 	@Override
-	public void keyPressed(KeyEvent e)
-	{
+	public void keyPressed(KeyEvent e) {
 		super.keyPressed(e);
 		
 		if (e.getKeyCode() == KeyEvent.VK_F1) debug = !debug;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) toggleLayer(new PauseLayer());
 	}
 	
-	public static void exit()
-	{
-		try
-		{
+	public static void exit() {
+		try {
 			if (currentGame.updater != null) currentGame.updater.closeRequested = true;
 			client.running = false;
 			if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
 			else System.exit(0);
-		}
-		catch (MalformedURLException e)
-		{
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}

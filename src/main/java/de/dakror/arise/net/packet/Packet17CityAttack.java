@@ -7,21 +7,18 @@ import de.dakror.arise.settings.Resources;
 /**
  * @author Dakror
  */
-public class Packet17CityAttack extends Packet
-{
+public class Packet17CityAttack extends Packet {
 	int attCityId, defCityId;
 	Resources attArmy;
 	
-	public Packet17CityAttack(int attCityId, int defCiyId, Resources attArmy)
-	{
+	public Packet17CityAttack(int attCityId, int defCiyId, Resources attArmy) {
 		super(17);
 		this.attCityId = attCityId;
 		defCityId = defCiyId;
 		this.attArmy = attArmy;
 	}
 	
-	public Packet17CityAttack(byte[] data)
-	{
+	public Packet17CityAttack(byte[] data) {
 		super(17);
 		
 		ByteBuffer bb = ByteBuffer.wrap(data);
@@ -35,8 +32,7 @@ public class Packet17CityAttack extends Packet
 	}
 	
 	@Override
-	protected byte[] getPacketData()
-	{
+	protected byte[] getPacketData() {
 		byte[] res = attArmy.getBinaryData();
 		ByteBuffer bb = ByteBuffer.allocate(12 + res.length);
 		bb.putInt(res.length);
@@ -47,18 +43,15 @@ public class Packet17CityAttack extends Packet
 		return bb.array();
 	}
 	
-	public int getAttCityId()
-	{
+	public int getAttCityId() {
 		return attCityId;
 	}
 	
-	public int getDefCityId()
-	{
+	public int getDefCityId() {
 		return defCityId;
 	}
 	
-	public Resources getAttArmy()
-	{
+	public Resources getAttArmy() {
 		return attArmy;
 	}
 }

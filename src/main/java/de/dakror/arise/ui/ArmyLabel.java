@@ -14,16 +14,13 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class ArmyLabel extends Component
-{
-	public ArmyLabel(int x, int y)
-	{
+public class ArmyLabel extends Component {
+	public ArmyLabel(int x, int y) {
 		super(x, y, 0, 25);
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		int army = 0;
 		for (TroopType r : TroopType.values())
 			army += CityLayer.resources.get(r.getType());
@@ -37,12 +34,10 @@ public class ArmyLabel extends Component
 	}
 	
 	@Override
-	public void update(int tick)
-	{}
+	public void update(int tick) {}
 	
 	@Override
-	public void drawTooltip(int x, int y, Graphics2D g)
-	{
+	public void drawTooltip(int x, int y, Graphics2D g) {
 		int width = 150;
 		int height = TroopType.values().length * 30 + 70;
 		int x1 = x;
@@ -53,8 +48,7 @@ public class ArmyLabel extends Component
 		
 		Helper.drawShadow(x1, y1, width, height, g);
 		Helper.drawString("Truppen", x1 + 20, y1 + 40, g, 35);
-		for (int i = 0; i < TroopType.values().length; i++)
-		{
+		for (int i = 0; i < TroopType.values().length; i++) {
 			Resource r = TroopType.values()[i].getType();
 			Assistant.drawResource(CityLayer.resources, r, x1 + 20, y1 + i * 30 + 50, 30, 30, g);
 		}

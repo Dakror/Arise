@@ -32,8 +32,7 @@ import de.dakror.gamesetup.util.Helper;
 /**
  * @author Dakror
  */
-public class World extends MPLayer
-{
+public class World extends MPLayer {
 	public static int CHUNKSIZE = 256;
 	
 	String name;
@@ -51,10 +50,8 @@ public class World extends MPLayer
 	
 	Point dragStart, worldDragStart;
 	
-	public World(Packet03World packet)
-	{
-		try
-		{
+	public World(Packet03World packet) {
+		try {
 			id = packet.getId();
 			name = packet.getName();
 			speed = packet.getSpeed();
@@ -67,20 +64,16 @@ public class World extends MPLayer
 					Helper.drawImage2(Game.getImage("world/ground.png"), i, j, 32, 32, 32, 0, 32, 32, (Graphics2D) chunk.getGraphics());
 			
 			updateSize();
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@Override
-	public void init()
-	{}
+	public void init() {}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		AffineTransform old = g.getTransform();
 		AffineTransform at = g.getTransform();
 		at.translate(x, y);
@@ -92,8 +85,7 @@ public class World extends MPLayer
 		
 		Component hovered = null;
 		
-		for (Component c : components)
-		{
+		for (Component c : components) {
 			if (!new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(c.getX() + x, c.getY() + y, c.getWidth(), c.getHeight()))) continue;
 			c.draw(g);
 			if (c.state == 2) hovered = c;
@@ -106,18 +98,15 @@ public class World extends MPLayer
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		this.tick = tick;
 		if (tick % 120 == 0) sortComponents();
 		updateComponents(tick);
 	}
 	
-	public void updateSize()
-	{
+	public void updateSize() {
 		int minX = -65536, minY = -65536, maxX = -65536, maxY = -65536;
-		for (Component c : components)
-		{
+		for (Component c : components) {
 			if (c.getX() < minX || minX == -65536) minX = c.getX();
 			if (c.getY() < minY || minY == -65536) minY = c.getY();
 			if (c.getX() + c.getWidth() > maxX || maxX == -65536) maxX = c.getX() + c.getWidth();
@@ -141,14 +130,11 @@ public class World extends MPLayer
 		y = y > -minY ? -minY : y;
 	}
 	
-	public void sortComponents()
-	{
+	public void sortComponents() {
 		ArrayList<Component> c = new ArrayList<>(components);
-		Collections.sort(c, new Comparator<Component>()
-		{
+		Collections.sort(c, new Comparator<Component>() {
 			@Override
-			public int compare(Component o1, Component o2)
-			{
+			public int compare(Component o1, Component o2) {
 				if (o1.getClass().equals(o2.getClass())) return 1;
 				if (o1 instanceof Transfer) return -1;
 				return 1;
@@ -159,12 +145,10 @@ public class World extends MPLayer
 	}
 	
 	@Override
-	public void mouseDragged(MouseEvent e)
-	{
+	public void mouseDragged(MouseEvent e) {
 		if (e.getModifiers() == 4) // RMB
 		{
-			if (dragStart == null)
-			{
+			if (dragStart == null) {
 				dragStart = e.getPoint();
 				worldDragStart = new Point(x, y);
 			}
@@ -182,16 +166,13 @@ public class World extends MPLayer
 	}
 	
 	@Override
-	public void mousePressed(MouseEvent e)
-	{
+	public void mousePressed(MouseEvent e) {
 		e.translatePoint(-x, -y);
 		super.mousePressed(e);
 		
 		anyCityActive = false;
-		for (Component c : components)
-		{
-			if (c instanceof City && c.state == 1)
-			{
+		for (Component c : components) {
+			if (c instanceof City && c.state == 1) {
 				anyCityActive = true;
 				break;
 			}
@@ -200,14 +181,11 @@ public class World extends MPLayer
 	}
 	
 	@Override
-	public void mouseMoved(MouseEvent e)
-	{
+	public void mouseMoved(MouseEvent e) {
 		e.translatePoint(-x, -y);
 		super.mouseMoved(e);
-		for (Component c : components)
-		{
-			if (c instanceof City && c.state == 2)
-			{
+		for (Component c : components) {
+			if (c instanceof City && c.state == 2) {
 				WorldHUDLayer.hoveredCity = (City) c;
 				return;
 			}
@@ -216,36 +194,30 @@ public class World extends MPLayer
 	}
 	
 	@Override
-	public void mouseReleased(MouseEvent e)
-	{
+	public void mouseReleased(MouseEvent e) {
 		worldDragStart = dragStart = null;
 		
 		e.translatePoint(-x, -y);
 		super.mouseReleased(e);
 	}
 	
-	public int getSpeed()
-	{
+	public int getSpeed() {
 		return speed;
 	}
 	
-	public int getId()
-	{
+	public int getId() {
 		return id;
 	}
 	
-	public int getWidth()
-	{
+	public int getWidth() {
 		return width;
 	}
 	
-	public int getHeight()
-	{
+	public int getHeight() {
 		return height;
 	}
 	
-	public int getCityCount()
-	{
+	public int getCityCount() {
 		int i = 0;
 		for (Component c : components)
 			if (c instanceof City) i++;
@@ -253,8 +225,7 @@ public class World extends MPLayer
 		return i;
 	}
 	
-	public City getCityForId(int id)
-	{
+	public City getCityForId(int id) {
 		for (Component c : components)
 			if (c instanceof City && ((City) c).getId() == id) return (City) c;
 		
@@ -262,12 +233,10 @@ public class World extends MPLayer
 	}
 	
 	@Override
-	public void onReceivePacket(Packet p)
-	{
+	public void onReceivePacket(Packet p) {
 		super.onReceivePacket(p);
 		
-		if (p.getType() == PacketTypes.CITY)
-		{
+		if (p.getType() == PacketTypes.CITY) {
 			Packet04City packet = (Packet04City) p;
 			int middleX = (Game.getWidth() - City.SIZE) / 2;
 			int middleY = (Game.getHeight() - City.SIZE) / 2;
@@ -277,10 +246,8 @@ public class World extends MPLayer
 			
 			boolean found = false;
 			
-			for (Component c : components)
-			{
-				if (c instanceof City && c.getX() == x && c.getY() == y)
-				{
+			for (Component c : components) {
+				if (c instanceof City && c.getX() == x && c.getY() == y) {
 					((City) c).setName(packet.getCityName());
 					((City) c).setLevel(packet.getLevel());
 					found = true;
@@ -288,61 +255,47 @@ public class World extends MPLayer
 				}
 			}
 			
-			if (!found)
-			{
+			if (!found) {
 				City c = new City(x, y, packet);
 				components.add(c);
 				updateSize();
 				sortComponents();
 			}
 		}
-		if (p.getType() == PacketTypes.RENAMECITY)
-		{
+		if (p.getType() == PacketTypes.RENAMECITY) {
 			Packet07RenameCity packet = (Packet07RenameCity) p;
-			for (Component c : components)
-			{
-				if (c instanceof City && ((City) c).getId() == packet.getCityId())
-				{
+			for (Component c : components) {
+				if (c instanceof City && ((City) c).getId() == packet.getCityId()) {
 					((City) c).setName(packet.getNewName());
 					break;
 				}
 			}
 		}
-		if (p.getType() == PacketTypes.RESOURCES && gotoCity != null)
-		{
-			if (gotoCity.getId() == ((Packet05Resources) p).getCityId())
-			{
+		if (p.getType() == PacketTypes.RESOURCES && gotoCity != null) {
+			if (gotoCity.getId() == ((Packet05Resources) p).getCityId()) {
 				gotoCity.resourcePacket = (Packet05Resources) p;
 				Game.currentGame.fadeTo(1, 0.05f);
-			}
-			else CFG.e("Received invalid packet05resources: current gotoCity.id=" + gotoCity.getId() + ", packet.id=" + ((Packet05Resources) p).getCityId());
+			} else CFG.e("Received invalid packet05resources: current gotoCity.id=" + gotoCity.getId() + ", packet.id=" + ((Packet05Resources) p).getCityId());
 		}
 		
-		if (p.getType() == PacketTypes.TRANSFER)
-		{
+		if (p.getType() == PacketTypes.TRANSFER) {
 			Packet19Transfer packet = (Packet19Transfer) p;
 			
-			if (packet.isMarkedForRemoval())
-			{
+			if (packet.isMarkedForRemoval()) {
 				for (Component c : components)
 					if (c instanceof Transfer && ((Transfer) c).getId() == packet.getId()) components.remove(c);
 				
 				sortComponents();
-			}
-			else
-			{
+			} else {
 				components.add(new Transfer(getCityForId(packet.getCityFrom()), getCityForId(packet.getCityTo()), packet));
 				sortComponents();
 			}
 		}
-		if (p.getType() == PacketTypes.TAKEOVER)
-		{
+		if (p.getType() == PacketTypes.TAKEOVER) {
 			Packet20Takeover packet = (Packet20Takeover) p;
 			
-			for (Component c : components)
-			{
-				if (c instanceof City && ((City) c).getId() == packet.getCityTakenOverId())
-				{
+			for (Component c : components) {
+				if (c instanceof City && ((City) c).getId() == packet.getCityTakenOverId()) {
 					((City) c).updateTakeoverStage(packet.getStage(), packet.getTimeleft());
 					if (packet.getNewUserId() != 0) ((City) c).setUser(packet.getNewUserId(), packet.getNewUsername());
 				}

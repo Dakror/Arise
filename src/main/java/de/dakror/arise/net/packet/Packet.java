@@ -5,10 +5,8 @@ import java.util.Arrays;
 /**
  * @author Dakror
  */
-public abstract class Packet
-{
-	public static enum PacketTypes
-	{
+public abstract class Packet {
+	public static enum PacketTypes {
 		INVALID(null),
 		HANDSHAKE(Packet00Handshake.class),
 		LOGIN(Packet01Login.class),
@@ -36,33 +34,28 @@ public abstract class Packet
 		
 		private Class<?> class1;
 		
-		private PacketTypes(Class<?> class1)
-		{
+		private PacketTypes(Class<?> class1) {
 			this.class1 = class1;
 		}
 		
-		public int getID()
-		{
+		public int getID() {
 			return ordinal() - 1;
 		}
 		
-		public Class<?> getPacketClass()
-		{
+		public Class<?> getPacketClass() {
 			return class1;
 		}
 	}
 	
 	public byte packetID;
 	
-	public Packet(int packetID)
-	{
+	public Packet(int packetID) {
 		this.packetID = (byte) packetID;
 	}
 	
 	protected abstract byte[] getPacketData();
 	
-	public byte[] getData()
-	{
+	public byte[] getData() {
 		byte[] strData = getPacketData();
 		
 		byte[] data = new byte[strData.length + 1];
@@ -73,36 +66,28 @@ public abstract class Packet
 		return data;
 	}
 	
-	public static String readData(byte[] data)
-	{
+	public static String readData(byte[] data) {
 		return new String(Arrays.copyOfRange(data, 1, data.length)).trim();
 	}
 	
-	public PacketTypes getType()
-	{
+	public PacketTypes getType() {
 		return Packet.lookupPacket(packetID);
 	}
 	
-	public static PacketTypes lookupPacket(int id)
-	{
-		for (PacketTypes pt : PacketTypes.values())
-		{
+	public static PacketTypes lookupPacket(int id) {
+		for (PacketTypes pt : PacketTypes.values()) {
 			if (pt.getID() == id) return pt;
 		}
 		
 		return PacketTypes.INVALID;
 	}
 	
-	public static Packet newInstance(PacketTypes type, byte[] data)
-	{
+	public static Packet newInstance(PacketTypes type, byte[] data) {
 		if (type == PacketTypes.INVALID) return null;
 		
-		try
-		{
+		try {
 			return (Packet) type.getPacketClass().getConstructor(byte[].class).newInstance(data);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}

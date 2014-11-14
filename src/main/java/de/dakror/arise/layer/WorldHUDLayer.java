@@ -23,8 +23,7 @@ import de.dakror.gamesetup.ui.Component;
 /**
  * @author Dakror
  */
-public class WorldHUDLayer extends MPLayer
-{
+public class WorldHUDLayer extends MPLayer {
 	public static City selectedCity;
 	public static City hoveredCity;
 	
@@ -37,24 +36,20 @@ public class WorldHUDLayer extends MPLayer
 	boolean waitingForResources;
 	
 	@Override
-	public void init()
-	{
+	public void init() {
 		dragType = TransferType.TROOPS_ATTACK;
 	}
 	
 	@Override
-	public void draw(Graphics2D g)
-	{
+	public void draw(Graphics2D g) {
 		// if (selectedCity != null)
 		// {
 		// int width = 300, height = 200;
 		// Helper.drawContainer(Game.getWidth() - width, Game.getHeight() - height, width, height, true, false, g);
 		// }
 		
-		try
-		{
-			if (showArrow && drag != null && hoveredCity != null)
-			{
+		try {
+			if (showArrow && drag != null && hoveredCity != null) {
 				Stroke s = g.getStroke();
 				Color c = g.getColor();
 				g.setStroke(new BasicStroke(12, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
@@ -79,8 +74,7 @@ public class WorldHUDLayer extends MPLayer
 				
 				g.setTransform(at);
 				Polygon arrow = new Polygon();
-				if (length >= 0)
-				{
+				if (length >= 0) {
 					arrow.addPoint(0, -6);
 					arrow.addPoint(0, 6);
 					arrow.addPoint(length, 6);
@@ -99,43 +93,33 @@ public class WorldHUDLayer extends MPLayer
 				g.setColor(c);
 				g.setTransform(old);
 			}
-		}
-		catch (NullPointerException e)
-		{}
+		} catch (NullPointerException e) {}
 	}
 	
 	@Override
-	public void update(int tick)
-	{
+	public void update(int tick) {
 		if (!Game.world.anyCityActive) selectedCity = null;
 	}
 	
 	@Override
-	public void mouseDragged(MouseEvent e)
-	{
+	public void mouseDragged(MouseEvent e) {
 		super.mouseDragged(e);
 		
 		selectedCity = null;
 		
 		showArrow = hoveredCity != null && hoveredCity.getUserId() == Game.userID && e.getModifiers() == 16; // LMB
-		if (showArrow)
-		{
+		if (showArrow) {
 			drag = e.getPoint();
 			
 			boolean ontoAny = false;
-			for (Component c : Game.world.components)
-			{
-				if (c instanceof City)
-				{
+			for (Component c : Game.world.components) {
+				if (c instanceof City) {
 					if (!c.equals(hoveredCity) && !c.equals(selectedCity)) c.state = 0;
-					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !((City) c).isInTakeoverCooldown())
-					{
+					if (c.contains(drag.x - Game.world.x, drag.y - Game.world.y) && !c.equals(hoveredCity) && !((City) c).isInTakeoverCooldown()) {
 						boolean canTarget = true;
 						
-						for (Component c1 : Game.world.components)
-						{
-							if (c1 instanceof Transfer && ((Transfer) c1).getCityFrom().equals(hoveredCity) && ((Transfer) c1).getCityTo().equals(c))
-							{
+						for (Component c1 : Game.world.components) {
+							if (c1 instanceof Transfer && ((Transfer) c1).getCityFrom().equals(hoveredCity) && ((Transfer) c1).getCityTo().equals(c)) {
 								canTarget = false;
 								break;
 							}
@@ -156,21 +140,16 @@ public class WorldHUDLayer extends MPLayer
 	}
 	
 	@Override
-	public void mouseReleased(MouseEvent e)
-	{
+	public void mouseReleased(MouseEvent e) {
 		super.mouseReleased(e);
 		
-		if (draggedOnto != null)
-		{
-			try
-			{
+		if (draggedOnto != null) {
+			try {
 				waitingForResources = true;
 				hovId = hoveredCity.getId();
 				draggedOntoId = draggedOnto.getId();
 				Game.client.sendPacket(new Packet05Resources(hoveredCity.getId()));
-			}
-			catch (IOException e1)
-			{
+			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 			Game.currentGame.addLayer(new LoadingLayer());
@@ -182,14 +161,11 @@ public class WorldHUDLayer extends MPLayer
 	}
 	
 	@Override
-	public void onReceivePacket(Packet p)
-	{
+	public void onReceivePacket(Packet p) {
 		super.onReceivePacket(p);
-		if (p.getType() == PacketTypes.RESOURCES && waitingForResources)
-		{
+		if (p.getType() == PacketTypes.RESOURCES && waitingForResources) {
 			Packet05Resources packet = (Packet05Resources) p;
-			if (packet.getCityId() == hovId)
-			{
+			if (packet.getCityId() == hovId) {
 				Game.currentGame.removeLoadingLayer();
 				Game.currentGame.addLayer(new AttackCityDialog(hovId, draggedOntoId, packet.getResources()));
 				

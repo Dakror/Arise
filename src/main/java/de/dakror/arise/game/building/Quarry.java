@@ -3,10 +3,8 @@ package de.dakror.arise.game.building;
 /**
  * @author Dakror
  */
-public class Quarry extends Building
-{
-	public Quarry(int x, int y, int level)
-	{
+public class Quarry extends Building {
+	public Quarry(int x, int y, int level) {
 		super(x, y, 5, 6, level);
 		
 		typeId = 4;

@@ -83,10 +83,14 @@ public class TransferExecutor {
 						if (p20.isCityTakenOver()) Server.currentServer.sendPacketToAllClientsOnWorld(p20, DBManager.getWorldIdForCityId(transferData.cityFromId));
 					}
 					
-					if (attOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), attOwner.getUsername()), attOwner); // to
-																																																																																																																							// attacker
-					if (defOwner != null) Server.currentServer.sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc, attOwner.getUsername(), defOwner.getUsername()), defOwner); // to
-																																																																																																																							// defender
+					if (attOwner != null)
+						Server.currentServer.sendPacket(new Packet18BattleResult(br.isAttackers(), false, br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc,
+																																			attOwner.getUsername(), attOwner.getUsername()), attOwner); // to
+																																																																	// attacker
+					if (defOwner != null)
+						Server.currentServer.sendPacket(new Packet18BattleResult(!br.isAttackers(), true, !br.isAttackers() ? (int) br.getDead().getLength() : 0, ac, dc,
+																																			attOwner.getUsername(), defOwner.getUsername()), defOwner); // to
+																																																																	// defender
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

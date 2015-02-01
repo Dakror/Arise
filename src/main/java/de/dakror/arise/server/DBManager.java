@@ -471,7 +471,8 @@ public class DBManager {
 			
 			int cities = rs2.getInt(1);
 			Point p = CitySpawner.spawnCity(cities, worldId);
-			execUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", " + worldId + ", 0,  '0:0:0:0:0:0:0', 300, 300, 300)");
+			execUpdate("INSERT INTO CITIES(NAME, X, Y, USER_ID, WORLD_ID, LEVEL, ARMY, WOOD, STONE, GOLD) VALUES('Neue Stadt', " + p.x + ", " + p.y + ", " + user.getId() + ", "
+					+ worldId + ", 0,  '0:0:0:0:0:0:0', 300, 300, 300)");
 			
 			ResultSet rs3 = connection.createStatement().executeQuery("SELECT ID FROM CITIES WHERE USER_ID = " + user.getId() + " AND WORLD_ID = " + worldId);
 			int cityId = rs3.getInt(1);
@@ -502,10 +503,12 @@ public class DBManager {
 		ResultSet rs = null;
 		try {
 			st = connection.createStatement();
-			rs = st.executeQuery("SELECT ((WOOD - " + res.getF(Resource.WOOD) + " >= 0) + (STONE - " + res.getF(Resource.STONE) + " >= 0) + (GOLD - " + res.getF(Resource.GOLD) + " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1");
+			rs = st.executeQuery("SELECT ((WOOD - " + res.getF(Resource.WOOD) + " >= 0) + (STONE - " + res.getF(Resource.STONE) + " >= 0) + (GOLD - " + res.getF(Resource.GOLD)
+					+ " >= 0)) == 3 as CANEFFORT FROM CITIES WHERE ID = " + cityId + " AND CANEFFORT == 1");
 			if (!rs.next()) return false;
 			
-			execUpdate("UPDATE CITIES SET WOOD = WOOD - " + res.getF(Resource.WOOD) + ", STONE = STONE - " + res.getF(Resource.STONE) + ", GOLD = GOLD - " + res.getF(Resource.GOLD) + " WHERE ID = " + cityId);
+			execUpdate("UPDATE CITIES SET WOOD = WOOD - " + res.getF(Resource.WOOD) + ", STONE = STONE - " + res.getF(Resource.STONE) + ", GOLD = GOLD - " + res.getF(Resource.GOLD)
+					+ " WHERE ID = " + cityId);
 			return true;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -601,7 +604,8 @@ public class DBManager {
 			Building b = Building.getBuildingByTypeId(x, y, 0, type);
 			
 			if (buy(cityId, b.getBuildingCosts())) {
-				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, " + b.getStageChangeSeconds() / getWorldSpeedForCityId(cityId) + ")");
+				execUpdate("INSERT INTO BUILDINGS(CITY_ID, TYPE, LEVEL, X, Y, STAGE, TIMELEFT) VALUES(" + cityId + ", " + type + ", 0, " + x + ", " + y + ", 0, "
+						+ b.getStageChangeSeconds() / getWorldSpeedForCityId(cityId) + ")");
 				st = connection.createStatement();
 				rs = st.executeQuery("SELECT last_insert_rowid() FROM BUILDINGS LIMIT 1");
 				return rs.getInt(1);
@@ -629,7 +633,8 @@ public class DBManager {
 			if (rs.getInt("STAGE") != 1) return -1;
 			
 			Building b = Building.getBuildingByTypeId(0, 0, rs.getInt(1), rs.getInt("TYPE"));
-			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = " + id);
+			execUpdate("UPDATE BUILDINGS SET STAGE = 2, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = "
+					+ id);
 			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId));
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -658,7 +663,8 @@ public class DBManager {
 			if (rs.getInt(1) >= b.getMaxLevel()) return -1;
 			if (!buy(cityId, b.getUpgradeCosts())) return -1;
 			
-			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = " + id);
+			execUpdate("UPDATE BUILDINGS SET STAGE = 3, TIMELEFT = " + (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId)) + " WHERE ID = "
+					+ id);
 			
 			return (int) ((b.getStageChangeSeconds() * Const.DECONSTRUCT_FACTOR) / getWorldSpeedForCityId(cityId));
 		} catch (SQLException e) {
@@ -708,7 +714,8 @@ public class DBManager {
 	// -- transfers -- //
 	
 	public static Packet19Transfer addTransfer(int cityFromId, int cityToId, TransferType type, Resources value, int time) {
-		execUpdate("INSERT INTO TRANSFERS(CITY_FROM_ID, CITY_TO_ID, TYPE, VALUE, TIMELEFT) VALUES(" + cityFromId + ", " + cityToId + ", " + type.ordinal() + ", '" + value.getStringData() + "', " + time + ")");
+		execUpdate("INSERT INTO TRANSFERS(CITY_FROM_ID, CITY_TO_ID, TYPE, VALUE, TIMELEFT) VALUES(" + cityFromId + ", " + cityToId + ", " + type.ordinal() + ", '"
+				+ value.getStringData() + "', " + time + ")");
 		
 		Statement st = null;
 		ResultSet rs = null;
@@ -750,7 +757,8 @@ public class DBManager {
 		ArrayList<Packet19Transfer> list = new ArrayList<>();
 		try {
 			st = connection.createStatement();
-			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT, (CITIES.ID = TRANSFERS.CITY_TO_ID) AS ISTARGET FROM TRANSFERS, CITIES WHERE (CITIES.ID = TRANSFERS.CITY_FROM_ID OR CITIES.ID = TRANSFERS.CITY_TO_ID) AND CITIES.USER_ID = " + user.getId() + " AND CITIES.WORLD_ID = " + user.getWorldId());
+			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT, (CITIES.ID = TRANSFERS.CITY_TO_ID) AS ISTARGET FROM TRANSFERS, CITIES WHERE (CITIES.ID = TRANSFERS.CITY_FROM_ID OR CITIES.ID = TRANSFERS.CITY_TO_ID) AND CITIES.USER_ID = "
+					+ user.getId() + " AND CITIES.WORLD_ID = " + user.getWorldId());
 			while (rs.next()) {
 				TransferType type = TransferType.values()[rs.getInt("TYPE")];
 				if (!type.isVisibleForTarget() && rs.getInt("ISTARGET") == 1) continue;
@@ -852,7 +860,8 @@ public class DBManager {
 			st = connection.createStatement();
 			rs = st.executeQuery("SELECT TRANSFERS.ID, TRANSFERS.CITY_FROM_ID, TRANSFERS.CITY_TO_ID, TRANSFERS.TYPE, TRANSFERS.VALUE, TRANSFERS.TIMELEFT FROM TRANSFERS WHERE TRANSFERS.TIMELEFT = 0");
 			while (rs.next()) {
-				TransferExecutor.execute(new TransferData(rs.getInt("ID"), rs.getInt("TIMELEFT"), rs.getInt("CITY_FROM_ID"), rs.getInt("CITY_TO_ID"), new Resources(rs.getString("VALUE")), TransferType.values()[rs.getInt("TYPE")]));
+				TransferExecutor.execute(new TransferData(rs.getInt("ID"), rs.getInt("TIMELEFT"), rs.getInt("CITY_FROM_ID"), rs.getInt("CITY_TO_ID"), new Resources(rs.getString("VALUE")),
+																									TransferType.values()[rs.getInt("TYPE")]));
 				
 				User from = Server.currentServer.getUserForId(getUserIdForCityId(rs.getInt("CITY_FROM_ID")));
 				User to = Server.currentServer.getUserForId(getUserIdForCityId(rs.getInt("CITY_TO_ID")));

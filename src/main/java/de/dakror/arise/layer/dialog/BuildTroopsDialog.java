@@ -80,9 +80,11 @@ public class BuildTroopsDialog extends MPLayer {
 		ArrayList<Resource> filled = type.getCosts().getFilled();
 		
 		for (int i = 0; i < filled.size(); i++)
-			Assistant.drawLabelWithIcon(Game.getWidth() / 2 - width / 3, (Game.getHeight() - height) / 2 + 55 + i * 40, 30, new Point(filled.get(i).getIconX(), filled.get(i).getIconY()), "" + type.getCosts().get(filled.get(i)) * (int) slider.getValue(), 30, g);
+			Assistant.drawLabelWithIcon(Game.getWidth() / 2 - width / 3, (Game.getHeight() - height) / 2 + 55 + i * 40, 30,
+																	new Point(filled.get(i).getIconX(), filled.get(i).getIconY()), "" + type.getCosts().get(filled.get(i)) * (int) slider.getValue(), 30, g);
 		
-		Helper.drawString("Dauer: " + Assistant.formatSeconds((int) ((type.getBuildTime() / (float) Game.world.getSpeed()) * slider.getValue())), Game.getWidth() / 2, Game.getHeight() / 2 - 30, g, 30);
+		Helper.drawString("Dauer: " + Assistant.formatSeconds((int) ((type.getBuildTime() / (float) Game.world.getSpeed()) * slider.getValue())), Game.getWidth() / 2,
+											Game.getHeight() / 2 - 30, g, 30);
 		
 		drawComponents(g);
 	}

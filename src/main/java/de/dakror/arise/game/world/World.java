@@ -81,7 +81,8 @@ public class World extends MPLayer {
 		
 		for (int i = 0; i < Math.ceil(width / (float) CHUNKSIZE); i++)
 			for (int j = 0; j < Math.ceil(height / (float) CHUNKSIZE); j++)
-				if (new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(minX + i * CHUNKSIZE + x, minY + j * CHUNKSIZE + y, CHUNKSIZE, CHUNKSIZE))) g.drawImage(chunk, minX + i * CHUNKSIZE, minY + j * CHUNKSIZE, null);
+				if (new Rectangle(0, 0, Game.getWidth(), Game.getHeight()).intersects(new Rectangle(minX + i * CHUNKSIZE + x, minY + j * CHUNKSIZE + y, CHUNKSIZE, CHUNKSIZE)))
+					g.drawImage(chunk, minX + i * CHUNKSIZE, minY + j * CHUNKSIZE, null);
 		
 		Component hovered = null;
 		

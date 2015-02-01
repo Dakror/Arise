@@ -77,7 +77,8 @@ public class CityLayer extends MPLayer {
 			
 			for (int i = activeBuilding.bx * Building.GRID; i < activeBuilding.bx * Building.GRID + activeBuilding.bw * Building.GRID; i += Building.GRID) {
 				for (int j = activeBuilding.by * Building.GRID; j < activeBuilding.by * Building.GRID + activeBuilding.bh * Building.GRID; j += Building.GRID) {
-					boolean green = new Rectangle(96, 96, 1088, 544).contains(new Rectangle(i + x, j + y, Building.GRID, Building.GRID)) && !intersectsBuildings(new Rectangle(i + x, j + y, Building.GRID, Building.GRID));
+					boolean green = new Rectangle(96, 96, 1088, 544).contains(new Rectangle(i + x, j + y, Building.GRID, Building.GRID))
+							&& !intersectsBuildings(new Rectangle(i + x, j + y, Building.GRID, Building.GRID));
 					g.setColor(green ? Color.decode("#5fff5b") : Color.red);
 					g.fillRect(i + x, j + y, Building.GRID, Building.GRID);
 					
@@ -107,7 +108,9 @@ public class CityLayer extends MPLayer {
 	
 	public boolean intersectsBuildings(Rectangle r) {
 		for (Component c : components)
-			if (c instanceof Building && new Rectangle(c.getX() + ((Building) c).bx * Building.GRID, c.getY() + ((Building) c).by * Building.GRID, ((Building) c).bw * Building.GRID, ((Building) c).bh * Building.GRID).intersects(r)) return true;
+			if (c instanceof Building
+					&& new Rectangle(c.getX() + ((Building) c).bx * Building.GRID, c.getY() + ((Building) c).by * Building.GRID, ((Building) c).bw * Building.GRID, ((Building) c).bh
+							* Building.GRID).intersects(r)) return true;
 		
 		return false;
 	}

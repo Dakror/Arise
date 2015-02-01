@@ -29,6 +29,7 @@ public class BattleResult {
 	}
 	
 	public String toString(int attCityId, int defCityId) {
-		return "The " + (attackers ? "Attackers (City #" + attCityId : "Defenders (City #" + defCityId) + ") are victorious. " + (int) dead.getLength() + " of their fighters died. Simulation took " + seconds + "s.";
+		return "The " + (attackers ? "Attackers (City #" + attCityId : "Defenders (City #" + defCityId) + ") are victorious. " + (int) dead.getLength()
+				+ " of their fighters died. Simulation took " + seconds + "s.";
 	}
 }

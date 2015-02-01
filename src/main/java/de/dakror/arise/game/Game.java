@@ -78,17 +78,18 @@ public class Game extends GameApplet {
 			
 			client = new Client();
 			if (!client.connectToServer()) {
-				addLayer(new Alert("Anscheinend ist der Server aktuell nicht erreichbar. Wir untersuchen dieses Problem bereits, um es so schnell wie möglich zu beheben.", new ClickEvent() {
-					@Override
-					public void trigger() {
-						try {
-							if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
-							else System.exit(0);
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-						}
-					}
-				}));
+				addLayer(new Alert("Anscheinend ist der Server aktuell nicht erreichbar. Wir untersuchen dieses Problem bereits, um es so schnell wie möglich zu beheben.",
+														new ClickEvent() {
+															@Override
+															public void trigger() {
+																try {
+																	if (!Arise.wrapper) Game.applet.getAppletContext().showDocument(new URL("http://dakror.de"));
+																	else System.exit(0);
+																} catch (MalformedURLException e) {
+																	e.printStackTrace();
+																}
+															}
+														}));
 			} else {
 				removeLoadingLayer();
 				client.start();

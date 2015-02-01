@@ -26,7 +26,8 @@ public class PauseLayer extends MPLayer {
 	@Override
 	public void draw(Graphics2D g) {
 		drawModality(g);
-		Helper.drawContainer((Game.getWidth() - TextButton.WIDTH - 40) / 2, (Game.getHeight() - TextButton.HEIGHT * 3 - 40) / 2, TextButton.WIDTH + 40, TextButton.HEIGHT * 3 + 40, true, false, g);
+		Helper.drawContainer(	(Game.getWidth() - TextButton.WIDTH - 40) / 2, (Game.getHeight() - TextButton.HEIGHT * 3 - 40) / 2, TextButton.WIDTH + 40, TextButton.HEIGHT * 3 + 40,
+													true, false, g);
 		
 		drawComponents(g);
 	}

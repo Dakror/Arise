@@ -34,19 +34,21 @@ public class Barracks extends Building {
 		bh -= 4;
 		
 		if (Game.client != null) {
-			addGuiButton(0, 1, new Point(4, 0), TroopType.SWORDFIGHTER.getType().getName(), "Starke und gut gepanzerte, jedoch langsame Nahkämpfer.", TroopType.SWORDFIGHTER.getCosts(), 0, new ClickEvent() {
-				@Override
-				public void trigger() {
-					Game.currentGame.addLayer(new BuildTroopsDialog(Barracks.this, TroopType.SWORDFIGHTER));
-				}
-			});
+			addGuiButton(	0, 1, new Point(4, 0), TroopType.SWORDFIGHTER.getType().getName(), "Starke und gut gepanzerte, jedoch langsame Nahkämpfer.", TroopType.SWORDFIGHTER.getCosts(),
+										0, new ClickEvent() {
+											@Override
+											public void trigger() {
+												Game.currentGame.addLayer(new BuildTroopsDialog(Barracks.this, TroopType.SWORDFIGHTER));
+											}
+										});
 			
-			addGuiButton(1, 1, new Point(4, 1), TroopType.LANCEBEARER.getType().getName(), "Mäßig starke und gepanzerte, jedoch schnelle Nahkämpfer.", TroopType.LANCEBEARER.getCosts(), 0, new ClickEvent() {
-				@Override
-				public void trigger() {
-					Game.currentGame.addLayer(new BuildTroopsDialog(Barracks.this, TroopType.LANCEBEARER));
-				}
-			});
+			addGuiButton(	1, 1, new Point(4, 1), TroopType.LANCEBEARER.getType().getName(), "Mäßig starke und gepanzerte, jedoch schnelle Nahkämpfer.", TroopType.LANCEBEARER.getCosts(),
+										0, new ClickEvent() {
+											@Override
+											public void trigger() {
+												Game.currentGame.addLayer(new BuildTroopsDialog(Barracks.this, TroopType.LANCEBEARER));
+											}
+										});
 		}
 		
 		init();

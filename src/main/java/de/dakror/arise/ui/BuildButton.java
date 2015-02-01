@@ -112,7 +112,8 @@ public class BuildButton extends IconButton {
 					int hW = g.getFontMetrics(g.getFont().deriveFont(40f)).stringWidth(tooltip) + 40;
 					int width = hW > 250 ? hW : 250;
 					tooltipRows = Helper.getLineCount(desc, width - 40, g, 25);
-					tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30) + (minCityLevel > 0 ? 35 : 0) - (buildingCosts.size() == 0 ? 30 : 0);
+					tooltipHeight = tooltipRows * 25 + 75 + resources.size() * 30 + (products.size() > 0 ? 55 + products.size() * 30 : 30) + (minCityLevel > 0 ? 35 : 0)
+							- (buildingCosts.size() == 0 ? 30 : 0);
 					
 					tooltipCache = new BufferedImage(width, tooltipHeight, BufferedImage.TYPE_INT_ARGB);
 					
@@ -131,10 +132,12 @@ public class BuildButton extends IconButton {
 						float sc = scale.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1);
 						float f = this.products.get(r) * (r.isUsable() ? Game.world.getSpeed() : 1) + sc * level;
 						
-						String scStr = sc > 0 ? (upgradeMode ? " -> " + (sc + f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(sc + f, 0) + (r.isUsable() ? "/h" : "") : " (+" + Assistant.formatNumber(sc, 0) + "/lvl)") : "";
+						String scStr = sc > 0 ? (upgradeMode ? " -> " + (sc + f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(sc + f, 0) + (r.isUsable() ? "/h" : "") : " (+"
+								+ Assistant.formatNumber(sc, 0) + "/lvl)") : "";
 						String str = (f > 0 && r.isUsable() ? "+" : "") + Assistant.formatNumber(f, 0) + (r.isUsable() ? "/h" : "") + scStr;
 						
-						Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30 + (minCityLevel > 0 ? 60 : 0), 25, new Point(r.getIconX(), r.getIconY()), str, 30, g2);
+						Assistant.drawLabelWithIcon(30, 80 + tooltipRows * 25 + 40 + resources.size() * 30 + i * 30 + (minCityLevel > 0 ? 60 : 0), 25, new Point(r.getIconX(), r.getIconY()),
+																				str, 30, g2);
 					}
 				}
 				
@@ -200,7 +203,8 @@ public class BuildButton extends IconButton {
 		
 		if (CityHUDLayer.cl.city.getLevel() < minCityLevel) canEffort = false;
 		
-		if (CityLayer.resources.get(Resource.BUILDINGS) >= new Center(0, 0, CityHUDLayer.cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS) && !upgradeMode) canEffort = false;
+		if (CityLayer.resources.get(Resource.BUILDINGS) >= new Center(0, 0, CityHUDLayer.cl.city.getLevel()).getScalingProducts().get(Resource.BUILDINGS) && !upgradeMode)
+			canEffort = false;
 		
 		if (!upgradeMode) enabled = canEffort;
 	}

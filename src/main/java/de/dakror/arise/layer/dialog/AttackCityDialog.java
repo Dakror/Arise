@@ -93,7 +93,8 @@ public class AttackCityDialog extends MPLayer {
 		Helper.drawHorizontallyCenteredString("Stadt angreifen", Game.getWidth(), (Game.getHeight() - height) / 2 + 40, g, 35);
 		
 		Army army = new Army(true, getSelectedResources());
-		Helper.drawHorizontallyCenteredString("Marschdauer: " + Assistant.formatSeconds(army.getMarchDuration() / Game.world.getSpeed()), Game.getWidth(), (Game.getHeight() - height) / 2 + 200, g, 30);
+		Helper.drawHorizontallyCenteredString("Marschdauer: " + Assistant.formatSeconds(army.getMarchDuration() / Game.world.getSpeed()), Game.getWidth(),
+																					(Game.getHeight() - height) / 2 + 200, g, 30);
 		
 		drawComponents(g);
 	}

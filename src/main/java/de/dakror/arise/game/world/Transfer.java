@@ -45,7 +45,8 @@ public class Transfer extends ClickableComponent {
 		timeleft = data.getTimeleft();
 		
 		angle = Math.atan2(to.y - from.y, to.x - from.x);
-		distance = (int) (Math.sqrt(Math.pow((to.x + City.SIZE / 2) - (from.x + City.SIZE / 2), 2) + Math.pow((to.y + City.SIZE / 2) - (from.y + City.SIZE / 2), 2)) - City.SIZE / 4 * Math.sqrt(2));
+		distance = (int) (Math.sqrt(Math.pow((to.x + City.SIZE / 2) - (from.x + City.SIZE / 2), 2) + Math.pow((to.y + City.SIZE / 2) - (from.y + City.SIZE / 2), 2)) - City.SIZE / 4
+				* Math.sqrt(2));
 		Polygon polygon = new Polygon();
 		
 		if (distance >= 0) {

@@ -28,7 +28,8 @@ public class ResourceLabel extends Component {
 	
 	@Override
 	public void draw(Graphics2D g) {
-		String string = Assistant.formatNumber(CityLayer.resources.get(r), 0) + "" + (off > -1 ? " / " + off : "") + (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + Assistant.formatNumber(perHour, 0) + "/h)" : "");
+		String string = Assistant.formatNumber(CityLayer.resources.get(r), 0) + "" + (off > -1 ? " / " + off : "")
+				+ (perHour != 0 ? " (" + (perHour > 0 ? "+" : "") + Assistant.formatNumber(perHour, 0) + "/h)" : "");
 		
 		if (width == 0) width = 25 + g.getFontMetrics(g.getFont().deriveFont(25f)).stringWidth(string);
 		

@@ -254,16 +254,20 @@ public class CityHUDLayer extends MPLayer {
 			selectedBuilding.updateGuiButtons();
 			
 			deconstruct.enabled = !(selectedBuilding instanceof Center) && selectedBuilding.getStage() == 1 && selectedBuilding.getStageChangeSecondsLeft() == 0;
-			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort && selectedBuilding.getStageChangeSecondsLeft() == 0;
+			upgrade.enabled = selectedBuilding.getLevel() < selectedBuilding.getMaxLevel() - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort
+					&& selectedBuilding.getStageChangeSecondsLeft() == 0;
 			
-			if (selectedBuilding instanceof Center) upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort && selectedBuilding.getStageChangeSecondsLeft() == 0;
+			if (selectedBuilding instanceof Center)
+				upgrade.enabled = selectedBuilding.getLevel() < City.levels.length - 1 && selectedBuilding.getStage() == 1 && upgrade.canEffort
+						&& selectedBuilding.getStageChangeSecondsLeft() == 0;
 		}
 	}
 	
 	public void updateBuildingbar() {
 		Resources products = new Resources();
 		for (Component c : cl.components)
-			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Center always active */)) products.add(((Building) c).getScalingProducts());
+			if (c instanceof Building && (((Building) c).getStage() == 1 || ((Building) c).getTypeId() == 1/* Center always active */))
+				products.add(((Building) c).getScalingProducts());
 		
 		products = Resources.mul(products, Game.world.getSpeed());
 		
@@ -319,7 +323,9 @@ public class CityHUDLayer extends MPLayer {
 		if (p.getType() == PacketTypes.RENAMECITY) {
 			Packet07RenameCity packet = (Packet07RenameCity) p;
 			if (packet.getCityId() == cl.city.getId()) {
-				if (packet.getNewName().equals("#false#")) Game.currentGame.addLayer(new Alert("Ein Fehler ist aufgetreten. Die Stadt konnte nicht umbennant werden. Bitte probiere es erneut.", null));
+				if (packet.getNewName().equals("#false#")) Game.currentGame.addLayer(new Alert(
+																																												"Ein Fehler ist aufgetreten. Die Stadt konnte nicht umbennant werden. Bitte probiere es erneut.",
+																																												null));
 				else cl.city.setName(packet.getNewName());
 			}
 		}
